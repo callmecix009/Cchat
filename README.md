@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cchat
+
+AI WhatsApp agent for small businesses in Tanzania. Handles customer conversations in Swahili and English, manages product knowledge, tracks stock, and hands off to a human when needed.
+
+## Tech Stack
+
+- **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS 4
+- **Auth:** Clerk
+- **Database:** Supabase (PostgreSQL) via Drizzle ORM
+- **AI:** DeepSeek (via OpenAI-compatible API)
+- **Payments:** Pesapal (planned)
+- **WhatsApp:** Meta Cloud API with Embedded Signup
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- A Supabase project (https://supabase.com)
+- A Clerk application (https://clerk.com)
+- A DeepSeek API key (https://platform.deepseek.com)
+
+### Setup
 
 ```bash
+git clone https://github.com/callmecix009/Cchat.git
+cd Cchat
+npm install
+cp .env.example .env.local
+npm run db:push
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Fill in `.env.local` with:
 
-## Learn More
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk Dashboard, API Keys
+- `CLERK_SECRET_KEY` - Clerk Dashboard, API Keys
+- `CLERK_WEBHOOK_SECRET` - Clerk Dashboard, Webhooks
+- `DATABASE_URL` - Supabase Dashboard, Settings, Database, Transaction pooler (port 6543)
+- `DIRECT_URL` - Supabase Dashboard, Settings, Database, Direct connection (port 5432)
+- `DEEPSEEK_API_KEY` - https://platform.deepseek.com/api_keys
 
-To learn more about Next.js, take a look at the following resources:
+## Database
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Push schema to Supabase:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run db:push
+```
 
-## Deploy on Vercel
+This creates all tables: users, conversations, messages, commands, settings, whatsapp_connections.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev` - Start dev server (webpack)
+- `npm run build` - Production build
+- `npm run start` - Start production server
+- `npm run db:push` - Push schema to database
+- `npm run db:generate` - Generate migration files
+
+## Project Structure
+
+```
+app/
+  (auth)/          - Sign-in, sign-up (Clerk)
+  (dashboard)/     - Dashboard pages (inbox, products, services, AI, settings, billing)
+  api/             - API routes (inbox, onboarding, webhooks, WhatsApp)
+  onboarding/      - Setup wizard
+components/        - Shared UI components
+lib/               - Database schema, utilities, brand config
+drizzle/           - Database migrations
+```
+
+## License
+
+Private. All rights reserved.
