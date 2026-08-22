@@ -73,3 +73,66 @@ export const whatsappConnections = pgTable('whatsapp_connections', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+export const products = pgTable('products', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  cat: text('cat').default('').notNull(),
+  price: integer('price').default(0).notNull(),
+  stock: integer('stock').default(0).notNull(),
+  emoji: text('emoji').default('📦').notNull(),
+  color: text('color').default('#E3F4E9').notNull(),
+  keywords: jsonb('keywords').$type<string[]>().default([]).notNull(),
+  sold: integer('sold').default(0).notNull(),
+  hidden: boolean('hidden').default(false).notNull(),
+  sortOrder: integer('sort_order').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const services = pgTable('services', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  desc: text('desc').default('').notNull(),
+  price: integer('price').default(0).notNull(),
+  priceFrom: boolean('price_from').default(false).notNull(),
+  duration: text('duration').default('').notNull(),
+  booking: boolean('booking').default(false).notNull(),
+  warranty: text('warranty').default('').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const policies = pgTable('policies', {
+  userId: text('user_id').primaryKey().references(() => users.id, { onDelete: 'cascade' }),
+  deliveryMode: text('delivery_mode').default('paid').notNull(),
+  freeOver: integer('free_over').default(0).notNull(),
+  areas: jsonb('areas').$type<{ area: string; fee: number; time: string }[]>().default([]).notNull(),
+  payments: jsonb('payments').$type<{ name: string; detail: string }[]>().default([]).notNull(),
+  payTiming: text('pay_timing').default('').notNull(),
+  deposits: text('deposits').default('').notNull(),
+  receipts: boolean('receipts').default(true).notNull(),
+  warranty: jsonb('warranty').$type<{ cat: string; dur: string; not: string }[]>().default([]).notNull(),
+  returns: text('returns').default('').notNull(),
+  refunds: text('refunds').default('').notNull(),
+  hours: jsonb('hours').$type<Record<string, string>>().default({}).notNull(),
+  outOfStockBehavior: text('out_of_stock_behavior').default('both').notNull(),
+  restockDays: integer('restock_days').default(7).notNull(),
+  custom: jsonb('custom').$type<string[]>().default([]).notNull(),
+  lowStockThreshold: integer('low_stock_threshold').default(3).notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const sales = pgTable('sales', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  conversationId: text('conversation_id'),
+  productId: text('product_id'),
+  productName: text('product_name').notNull(),
+  qty: integer('qty').default(1).notNull(),
+  unitPrice: integer('unit_price').default(0).notNull(),
+  amount: integer('amount').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

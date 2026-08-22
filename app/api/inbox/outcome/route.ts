@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
-import { users, conversations } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { conversations, products as productsTable, sales as salesTable } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
 import { ensureUserRow } from '@/lib/ensureUser';
-import type { Catalog } from '@/lib/workspace';
 
 export const runtime = 'nodejs';
 
@@ -91,11 +90,14 @@ export async function POST(req: NextRequest) {
     let updatedProduct: { id: string; name: string; stock: number } | null = null;
 
     if (outcome === 'sold') {
-      const catalog = (user.catalog ?? {}) as Catalog;
-      const list = Array.isArray(catalog.products) ? [...catalog.products] : [];
-
       if (body?.productId) {
-        const prod = list.find((p) => p.id === body.productId);
+        const prod = (
+          await db
+            .select()
+            .from(productsTable)
+            .where(and(eq(productsTable.id, body.productId), eq(productsTable.userId, user.id)))
+            .limit(1)
+        )[0];
         if (!prod) {
           return NextResponse.json(
             { error: 'PRODUCT_NOT_FOUND', message: 'That product is no longer in your catalog.' },
@@ -108,17 +110,36 @@ export async function POST(req: NextRequest) {
             { status: 400 }
           );
         }
-        prod.stock = Math.max(0, prod.stock - quantity);
-        prod.sold = (prod.sold ?? 0) + quantity;
-        soldName = prod.name;
-        updatedProduct = { id: prod.id, name: prod.name, stock: prod.stock };
+        const newStock = Math.max(0, prod.stock - quantity);
         await db
-          .update(users)
-          .set({ catalog: { ...catalog, products: list }, updatedAt: new Date() })
-          .where(eq(users.id, user.id));
+          .update(productsTable)
+          .set({ stock: newStock, sold: prod.sold + quantity, updatedAt: new Date() })
+          .where(eq(productsTable.id, prod.id));
+        soldName = prod.name;
+        updatedProduct = { id: prod.id, name: prod.name, stock: newStock };
+        await db.insert(salesTable).values({
+          id: crypto.randomUUID(),
+          userId: user.id,
+          conversationId,
+          productId: prod.id,
+          productName: prod.name,
+          qty: quantity,
+          unitPrice: prod.price,
+          amount: prod.price * quantity,
+        });
       }
       if (!soldName && typeof body?.productName === 'string' && body.productName.trim()) {
         soldName = body.productName.trim().slice(0, 120);
+        await db.insert(salesTable).values({
+          id: crypto.randomUUID(),
+          userId: user.id,
+          conversationId,
+          productId: null,
+          productName: soldName,
+          qty: quantity,
+          unitPrice: 0,
+          amount: 0,
+        });
       }
     }
 

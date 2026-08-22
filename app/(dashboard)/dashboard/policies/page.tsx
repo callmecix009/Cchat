@@ -18,6 +18,7 @@ export default function PoliciesPage() {
   const [p, setP] = useState<Policy>(emptyPolicies());
   const [loaded, setLoaded] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetch("/api/workspace")
@@ -40,9 +41,26 @@ export default function PoliciesPage() {
   const setWarranty = (i: number, k: "cat" | "dur" | "not", v: string) =>
     set("warranty", p.warranty.map((a, j) => (j === i ? { ...a, [k]: v } : a)));
 
-  const save = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  const save = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/workspace", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ policies: p }),
+      });
+      if (res.ok) {
+        window.dispatchEvent(new Event("seechat:business-updated"));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
+      } else {
+        alert("Save failed — please try again.");
+      }
+    } catch {
+      alert("Save failed — please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -52,8 +70,8 @@ export default function PoliciesPage() {
           <h2>Policies</h2>
           <p>The single source of truth the AI promises customers.</p>
         </div>
-        <button className="btn pri" onClick={save}>
-          <Icon name="check" size={15} /> {saved ? "Saved!" : "Save policies"}
+        <button className="btn pri" onClick={save} disabled={saving || !loaded}>
+          <Icon name="check" size={15} /> {saved ? "Saved!" : saving ? "Saving…" : "Save policies"}
         </button>
       </div>
 
