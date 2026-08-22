@@ -6,7 +6,7 @@ export default function AuthShell({ children }: { children: React.ReactNode }) {
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-6">
           <div className="flex items-center gap-3">
-            <CchatLogo size={56} className="shrink-0" />
+            <CchatLogo size={56} decorative className="shrink-0" />
             <span className="font-disp font-[800] text-[26px] tracking-tight text-dark">Cchat</span>
           </div>
         </div>
