@@ -40,6 +40,7 @@ export async function GET() {
 
     const whatsappConnected = !!waRow;
     const whatsappPaused = whatsappConnected && business?.connected === false;
+    const u = found.length ? found[0].users : null;
     return NextResponse.json({
       business,
       logo,
@@ -48,6 +49,10 @@ export async function GET() {
       whatsappPaused,
       whatsappNumber: waRow?.displayPhoneNumber ?? null,
       whatsappBusinessName: waRow?.businessName ?? null,
+      planStatus: u?.subscriptionStatus ?? 'inactive',
+      plan: u?.subscriptionPlan ?? null,
+      trialEndsAt: u?.trialEndsAt ?? null,
+      expiresAt: u?.subscriptionExpiresAt ?? null,
     });
   } catch (err: any) {
     console.error('Settings load error:', err);

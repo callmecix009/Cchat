@@ -22,7 +22,16 @@ export async function ensureUserRow(clerkId: string) {
 
   await db
     .insert(users)
-    .values({ id: crypto.randomUUID(), clerkId, email, name, phone })
+    .values({
+      id: crypto.randomUUID(),
+      clerkId,
+      email,
+      name,
+      phone,
+      plan: 'trial',
+      subscriptionStatus: 'trialing',
+      trialEndsAt: new Date(Date.now() + 3 * 86400000),
+    })
     .onConflictDoNothing({ target: users.clerkId });
 
   const again = await db.select().from(users).where(eq(users.clerkId, clerkId)).limit(1);

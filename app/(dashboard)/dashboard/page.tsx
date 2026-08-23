@@ -22,11 +22,9 @@ import {
   VolumeChart,
   OutcomeDonut,
   HandlingBars,
-  ReplyLine,
   type VolumePoint,
   type OutcomeSlice,
   type HandlingBar,
-  type ReplyPoint,
 } from "@/components/dashboard/charts";
 
 export const dynamic = "force-dynamic";
@@ -87,35 +85,6 @@ function buildHandling(msgs: FlatMsg[], days: number): HandlingBar[] {
       day: d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
       ai: replies.filter((m) => m.aiSent).length,
       owner: replies.filter((m) => !m.aiSent).length,
-    });
-  }
-  return out;
-}
-
-function buildReplyTimes(convos: ConvoLite[], msgs: FlatMsg[], days: number): ReplyPoint[] {
-  const out: ReplyPoint[] = [];
-  const today = dayKey(new Date());
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const next = new Date(d);
-    next.setDate(d.getDate() + 1);
-    const dayConvs = convos.filter((c) => c.createdAt >= d && c.createdAt < next);
-    const samples: number[] = [];
-    for (const c of dayConvs) {
-      const cm = msgs
-        .filter((m) => m.conversationId === c.id)
-        .sort((a, b) => a.t.getTime() - b.t.getTime());
-      const firstCust = cm.find((m) => m.fromCustomer);
-      const firstReply = cm.find((m) => !m.fromCustomer && m.t > (firstCust?.t ?? 0));
-      if (firstCust && firstReply) {
-        samples.push((firstReply.t.getTime() - firstCust.t.getTime()) / 60000);
-      }
-    }
-    const avg = samples.length ? samples.reduce((s, x) => s + x, 0) / samples.length : null;
-    out.push({
-      day: d.toLocaleDateString("en-GB", { weekday: "short" }),
-      minutes: avg === null ? null : Math.round(avg * 10) / 10,
     });
   }
   return out;
@@ -335,12 +304,13 @@ export default async function DashboardPage() {
   d30.setDate(d30.getDate() - 30);
   const d60 = new Date(startToday);
   d60.setDate(d60.getDate() - 60);
-  const sales30 = saleEvents.filter((s) => s.t >= d30).length;
+  const salesRows30 = saleEvents.filter((s) => s.t >= d30);
   const salesPrev30 = saleEvents.filter((s) => s.t >= d60 && s.t < d30).length;
+  const revenue30 = salesRows30.reduce((s, x) => s + x.amount, 0);
+  const revenuePrev30 = saleEvents.filter((s) => s.t >= d60 && s.t < d30).reduce((s, x) => s + x.amount, 0);
 
-  const replyPoints = buildReplyTimes(convos, flatMsgs, 7);
-  const validReplies = replyPoints.filter((r) => r.minutes !== null) as (ReplyPoint & { minutes: number })[];
-  const replyAvg = validReplies.length ? validReplies.reduce((s, r) => s + r.minutes, 0) / validReplies.length : null;
+  const volumeData = buildVolume(flatMsgs, 61);
+  const handlingData = buildHandling(flatMsgs, 10);
 
   const totalMsgs = flatMsgs.length;
   const aiReplies = flatMsgs.filter((m) => !m.fromCustomer && m.aiSent).length;
@@ -364,22 +334,18 @@ export default async function DashboardPage() {
     {
       label: "Closed as sold",
       value: String(soldN),
-      delta: pctDelta(sales30, salesPrev30).v,
-      hasDelta: pctDelta(sales30, salesPrev30).has && (salesPrev30 > 0 || sales30 > 0),
+      delta: pctDelta(salesRows30.length, salesPrev30).v,
+      hasDelta: pctDelta(salesRows30.length, salesPrev30).has && (salesPrev30 > 0 || salesRows30.length > 0),
       footnote: "sales last 30d",
     },
     {
-      label: "Avg first reply",
-      value: replyAvg === null ? "—" : replyAvg.toFixed(1) + "m",
-      delta: 0,
-      hasDelta: false,
-      footnote: "last 7 days",
-      lowerIsBetter: true,
+      label: "Sales · 30 days",
+      value: TZS(revenue30),
+      delta: pctDelta(revenue30, revenuePrev30).v,
+      hasDelta: pctDelta(revenue30, revenuePrev30).has && (revenuePrev30 > 0 || revenue30 > 0),
+      footnote: "recorded via inbox",
     },
   ];
-
-  const volumeData = buildVolume(flatMsgs, 61);
-  const handlingData = buildHandling(flatMsgs, 10);
 
   const outcomeSlices: OutcomeSlice[] = [
     { key: "sold", label: "Closed as sold", value: soldN, color: "#149A5B" },
@@ -566,8 +532,6 @@ export default async function DashboardPage() {
         )}
 
         <HandlingBars data={handlingData} />
-
-        <ReplyLine data={replyPoints} />
 
         <Card className="md:col-span-2 gap-0">
           <CardHeader className="border-b border-[#E4EDE5] pb-3">

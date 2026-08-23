@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
 import CchatLogo from "@/components/branding/CchatLogo";
+import { CrownIcon, planBadgeInfo, type PlanState } from "@/components/premium";
 
 const NAV = [
   { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: "grid" },
@@ -79,6 +80,10 @@ type BizSettings = {
   avatar: string | null;
   whatsappConnected: boolean;
   whatsappPaused: boolean;
+  planStatus: string;
+  plan: string | null;
+  trialEndsAt: string | null;
+  expiresAt: string | null;
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -96,6 +101,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         avatar: data.avatar ?? null,
         whatsappConnected: !!data.whatsappConnected,
         whatsappPaused: !!data.whatsappPaused,
+        planStatus: data.planStatus ?? "inactive",
+        plan: data.plan ?? null,
+        trialEndsAt: data.trialEndsAt ?? null,
+        expiresAt: data.expiresAt ?? null,
       });
     } catch {
       /* keep last known state */
@@ -142,12 +151,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </Link>
           ))}
         </nav>
-        <div className="p-3.5 m-2.5 rounded-xl bg-white/5 text-xs">
-          <div className="flex justify-between font-bold text-white mb-1">
-            <span>Pro plan</span>
-            <span>$5/mo</span>
-          </div>
-          <div className="text-[#86A893]">12,000 AI messages included</div>
+        <div className="p-3.5 m-2.5 mt-auto rounded-xl bg-white/5 text-xs">
+          {(() => {
+            const info = planBadgeInfo({
+              status: settings?.planStatus ?? "inactive",
+              plan: settings?.plan ?? null,
+              trialEndsAt: settings?.trialEndsAt ?? null,
+              expiresAt: settings?.expiresAt ?? null,
+            });
+            const tone =
+              info.tone === "premium"
+                ? "bg-lime2 text-[#06170D]"
+                : info.tone === "trial"
+                  ? "bg-[rgba(232,162,34,.15)] text-[#F5C563] border border-[rgba(232,162,34,.35)]"
+                  : "bg-white/10 text-white";
+            return (
+              <Link href="/billing" className="block group">
+                <div className={`flex items-center gap-2 px-3 py-2.5 rounded-[10px] font-bold transition-transform group-hover:scale-[1.02] ${tone}`}>
+                  {info.crown && <CrownIcon className="w-4 h-4" />}
+                  <span>{info.label}</span>
+                  <span className="ml-auto opacity-60">›</span>
+                </div>
+                <div className="text-[#86A893] mt-2 px-1">
+                  {info.tone === "none"
+                    ? "12,000 TSh/mo · 3-day free trial"
+                    : info.tone === "trial"
+                      ? "Full access while trialing"
+                      : "Thanks for supporting Cchat 💚"}
+                </div>
+              </Link>
+            );
+          })()}
         </div>
       </aside>
 

@@ -11,6 +11,8 @@ export const users = pgTable('users', {
   pesapalMerchantRef: text('pesapal_merchant_ref'),
   subscriptionStatus: text('subscription_status').default('inactive').notNull(),
   subscriptionExpiresAt: timestamp('subscription_expires_at'),
+  subscriptionPlan: text('subscription_plan'),
+  trialEndsAt: timestamp('trial_ends_at'),
   lastPaymentAt: timestamp('last_payment_at'),
   onboarded: boolean('onboarded').default(false).notNull(),
   isDemoOwner: boolean('is_demo_owner').default(false).notNull(),
