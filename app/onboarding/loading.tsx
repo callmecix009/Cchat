@@ -5,7 +5,7 @@ export default function OnboardingLoading() {
         <div className="w-10 h-10 rounded-xl bg-lime2 text-[#06170D] flex items-center justify-center font-bold text-lg animate-pulse">
           C
         </div>
-        <p className="text-[#8FAA99] text-sm font-medium">Loading setup wizard...</p>
+        <p className="text-[#8FAA99] text-sm font-medium">Loading Setup Guide…</p>
       </div>
     </div>
   );

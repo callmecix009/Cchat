@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
 
     await db
       .update(conversations)
-      .set({ status: 'waiting', contactName, contactPhone, createdAt: new Date() })
+      .set({ status: 'waiting', contactName, contactPhone })
       .where(eq(conversations.id, conversationId));
 
     return NextResponse.json({ ok: true, delivered: true }, { status: 200 });

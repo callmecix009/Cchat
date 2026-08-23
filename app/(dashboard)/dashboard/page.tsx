@@ -409,7 +409,7 @@ export default async function DashboardPage() {
   }
 
   const checklist = [
-    { label: "Finish setup wizard", done: onboarded, href: "/onboarding", cta: onboarded ? "Edit" : "Start" },
+    { label: "Complete the Setup Guide", done: onboarded, href: "/onboarding", cta: onboarded ? "Edit" : "Start" },
     { label: "Add your business name", done: hasBusinessName, href: "/settings", cta: "Add" },
     { label: "Add your first product", done: catalogProducts.length > 0, href: "/dashboard/products", cta: "Add" },
     { label: "Connect WhatsApp", done: !!wa, href: "/settings", cta: "Connect" },
@@ -450,7 +450,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <Link href="/onboarding" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-lime2 text-[#06170D] font-semibold text-sm hover:bg-[#6ff0a8] transition-colors">
-            Complete setup wizard
+            Finish Setup
           </Link>
         </div>
       )}
@@ -655,7 +655,7 @@ export default async function DashboardPage() {
           </div>
           <div className="flex gap-2">
             <Link href="/onboarding" className="inline-flex items-center px-3.5 py-2 rounded-[9px] bg-grn text-white font-semibold text-[13px] hover:bg-grn-d transition-colors">
-              {onboarded ? "Edit setup wizard" : "Start setup wizard"}
+              {onboarded ? "Edit Setup Guide" : "Start Setup Guide"}
             </Link>
             <Link href="/settings" className="inline-flex items-center px-3.5 py-2 rounded-[9px] border border-[#E4EDE5] text-dark font-semibold text-[13px] hover:border-grn transition-colors">
               {wa ? "Manage WhatsApp" : "Connect WhatsApp"}

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { initials, avColor, fmtDay, fmtClock, type Convo, type Product } from "@/lib/demo";
 
-type Filter = "all" | "ai" | "hand" | "open";
+type Filter = "all" | "ai" | "hand" | "waiting" | "open";
 
-const FILTER_LABELS: Record<Filter, string> = { all: "All", ai: "AI-handled", hand: "Handed-off", open: "Open" };
+const FILTER_LABELS: Record<Filter, string> = { all: "All", ai: "AI-handled", hand: "Handed-off", waiting: "Waiting", open: "Open" };
 
 function statusBadge(c: Convo) {
   if (c.status === "waiting")
@@ -73,8 +73,13 @@ export default function InboxPage() {
   const filtered = useMemo(() => {
     return conversations
       .filter((c) => {
-        if (filter === "ai" && !(c.status === "ai" || c.status === "closed")) return false;
+        if (filter === "ai" && c.status !== "ai") return false;
         if (filter === "hand" && c.status !== "waiting") return false;
+        if (filter === "waiting") {
+          if (c.status === "closed") return false;
+          const last = c.msgs[c.msgs.length - 1];
+          if (!last || last.from !== "c") return false;
+        }
         if (filter === "open" && c.status === "closed") return false;
         if (query) {
           const q = query.toLowerCase();
@@ -282,7 +287,7 @@ export default function InboxPage() {
               </span>
             </div>
             <div className="ifilters">
-              {(["all", "ai", "hand", "open"] as Filter[]).map((f) => (
+              {(["all", "ai", "hand", "waiting", "open"] as Filter[]).map((f) => (
                 <button key={f} className={filter === f ? "on" : ""} onClick={() => setFilter(f)}>
                   {FILTER_LABELS[f]}
                 </button>
@@ -397,6 +402,9 @@ export default function InboxPage() {
               )}
 
               <div className="transcript">
+                {open.msgs.length === 0 && (
+                  <div className="sysline">No messages in this conversation yet.</div>
+                )}
                 {open.msgs.map((m, i) => {
                   if (m.from === "sys")
                     return (
@@ -409,7 +417,9 @@ export default function InboxPage() {
                     <span className={`bub ${side}`} key={i}>
                       {m.text}
                       <time>
-                        {fmtClock(m.t)} {m.from === "ai" ? "· 🤖" : m.from === "me" ? "· ✍️ you" : ""}
+                        {fmtClock(m.t)}
+                        {m.from === "ai" && <i className="who-tag">AI</i>}
+                        {m.from === "me" && <i className="who-tag me">You</i>}
                       </time>
                     </span>
                   );

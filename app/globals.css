@@ -844,9 +844,28 @@ textarea.inp { resize: vertical; min-height: 74px; }
   padding: 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
-.transcript .bub { max-width: 64%; font-size: 14px; }
+.transcript .bub { max-width: 72%; font-size: 14.5px; line-height: 1.45; padding: 9px 13px; }
+.transcript .bub.c { color: #111B12; }
+.transcript .bub time {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+}
+.who-tag {
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  padding: 1px 5px;
+  border-radius: 99px;
+  background: rgba(20,154,91,.14);
+  color: #0E7A47;
+  text-transform: uppercase;
+}
+.who-tag.me { background: rgba(232,162,34,.16); color: #9A6A06; }
 .inote {
   padding: 12px 16px;
   background: #F6F8F5;

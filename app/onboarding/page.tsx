@@ -261,7 +261,7 @@ export default function OnboardingPage() {
         <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
           <CchatLogo size={32} decorative className="shrink-0" />
           Cchat
-          <span className="text-[#8FAA99] font-medium text-[14px] ml-1">· setup wizard</span>
+          <span className="text-[#8FAA99] font-medium text-[14px] ml-1">· Setup Guide</span>
         </div>
         <Link href="/dashboard" className="inline-flex items-center gap-2 px-3 py-[6px] rounded-lg border border-[rgba(143,240,180,.3)] text-[#B9CDBF] text-[13px] font-semibold hover:border-lime hover:text-lime transition-colors bg-transparent">
           Skip — I&apos;ll do this later

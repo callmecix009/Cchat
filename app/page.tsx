@@ -97,14 +97,14 @@ function PlusIcon({ size = 17 }: { size?: number }) {
 const FAQ_DATA = [
   ["Does Cchat read all my WhatsApp?", "No. Cchat only handles customer conversations routed to the agent. Your personal chats are untouched, and you can take over or close any conversation instantly."],
   ["What if the AI doesn't know an answer?", "It never invents prices, stock or promises. It tells the customer it will check, hands the chat to you, and (if you're offline) collects their name and number for a callback."],
-  ["How do payments work?", "Your customers pay you directly â€” M-Pesa, Tigo Pesa, Airtel Money, cash. For your Cchat subscription, you pay TSh 12,000/month (or 115,200/year, 20% off) via Pesapal after your 3-day free trial."],
-  ["Can it really speak proper Swahili?", "Yes â€” Swahili is the first language of the agent, including common slang you teach it during setup. English is detected and used automatically when the customer switches."],
-  ["What do I need to start?", "A WhatsApp Business number and about ten minutes to answer setup questions. No hardware, no developers. Every new account starts with a free 3-day trial."],
-  ["Is there a contract?", "No. TSh 12,000/month or save 20% on the yearly plan. Cancel anytime â€” your inbox history stays exportable."],
+  ["How do payments work?", "Your customers pay you directly — M-Pesa, Tigo Pesa, Airtel Money, cash. For your Cchat subscription, you pay TSh 12,000/month (or 115,200/year, 20% off) after your 7-day free trial."],
+  ["Can it really speak proper Swahili?", "Yes — Swahili is the first language of the agent, including common slang you teach it during setup. English is detected and used automatically when the customer switches."],
+  ["What do I need to start?", "A WhatsApp Business number and about ten minutes to answer setup questions. No hardware, no developers. Every new account starts with a free 7-day trial."],
+  ["Is there a contract?", "No. TSh 12,000/month or save 20% on the yearly plan. Cancel anytime — your inbox history stays exportable."],
 ];
 
 const PRICING_FEATURES = [
-  "Unlimited customer conversations",
+  "12,000 AI messages every month",
   "Live stock & price sync",
   "Swahili-first AI with auto English",
   "Human takeover & smart handoffs",
@@ -120,7 +120,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen font-body text-dark">
-      {/* â”€â”€â”€ NAVBAR â”€â”€â”€ */}
+      {/* NAVBAR */}
       <nav className="fixed top-0 left-0 right-0 z-[900] flex items-center gap-6 px-[5vw] py-4 bg-[#081811]/95 backdrop-blur-sm border-b border-[rgba(143,240,180,.08)] transition-all">
         <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
           <CchatLogo size={32} decorative className="shrink-0" />
@@ -141,7 +141,7 @@ export default function LandingPage() {
         </Link>
       </nav>
 
-      {/* â”€â”€â”€ HERO â”€â”€â”€ */}
+      {/* HERO */}
       <header className="relative overflow-hidden bg-[#081811] text-[#EAF4EE] pt-[130px] pb-[70px] px-[5vw]">
         {/* dot grid */}
         <div
@@ -165,7 +165,7 @@ export default function LandingPage() {
             </em>
           </h1>
           <p className="text-[#B9CDBF] text-[16.5px] max-w-[580px] mx-auto leading-[1.6]">
-            Let AI handle customer questions, follow-ups, and everyday conversations automatically â€” while you stay in control when a human touch is needed.
+            Let AI handle customer questions, follow-ups, and everyday conversations automatically — while you stay in control when a human touch is needed.
           </p>
           <div className="flex gap-3 mt-[26px] mb-5 flex-wrap justify-center">
             <Link
@@ -187,42 +187,11 @@ export default function LandingPage() {
             <span className="flex items-center gap-[6px]"><CheckIcon /> You stay in control</span>
             <span className="flex items-center gap-[6px]"><CheckIcon /> Your payments stay yours</span>
           </div>
-          <div className="text-[12.5px] text-lime font-semibold mt-4">3-day free trial Â· TSh 12,000/mo Â· save 20% yearly Â· cancel anytime</div>
-
-          {/* floating product visual */}
-          <Reveal delay={150} className="relative max-w-[560px] mx-auto mt-12 text-left">
-            <div className="blob absolute -top-10 -left-14 w-40 h-40 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(83,232,155,.18), transparent 70%)" }} />
-            <div className="relative bg-white rounded-[22px] p-4 shadow-[0_30px_80px_-20px_rgba(0,0,0,.55)] border border-[rgba(143,240,180,.15)]">
-              <div className="bg-[#EFE7DB] rounded-[16px] p-3.5 flex flex-col gap-2">
-                <span className="max-w-[78%] bg-white px-3 py-1.5 rounded-[11px] rounded-tl-[3px] text-[13.5px] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-start text-dark">Habari! iPhone 11 iko na bei gani?</span>
-                <span className="max-w-[82%] bg-[#D9FDD3] px-3 py-1.5 rounded-[11px] rounded-tr-[3px] text-[13.5px] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-end text-dark">Ndiyo! 64GB â€” TSh 720,000, tuna 3 ðŸ“± Ukichukua leo, case ni bure!</span>
-                <span className="max-w-[70%] bg-white px-3 py-1.5 rounded-[11px] rounded-tl-[3px] text-[13.5px] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-start text-dark">Nitatuma M-Pesa sahihi</span>
-                <span className="max-w-[82%] bg-[#D9FDD3] px-3 py-1.5 rounded-[11px] rounded-tr-[3px] text-[13.5px] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-end text-dark">Poa! Tutakupa receipt mara moja âœ…</span>
-              </div>
-              <div className="mt-2.5 flex items-center justify-between px-1 pb-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-[.12em] text-grn-d flex items-center gap-1.5"><i className="dot g pulse" /> AI replying in Swahili</span>
-                <span className="text-[10px] font-mono text-muted">just now</span>
-              </div>
-            </div>
-            <div className="floaty hidden sm:flex absolute -right-6 -top-6 items-center gap-2 bg-white text-dark rounded-[12px] px-3.5 py-2.5 shadow-[0_18px_40px_-14px_rgba(0,0,0,.45)] border border-[#E4EDE5]" style={{ "--tilt": "3deg" } as CSSProperties}>
-              <span className="w-7 h-7 rounded-[9px] bg-grn-bg text-grn-d flex items-center justify-center font-bold text-[13px]">ðŸ’°</span>
-              <div className="leading-tight">
-                <div className="text-[11px] font-bold">New sale!</div>
-                <div className="text-[10.5px] text-muted font-mono">TSh 285,000 Â· Tecno Spark 10</div>
-              </div>
-            </div>
-            <div className="floaty-slow hidden sm:flex absolute -left-8 -bottom-6 items-center gap-2 bg-white text-dark rounded-[12px] px-3.5 py-2.5 shadow-[0_18px_40px_-14px_rgba(0,0,0,.45)] border border-[#E4EDE5]" style={{ "--tilt": "-3deg" } as CSSProperties}>
-              <span className="w-7 h-7 rounded-[9px] bg-amb-bg flex items-center justify-center text-[13px]">ðŸ“¦</span>
-              <div className="leading-tight">
-                <div className="text-[11px] font-bold">Stock alert</div>
-                <div className="text-[10.5px] text-muted font-mono">Oraimo Earbuds Â· 2 left</div>
-              </div>
-            </div>
-          </Reveal>
+          <div className="text-[12.5px] text-lime font-semibold mt-4">7-day free trial · TSh 12,000/mo · save 20% yearly · cancel anytime</div>
         </div>
       </header>
 
-      {/* â”€â”€â”€ HOW IT WORKS â”€â”€â”€ */}
+      {/* HOW IT WORKS */}
       <section className="bg-surface text-dark py-[86px] px-[5vw]" id="how">
         <div className="max-w-[1200px] mx-auto">
           <div className="max-w-[640px] mb-[44px]">
@@ -237,21 +206,21 @@ export default function LandingPage() {
               {
                 num: 1,
                 title: "Tell the AI about your business",
-                desc: "Create your account, then answer a short setup wizard about your products, prices, services, delivery and policies â€” in your own words. Ten minutes, done once.",
+                desc: "Create your account, then follow the Setup Guide about your products, prices, services, delivery and policies — in your own words. Ten minutes, done once.",
                 tags: ["10-minute setup", "Products & prices", "Delivery & policies"],
                 tagIcons: [null, null, null],
               },
               {
                 num: 2,
                 title: "The AI answers your customers",
-                desc: "It learns your products, prices, stock, services and policies â€” then replies in Swahili or English, instantly, at any hour. It asks smart follow-ups to guide customers toward a sale or booking.",
+                desc: "It learns your products, prices, stock, services and policies — then replies in Swahili or English, instantly, at any hour. It asks smart follow-ups to guide customers toward a sale or booking.",
                 tags: ["Live stock & prices", "Swahili-first", "Never invents answers"],
                 tagIcons: [null, null, null],
               },
               {
                 num: 3,
                 title: "You watch and take over when needed",
-                desc: "Every conversation streams to your dashboard. Negotiation? Angry customer? The AI hands it to you with the reason â€” and pauses while you reply. Everything else, it handles.",
+                desc: "Every conversation streams to your dashboard. Negotiation? Angry customer? The AI hands it to you with the reason — and pauses while you reply. Everything else, it handles.",
                 tags: ["Live inbox", "Instant handoff", "Full history forever"],
                 tagIcons: [null, null, null],
               },
@@ -280,7 +249,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* â”€â”€â”€ FEATURES â”€â”€â”€ */}
+      {/* FEATURES */}
       <section className="bg-[#EDF2EC] text-dark py-[86px] px-[5vw]" id="features">
         <div className="max-w-[1200px] mx-auto">
           <div className="max-w-[640px] mb-[44px]">
@@ -290,32 +259,32 @@ export default function LandingPage() {
             </h2>
           </div>
           <div className="grid grid-cols-12 gap-[14px]">
-            {/* Live stock â€” 7 cols */}
+            {/* Live stock — 7 cols */}
             <div className="col-span-12 lg:col-span-7 bg-white border border-[#E3E9E1] rounded-[16px] p-6 hover:-translate-y-[3px] hover:shadow-[0_2px_4px_rgba(14,32,22,.06),0_12px_32px_-14px_rgba(14,32,22,.18)] transition-all relative overflow-hidden">
               <div className="w-10 h-[40px] rounded-[11px] bg-grn-bg text-grn-d flex items-center justify-center mb-[14px]">
                 <ZapIcon size={20} />
               </div>
-              <h3 className="font-disp text-[17.5px] mb-[6px]">Live stock truth â€” to the last unit</h3>
+              <h3 className="font-disp text-[17.5px] mb-[6px]">Live stock truth — to the last unit</h3>
               <p className="text-muted text-[13.5px] leading-[1.55]">Every edit, sale or restock hits the AI&apos;s brain instantly. It never promises what you don&apos;t have.</p>
               <div className="flex items-center gap-[10px] mt-[18px] flex-wrap">
                 <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold flex items-center gap-[7px]">ðŸ“±ðŸ“±ðŸ“± 3 iPhones in stock</span>
                 <span className="text-[#8B9B8F]"><ArrowIcon size={15} /></span>
-                <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold">ðŸ›’ One sellsâ€¦</span>
+                <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold">ðŸ›’ One sells…</span>
                 <span className="text-[#8B9B8F]"><ArrowIcon size={15} /></span>
                 <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold">ðŸ’¬ &ldquo;Kuna iPhone 13?&rdquo;</span>
                 <span className="text-[#8B9B8F]"><ArrowIcon size={15} /></span>
-                <span className="bg-grn-bg border border-grn-br rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold text-grn-d">âœ… &ldquo;Zimebaki 2 tu&rdquo;</span>
+                <span className="bg-grn-bg border border-grn-br rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold text-grn-d">✅ &ldquo;Zimebaki 2 tu&rdquo;</span>
               </div>
             </div>
-            {/* Handoff â€” 5 cols */}
+            {/* Handoff — 5 cols */}
             <div className="col-span-12 lg:col-span-5 bg-white border border-[#E3E9E1] rounded-[16px] p-6 hover:-translate-y-[3px] hover:shadow-[0_2px_4px_rgba(14,32,22,.06),0_12px_32px_-14px_rgba(14,32,22,.18)] transition-all relative overflow-hidden">
               <div className="w-10 h-[40px] rounded-[11px] bg-grn-bg text-grn-d flex items-center justify-center mb-[14px]">
                 <HandIcon size={20} />
               </div>
               <h3 className="font-disp text-[17.5px] mb-[6px]">Handoff, exactly when you want</h3>
-              <p className="text-muted text-[13.5px] leading-[1.55]">Negotiation past your limit, angry customer, &ldquo;let me talk to the owner&rdquo; â€” the AI hands over with the reason, and pauses until you&apos;re done. You set the triggers, the discount ceiling and your available hours.</p>
+              <p className="text-muted text-[13.5px] leading-[1.55]">Negotiation past your limit, angry customer, &ldquo;let me talk to the owner&rdquo; — the AI hands over with the reason, and pauses until you&apos;re done. You set the triggers, the discount ceiling and your available hours.</p>
             </div>
-            {/* Swahili-first â€” 4 cols */}
+            {/* Swahili-first — 4 cols */}
             <div className="col-span-12 lg:col-span-4 bg-white border border-[#E3E9E1] rounded-[16px] p-6 hover:-translate-y-[3px] hover:shadow-[0_2px_4px_rgba(14,32,22,.06),0_12px_32px_-14px_rgba(14,32,22,.18)] transition-all relative overflow-hidden">
               <div className="w-10 h-[40px] rounded-[11px] bg-grn-bg text-grn-d flex items-center justify-center mb-[14px]">
                 <GlobeIcon size={20} />
@@ -323,7 +292,7 @@ export default function LandingPage() {
               <h3 className="font-disp text-[17.5px] mb-[6px]">Swahili-first brain</h3>
               <p className="text-muted text-[13.5px] leading-[1.55]">Replies in Swahili by default. Customer writes in English mid-chat? The AI switches instantly. Or force one language.</p>
             </div>
-            {/* Sells â€” 4 cols */}
+            {/* Sells — 4 cols */}
             <div className="col-span-12 lg:col-span-4 bg-white border border-[#E3E9E1] rounded-[16px] p-6 hover:-translate-y-[3px] hover:shadow-[0_2px_4px_rgba(14,32,22,.06),0_12px_32px_-14px_rgba(14,32,22,.18)] transition-all relative overflow-hidden">
               <div className="w-10 h-[40px] rounded-[11px] bg-grn-bg text-grn-d flex items-center justify-center mb-[14px]">
                 <SparkIcon size={20} />
@@ -331,37 +300,37 @@ export default function LandingPage() {
               <h3 className="font-disp text-[17.5px] mb-[6px]">Sells, not just answers</h3>
               <p className="text-muted text-[13.5px] leading-[1.55]">Follow-up questions on budget, model and use case. Upsells a case with the phone. Books repairs with deposits.</p>
             </div>
-            {/* Policies â€” 4 cols */}
+            {/* Policies — 4 cols */}
             <div className="col-span-12 lg:col-span-4 bg-white border border-[#E3E9E1] rounded-[16px] p-6 hover:-translate-y-[3px] hover:shadow-[0_2px_4px_rgba(14,32,22,.06),0_12px_32px_-14px_rgba(14,32,22,.18)] transition-all relative overflow-hidden">
               <div className="w-10 h-[40px] rounded-[11px] bg-grn-bg text-grn-d flex items-center justify-center mb-[14px]">
                 <ShieldIcon size={20} />
               </div>
               <h3 className="font-disp text-[17.5px] mb-[6px]">Policies it never breaks</h3>
-              <p className="text-muted text-[13.5px] leading-[1.55]">Delivery fees, warranties, returns, deposits â€” written once by you, promised correctly forever.</p>
+              <p className="text-muted text-[13.5px] leading-[1.55]">Delivery fees, warranties, returns, deposits — written once by you, promised correctly forever.</p>
             </div>
-            {/* One inbox â€” 5 cols */}
+            {/* One inbox — 5 cols */}
             <div className="col-span-12 lg:col-span-5 bg-white border border-[#E3E9E1] rounded-[16px] p-6 hover:-translate-y-[3px] hover:shadow-[0_2px_4px_rgba(14,32,22,.06),0_12px_32px_-14px_rgba(14,32,22,.18)] transition-all relative overflow-hidden">
               <div className="w-10 h-[40px] rounded-[11px] bg-grn-bg text-grn-d flex items-center justify-center mb-[14px]">
                 <ChatIcon size={20} />
               </div>
               <h3 className="font-disp text-[17.5px] mb-[6px]">One inbox, forever</h3>
-              <p className="text-muted text-[13.5px] leading-[1.55]">Every customer conversation stored and searchable â€” by name, number or keyword. Jump into any chat, any time. Nothing is ever lost.</p>
+              <p className="text-muted text-[13.5px] leading-[1.55]">Every customer conversation stored and searchable — by name, number or keyword. Jump into any chat, any time. Nothing is ever lost.</p>
             </div>
-            {/* Money â€” 7 cols */}
+            {/* Money — 7 cols */}
             <div className="col-span-12 lg:col-span-7 bg-white border border-[#E3E9E1] rounded-[16px] p-6 hover:-translate-y-[3px] hover:shadow-[0_2px_4px_rgba(14,32,22,.06),0_12px_32px_-14px_rgba(14,32,22,.18)] transition-all relative overflow-hidden">
               <div className="w-10 h-[40px] rounded-[11px] bg-grn-bg text-grn-d flex items-center justify-center mb-[14px]">
                 <CardIcon size={20} />
               </div>
               <h3 className="font-disp text-[17.5px] mb-[6px]">Your money never touches Cchat</h3>
               <p className="text-muted text-[13.5px] leading-[1.55]">
-                The AI tells customers <b className="text-dark">your</b> methods â€” M-Pesa, Tigo Pesa, Airtel Money, cash â€” and nothing more. Cchat never processes, holds or sees a payment. You pay Cchat one flat $5/month, outside the app.
+                The AI tells customers <b className="text-dark">your</b> methods — M-Pesa, Tigo Pesa, Airtel Money, cash — and nothing more. Cchat never processes, holds or sees a payment. You pay Cchat one flat $5/month, outside the app.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* â”€â”€â”€ LANGUAGES â”€â”€â”€ */}
+      {/* LANGUAGES */}
       <section className="bg-[#081811] text-[#EAF4EE] py-[86px] px-[5vw]" id="languages">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div>
@@ -371,13 +340,13 @@ export default function LandingPage() {
                 Swahili kwanza.<br />English automatically.
               </h2>
               <p className="text-[#9DB6A7] mt-3 text-[16px]">
-                Your customers don&apos;t pick a language menu. They just talk â€” and the AI keeps up, even switching mid-conversation.
+                Your customers don&apos;t pick a language menu. They just talk — and the AI keeps up, even switching mid-conversation.
               </p>
             </div>
             <div className="flex flex-col gap-4">
               {[
-                { n: "SW", title: "Swahili is the default", desc: "Natural, warm, street-smart â€” not robot Swahili. Add your own slang and local phrases." },
-                { n: "EN", title: "Auto-detect & switch", desc: "One English sentence flips the whole conversation â€” no restart, no confusion." },
+                { n: "SW", title: "Swahili is the default", desc: "Natural, warm, street-smart — not robot Swahili. Add your own slang and local phrases." },
+                { n: "EN", title: "Auto-detect & switch", desc: "One English sentence flips the whole conversation — no restart, no confusion." },
                 { n: "1", title: "Or force one language", desc: "Prefer everything in Swahili only? One toggle in AI Configure." },
               ].map((item, i) => (
                 <div key={i} className="flex gap-[14px] items-start">
@@ -397,7 +366,7 @@ export default function LandingPage() {
               Habari! iPhone 11 iko na bei gani? <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:02</time>
             </span>
             <span className="max-w-[80%] bg-[#D9FDD3] px-[11px] py-[7px] rounded-[11px] rounded-tr-[3px] text-[14px] leading-[1.4] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-end text-dark">
-              Habari boss! ðŸ‘‹ iPhone 11 64GB â€” TZS 720,000, tuna 3. <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:02</time>
+              Habari boss! ðŸ‘‹ iPhone 11 64GB — TZS 720,000, tuna 3. <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:02</time>
             </span>
             <span className="max-w-[80%] bg-white px-[11px] py-[7px] rounded-[11px] rounded-tl-[3px] text-[14px] leading-[1.4] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-start text-dark">
               Actually, can you deliver to Mikocheni? <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:03</time>
@@ -406,28 +375,39 @@ export default function LandingPage() {
               â†» switches to English instantly
             </span>
             <span className="max-w-[80%] bg-[#D9FDD3] px-[11px] py-[7px] rounded-[11px] rounded-tr-[3px] text-[14px] leading-[1.4] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-end text-dark">
-              Of course! Mikocheni delivery is TZS 7,000, within 2â€“4 hours ðŸšš <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:03</time>
+              Of course! Mikocheni delivery is TZS 7,000, within 2–4 hours ðŸšš <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:03</time>
             </span>
           </div>
         </div>
       </section>
 
-      {/* â”€â”€â”€ PRICING â”€â”€â”€ */}
+      {/* PRICING */}
       <section className="bg-surface text-dark py-[86px] px-[5vw]" id="pricing">
         <div className="max-w-[1100px] mx-auto">
           <Reveal>
-            <div className="border border-cborder rounded-[20px] overflow-hidden bg-[#E4EDE5] grid grid-cols-1 gap-px md:grid-cols-2 lg:grid-cols-3">
+            <div className="border border-cborder rounded-[20px] overflow-hidden bg-[#E4EDE5] grid grid-cols-1 gap-px md:grid-cols-2 lg:grid-cols-4">
               <div className="bg-white p-8 md:col-span-2 lg:col-span-1 flex flex-col justify-center">
                 <p className="mb-5 text-muted text-[12px] font-bold uppercase tracking-wider">Pricing</p>
                 <h2 className="font-disp font-extrabold text-[32px] leading-[1.08] tracking-tight text-dark">
                   One plan.<br />Zero drama.
                 </h2>
                 <p className="mt-3 text-muted text-[13.5px] leading-relaxed max-w-[300px]">
-                  Every feature included on every plan. Start with a free trial â€” no card needed.
+                  Every feature included on every plan. Start with the free trial — no card needed.
                 </p>
-                <div className="mt-6 inline-flex items-center gap-2 self-start rounded-full border border-grn-br bg-grn-bg px-4 py-2 text-[12.5px] font-bold text-grn-d">
-                  <span className="w-5 h-5 rounded-full bg-lime2 text-[#06170D] flex items-center justify-center"><CrownIcon className="w-3 h-3" /></span>
-                  3-day free trial for everyone
+              </div>
+
+              <div className="relative flex flex-col bg-white shadow-[inset_0_0_0_2px_#149A5B]">
+                <span className="absolute top-0 right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-b-[8px] bg-grn text-white text-[10.5px] font-extrabold uppercase tracking-wider">
+                  Free trial
+                </span>
+                <div className="p-8 border-b border-[#BCE5CB] flex flex-col flex-1">
+                  <p className="mb-5 text-muted text-[12px] font-bold uppercase tracking-wider">Trial · Premium</p>
+                  <div className="mb-1 flex items-baseline gap-2">
+                    <h3 className="font-disp font-extrabold text-[38px] leading-none tracking-tight text-dark">7</h3>
+                    <span className="text-muted text-[12px]">days free</span>
+                  </div>
+                  <p className="mb-7 text-muted text-[13px]">Everything unlocked. No card required.</p>
+                  <Link href="/sign-up" className="btn wide pri mt-auto justify-center">Start free trial</Link>
                 </div>
               </div>
 
@@ -439,23 +419,22 @@ export default function LandingPage() {
                     <span className="text-muted text-[12px]">TSh / month</span>
                   </div>
                   <p className="mb-7 text-muted text-[13px]">Full agent, billed monthly. Cancel anytime.</p>
-                  <Link href="/sign-up" className="btn wide ghost mt-auto justify-center">Start free trial</Link>
+                  <Link href="/sign-up" className="btn wide ghost mt-auto justify-center">Get started</Link>
                 </div>
               </div>
 
-              <div className="relative flex flex-col bg-white shadow-[inset_0_0_0_2px_#149A5B]">
-                <span className="absolute top-0 right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-b-[8px] bg-grn text-white text-[10.5px] font-extrabold uppercase tracking-wider">
+              <div className="relative flex flex-col bg-white">
+                <span className="absolute top-0 right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-b-[8px] bg-amb-bg text-amber-600 text-[10.5px] font-extrabold uppercase tracking-wider">
                   <CrownIcon className="w-3 h-3" /> Save 20%
                 </span>
-                <div className="p-8 border-b border-[#BCE5CB] flex flex-col flex-1">
-                  <p className="mb-5 text-muted text-[12px] font-bold uppercase tracking-wider">Yearly Â· Premium</p>
+                <div className="p-8 border-b border-[#EEF2ED] flex flex-col flex-1">
+                  <p className="mb-5 text-muted text-[12px] font-bold uppercase tracking-wider">Yearly · Premium</p>
                   <div className="mb-1 flex items-baseline gap-2">
                     <h3 className="font-disp font-extrabold text-[38px] leading-none tracking-tight text-dark">115,200</h3>
                     <span className="text-muted text-[12px]">TSh / year</span>
                   </div>
-                  <p className="text-grn-d text-[12.5px] font-bold mb-1">â‰ˆ 9,600 TSh / month</p>
-                  <p className="mb-7 text-muted text-[13px]">Billed once a year â€” effectively two months free.</p>
-                  <Link href="/sign-up" className="btn wide pri mt-auto justify-center">Start free trial</Link>
+                  <p className="mb-7 text-muted text-[13px]">Billed once a year — effectively two months free.</p>
+                  <Link href="/sign-up" className="btn wide ghost mt-auto justify-center">Choose yearly</Link>
                 </div>
               </div>
             </div>
@@ -471,14 +450,14 @@ export default function LandingPage() {
               ))}
             </ul>
             <p className="text-[12.5px] text-muted text-center mt-7 leading-[1.6] max-w-[540px] mx-auto">
-              Every new account gets a <b className="text-dark">3-day free trial</b>. Pay with M-Pesa, Tigo Pesa,
+              Every new account gets a <b className="text-dark">7-day free trial</b>. Pay with M-Pesa, Tigo Pesa,
               Airtel Money or card via Pesapal. Cchat <b className="text-dark">never</b> processes your customers&apos; payments.
             </p>
           </Reveal>
         </div>
       </section>
 
-      {/* â”€â”€â”€ FAQ â”€â”€â”€ */}
+      {/* FAQ */}
       <section className="bg-[#EDF2EC] text-dark py-[86px] px-[5vw]" id="faq">
         <div className="max-w-[1200px] mx-auto">
           <div className="mx-auto mb-10 max-w-[640px] text-center">
@@ -511,7 +490,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* â”€â”€â”€ FOOTER â”€â”€â”€ */}
+      {/* FOOTER */}
       <footer className="bg-[#050F0A] text-[#8FAA99] pt-14 pb-[30px] px-[5vw]">
         <div className="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-9 pb-9 border-b border-[rgba(143,240,180,.1)]">
           <div>
@@ -533,7 +512,7 @@ export default function LandingPage() {
           <div>
             <h5 className="text-[#EAF4EE] text-[13px] uppercase tracking-[.1em] mb-[14px]">Get started</h5>
             <Link href="/sign-up" className="block text-[13.5px] mb-[9px] hover:text-lime transition-colors">Start now</Link>
-            <Link href="/sign-up" className="block text-[13.5px] mb-[9px] hover:text-lime transition-colors">Run the setup wizard</Link>
+            <Link href="/sign-up" className="block text-[13.5px] mb-[9px] hover:text-lime transition-colors">Open the Setup Guide</Link>
             <a href="/" className="block text-[13.5px] mb-[9px] hover:text-lime transition-colors">Explore the live demo</a>
           </div>
           <div>
@@ -544,7 +523,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto flex justify-between gap-3 pt-[22px] text-[12.5px] flex-wrap">
-          <span>Â© 2026 Cchat Â· 3-day free trial Â· 12,000 TSh/mo or save 20% yearly</span>
+          <span>© 2026 Cchat · 7-day free trial · 12,000 TSh/mo or save 20% yearly</span>
           <span>Cchat never processes customer payments.</span>
         </div>
       </footer>

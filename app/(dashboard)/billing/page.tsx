@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CrownIcon, planBadgeInfo } from "@/components/premium";
 
 const FEATURES = [
-  "Unlimited customer conversations",
+  "12,000 AI messages every month",
   "Live stock & price sync",
   "Swahili-first AI with auto English",
   "Human takeover & smart handoffs",
@@ -59,7 +59,7 @@ export default function BillingPage() {
 
   function pay(plan: "monthly" | "yearly") {
     alert(
-      `Pesapal checkout for the ${plan} plan is coming soon.\n\nYou'll pay with M-Pesa, Tigo Pesa, Airtel Money or card.`
+      `Secure checkout for the ${plan} plan is coming soon.\n\nYou'll pay with M-Pesa, Tigo Pesa, Airtel Money or card.`
     );
   }
 
@@ -93,13 +93,14 @@ export default function BillingPage() {
                 ? `Full access · ${trialLeft} day${trialLeft === 1 ? "" : "s"} remaining`
                 : status?.status === "active"
                   ? "All features unlocked"
-                  : "Start your 3-day free trial anytime"}
+                  : "Start your 7-day free trial anytime"}
             </div>
           </div>
         </div>
-        <Link href="/" className="text-[12.5px] font-bold text-grn-d hover:underline">
-          Compare plans ↓
-        </Link>
+          <div className="flex flex-col items-end gap-1">
+            <span className="livechip"><span className="dot g" /> Secure payment</span>
+            <span className="text-[11px] text-muted">M-Pesa · Tigo Pesa · Airtel Money · Card</span>
+          </div>
       </div>
 
       {/* pricing-2 style grid */}
@@ -139,7 +140,7 @@ export default function BillingPage() {
             price="12,000"
             period="TSh / month"
             description="Full agent, billed every month."
-            cta="Pay with Pesapal"
+            cta="Subscribe"
             popular={false}
             highlight={false}
             onPay={() => pay("monthly")}
@@ -152,7 +153,7 @@ export default function BillingPage() {
             period="TSh / year"
             description={"Billed once a year."}
             badge="SAVE 20%"
-            cta="Pay with Pesapal"
+            cta="Subscribe"
             popular
             highlight={yearly}
             onPay={() => pay("yearly")}
@@ -174,7 +175,7 @@ export default function BillingPage() {
           </ul>
           <div className="rulecard mt-5">
             <span>
-              <b>3-day free trial</b> on every new account — full access, no card required.
+              <b>7-day free trial</b> on every new account — full access, no card required.
               We&apos;ll remind you a day before it ends. Your customers&apos; money never
               touches Cchat.
             </span>
