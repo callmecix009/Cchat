@@ -1125,6 +1125,19 @@ textarea.inp { resize: vertical; min-height: 74px; }
 }
 .blob { animation: blobDrift 11s ease-in-out infinite; }
 
+/* Hero image entrance — plays once on page load */
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.hero-img {
+  opacity: 0;
+  animation: heroIn .75s cubic-bezier(.2,.7,.3,1) .1s forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-img { opacity: 1; animation: none; }
+}
+
 /* Sale follow-up */
 .salebar {
   display: flex;

@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { CrownIcon, planBadgeInfo } from "@/components/premium";
+import { CrownIcon, GoldCrown, planBadgeInfo } from "@/components/premium";
 import { PremiumBadge, ExtraPremiumBadge, MiniPlanBadge } from "@/components/plan-badges";
 
 const FEATURES = [
@@ -71,12 +71,27 @@ export default function BillingPage() {
     ) : (
       <span
         className={`w-[52px] h-[52px] rounded-[13px] flex items-center justify-center flex-none ${
-          info.tone === "trial" ? "bg-amb-bg text-amber-600" : "bg-[#EEF2ED] text-muted"
+          info.tone === "trial" ? "bg-[#FDF6E3]" : "bg-[#EEF2ED] text-muted"
         }`}
       >
-        <CrownIcon className="w-6 h-6" />
+        <GoldCrown size={26} />
       </span>
     );
+
+  const trialActive = status?.status === "trialing" && trialLeft > 0;
+  const trialExpired = status?.status === "trialing" && trialLeft <= 0;
+
+  let stateLine = "Start your 3-day free trial anytime";
+  if (trialActive) {
+    stateLine = `Free Trial · ${trialLeft} day${trialLeft === 1 ? "" : "s"} left`;
+  } else if (trialExpired) {
+    stateLine = "Your free trial has ended";
+  } else if (status?.status === "active") {
+    stateLine =
+      info.tone === "extra"
+        ? "Extra Premium · yearly subscription active"
+        : "Premium · monthly subscription active";
+  }
 
   return (
     <div className="viewwrap max-w-[1100px] mx-auto pb-10">
@@ -93,15 +108,7 @@ export default function BillingPage() {
           {currentBadge}
           <div>
             <div className="font-bold text-sm text-dark">{info.name}</div>
-            <div className="text-[12px] text-muted">
-              {status?.status === "trialing" && trialLeft > 0
-                ? `Free Trial · ${trialLeft} day${trialLeft === 1 ? "" : "s"} left`
-                : status?.status === "active"
-                  ? info.tone === "extra"
-                    ? "Extra Premium · yearly subscription active"
-                    : "Premium · monthly subscription active"
-                  : "Start your 3-day free trial anytime"}
-            </div>
+            <div className="text-[12px] text-muted">{stateLine}</div>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">

@@ -15,32 +15,32 @@ export async function GET() {
 
   try {
     const userRow = await ensureUserRow(userId);
+
     const found = userRow
       ? await db
           .select()
           .from(settings)
-          .innerJoin(users, eq(settings.userId, users.id))
-          .where(eq(users.clerkId, userId))
+          .where(eq(settings.userId, userRow.id))
           .limit(1)
       : [];
 
-    const business = found.length ? ((found[0].settings.business ?? null) as { connected?: boolean } | null) : null;
-    const logo = found.length ? found[0].settings.logo ?? null : null;
-    const avatar = found.length ? found[0].users.avatar ?? null : null;
+    const business = found.length ? ((found[0].business ?? null) as { connected?: boolean } | null) : null;
+    const logo = found.length ? found[0].logo ?? null : null;
+    const avatar = userRow?.avatar ?? null;
 
     let waRow;
-    if (found.length) {
+    if (userRow) {
       const wa = await db
         .select()
         .from(whatsappConnections)
-        .where(eq(whatsappConnections.userId, found[0].users.id))
+        .where(eq(whatsappConnections.userId, userRow.id))
         .limit(1);
       waRow = wa[0];
     }
 
     const whatsappConnected = !!waRow;
     const whatsappPaused = whatsappConnected && business?.connected === false;
-    const u = found.length ? found[0].users : null;
+    const u = userRow;
     return NextResponse.json({
       business,
       logo,

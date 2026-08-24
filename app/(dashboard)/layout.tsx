@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
 import CchatLogo from "@/components/branding/CchatLogo";
-import { CrownIcon, planBadgeInfo, type PlanState } from "@/components/premium";
+import { GoldCrown, planBadgeInfo, type PlanState } from "@/components/premium";
 
 const NAV = [
   { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: "grid" },
@@ -168,7 +168,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             return (
               <Link href="/billing" className="block group">
                 <div className={`flex items-center gap-2 px-3 py-2.5 rounded-[10px] font-bold transition-transform group-hover:scale-[1.02] ${tone}`}>
-                  {info.crown && <CrownIcon className="w-4 h-4" />}
+                  {info.crown && <GoldCrown size={16} />}
                   <span>{info.label}</span>
                   <span className="ml-auto opacity-60">›</span>
                 </div>

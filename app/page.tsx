@@ -139,7 +139,7 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <header className="relative overflow-hidden bg-[#081811] text-[#EAF4EE] pt-[130px] pb-[70px] px-[5vw]">
+      <header className="relative overflow-hidden bg-[#081811] text-[#EAF4EE] pt-[120px] pb-[70px] px-[5vw]">
         <div
           className="absolute inset-0 opacity-40 pointer-events-none"
           style={{
@@ -149,101 +149,133 @@ export default function LandingPage() {
         />
         <div className="absolute w-[480px] h-[480px] rounded-full -top-[180px] right-[10%] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(20,154,91,.15), transparent 65%)" }} />
 
-        <div className="relative max-w-[720px] mx-auto text-center">
-          <span className="inline-flex items-center gap-2 text-[12.5px] font-bold tracking-[.14em] uppercase text-lime border border-[rgba(143,240,180,.3)] px-[14px] py-[6px] rounded-full bg-[rgba(143,240,180,.06)]">
-            <ZapIcon size={13} /> AI WhatsApp agent for small businesses
-          </span>
-          <h1 className="font-disp font-[800] tracking-[-.025em] mt-5 mb-[18px] leading-[1.04] text-[clamp(38px,4.6vw,62px)]">
-            Your WhatsApp customers get answers <em className="not-italic text-lime2 relative">
-              right away.
-              <span className="absolute left-0 right-0 bottom-1 h-[10px] bg-[rgba(83,232,155,.18)] -z-10 rounded-[3px]" />
-            </em>
-          </h1>
-          <p className="text-[#B9CDBF] text-[16.5px] max-w-[580px] mx-auto leading-[1.6]">
-            Cchat answers your customers on WhatsApp — day and night, in Swahili or English.
-            When a chat needs you, it comes straight to you.
-          </p>
-          <div className="flex gap-3 mt-[26px] mb-5 flex-wrap justify-center">
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[10px] bg-lime2 text-[#06170D] font-semibold text-[15px] hover:bg-[#6ff0a8] transition-all hover:-translate-y-[1px]"
-            >
-              Start free <ArrowIcon size={16} />
-            </Link>
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[10px] font-semibold text-[15px] border border-[rgba(143,240,180,.35)] text-[#EAF4EE] bg-transparent hover:border-lime hover:text-lime transition-all hover:-translate-y-[1px]"
-            >
-              <ChatIcon size={16} /> Connect your WhatsApp
-            </Link>
+        <div className="relative max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-14 items-center">
+          {/* LEFT — all hero content */}
+          <div className="text-center lg:text-left">
+            <span className="inline-flex items-center gap-2 text-[12.5px] font-bold tracking-[.14em] uppercase text-lime border border-[rgba(143,240,180,.3)] px-[14px] py-[6px] rounded-full bg-[rgba(143,240,180,.06)]">
+              <ZapIcon size={13} /> AI WhatsApp agent for small businesses
+            </span>
+            <h1 className="font-disp font-[800] tracking-[-.025em] mt-5 mb-[18px] leading-[1.04] text-[clamp(36px,4.4vw,58px)]">
+              Your WhatsApp customers get answers <em className="not-italic text-lime2 relative">
+                right away.
+                <span className="absolute left-0 right-0 bottom-1 h-[10px] bg-[rgba(83,232,155,.18)] -z-10 rounded-[3px]" />
+              </em>
+            </h1>
+            <p className="text-[#B9CDBF] text-[16.5px] max-w-[540px] mx-auto lg:mx-0 leading-[1.6]">
+              Cchat answers your customers on WhatsApp — day and night, in Swahili or English.
+              When a chat needs you, it comes straight to you.
+            </p>
+            <div className="flex gap-3 mt-[26px] mb-5 flex-wrap justify-center lg:justify-start">
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[10px] bg-lime2 text-[#06170D] font-semibold text-[15px] hover:bg-[#6ff0a8] transition-all hover:-translate-y-[1px]"
+              >
+                Start free <ArrowIcon size={16} />
+              </Link>
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[10px] font-semibold text-[15px] border border-[rgba(143,240,180,.35)] text-[#EAF4EE] bg-transparent hover:border-lime hover:text-lime transition-all hover:-translate-y-[1px]"
+              >
+                <ChatIcon size={16} /> Connect your WhatsApp
+              </Link>
+            </div>
+            <div className="flex gap-[18px] flex-wrap justify-center lg:justify-start text-[#8FAA99] text-[13px] font-medium">
+              <span className="flex items-center gap-[6px]"><CheckIcon /> Built for Tanzania</span>
+              <span className="flex items-center gap-[6px]"><CheckIcon /> Swahili-first</span>
+              <span className="flex items-center gap-[6px]"><CheckIcon /> You stay in control</span>
+              <span className="flex items-center gap-[6px]"><CheckIcon /> Your payments stay yours</span>
+            </div>
+            <div className="text-[12.5px] text-lime font-semibold mt-4">3-day free trial · TSh 12,000/mo · save 20% yearly · cancel anytime</div>
           </div>
-          <div className="flex gap-[18px] flex-wrap justify-center text-[#8FAA99] text-[13px] font-medium">
-            <span className="flex items-center gap-[6px]"><CheckIcon /> Built for Tanzania</span>
-            <span className="flex items-center gap-[6px]"><CheckIcon /> Swahili-first</span>
-            <span className="flex items-center gap-[6px]"><CheckIcon /> You stay in control</span>
-            <span className="flex items-center gap-[6px]"><CheckIcon /> Your payments stay yours</span>
+
+          {/* RIGHT — robot image, gentle entrance on load */}
+          <div className="hero-img-wrap relative">
+            <div className="absolute -inset-6 rounded-[28px] pointer-events-none" style={{ background: "radial-gradient(circle at 60% 40%, rgba(20,154,91,.22), transparent 70%)" }} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/hero-robot.png"
+              alt="Cchat AI assistant working on a laptop"
+              className="hero-img relative w-full h-auto rounded-[22px] shadow-[0_40px_90px_-30px_rgba(0,0,0,.6)] ring-1 ring-[rgba(143,240,180,.18)] object-cover aspect-[16/10]"
+            />
           </div>
-          <div className="text-[12.5px] text-lime font-semibold mt-4">3-day free trial · TSh 12,000/mo · save 20% yearly · cancel anytime</div>
         </div>
       </header>
 
       {/* HOW IT WORKS */}
       <section className="bg-surface text-dark py-[86px] px-[5vw]" id="how">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="max-w-[640px] mb-[44px]">
-            <div className="text-[12px] font-[800] tracking-[.16em] uppercase text-grn-d mb-[10px]">How it works</div>
-            <h2 className="font-disp font-[800] tracking-[-.02em] leading-[1.1] text-[clamp(28px,3.4vw,42px)]">
-              Set it up once. It works every day.
-            </h2>
-            <p className="text-muted mt-3 text-[16px]">No developers. No new hardware. About ten minutes of setup.</p>
-          </div>
-          <div className="flex flex-col max-w-[860px]">
-            {[
-              {
-                num: 1,
-                title: "Tell it about your business",
-                desc: "Answer a few simple questions about your products, prices, services and delivery rules. You do this once, in your own words.",
-                tags: ["10-minute setup", "Products & prices", "Delivery & policies"],
-                tagIcons: [null, null, null],
-              },
-              {
-                num: 2,
-                title: "It answers your customers",
-                desc: "Questions about price, stock or delivery get answered right away — in Swahili or English, at any hour. If it doesn't know something, it says so and passes the chat to you.",
-                tags: ["Always up to date", "Swahili-first", "Doesn't make things up"],
-                tagIcons: [null, null, null],
-              },
-              {
-                num: 3,
-                title: "You take over when it matters",
-                desc: "Every chat shows up in your inbox. When a customer needs a person, the AI steps aside and tells you why. Reply yourself, then let it continue.",
-                tags: ["One inbox", "You get alerted", "Full chat history"],
-                tagIcons: [null, null, null],
-              },
-            ].map((step, i) => (
-              <Reveal key={i} delay={i * 90}>
-                <div className="grid grid-cols-[64px_1fr] gap-[22px] relative pb-10">
-                  {i < 2 && (
-                    <div className="absolute left-[31px] top-16 bottom-2 w-[2px]" style={{ background: "repeating-linear-gradient(to bottom, #BCE5CB 0 6px, transparent 6px 12px)" }} />
-                  )}
-                  <div className="w-[62px] h-[62px] rounded-[18px] bg-[#081811] text-lime2 font-disp text-[24px] font-[800] flex items-center justify-center shadow-[0_10px_24px_-8px_rgba(11,27,18,.4)]">
-                    {step.num}
-                  </div>
-                  <div>
-                    <h3 className="font-disp text-[21px] mb-[6px]">{step.title}</h3>
-                    <p className="text-muted max-w-[560px]">{step.desc}</p>
-                    <div className="flex gap-2 mt-3 flex-wrap">
-                      {step.tags.map((t, j) => (
-                        <span key={j} className="text-[12px] font-semibold bg-white border border-[#D2DCD1] rounded-full px-3 py-[5px] text-grn-d flex items-center gap-[5px]">
-                          {step.tagIcons[j]} {t}
-                        </span>
-                      ))}
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-16 items-center">
+          <div>
+            <div className="max-w-[640px] mb-[44px]">
+              <div className="text-[12px] font-[800] tracking-[.16em] uppercase text-grn-d mb-[10px]">How it works</div>
+              <h2 className="font-disp font-[800] tracking-[-.02em] leading-[1.1] text-[clamp(28px,3.4vw,42px)]">
+                Set it up once. It works every day.
+              </h2>
+              <p className="text-muted mt-3 text-[16px]">No developers. No new hardware. About ten minutes of setup.</p>
+            </div>
+            <div className="flex flex-col max-w-[720px]">
+              {[
+                {
+                  num: 1,
+                  title: "Tell it about your business",
+                  desc: "Answer a few simple questions about your products, prices, services and delivery rules. You do this once, in your own words.",
+                  tags: ["10-minute setup", "Products & prices", "Delivery & policies"],
+                  tagIcons: [null, null, null],
+                },
+                {
+                  num: 2,
+                  title: "It answers your customers",
+                  desc: "Questions about price, stock or delivery get answered right away — in Swahili or English, at any hour. If it doesn't know something, it says so and passes the chat to you.",
+                  tags: ["Always up to date", "Swahili-first", "Doesn't make things up"],
+                  tagIcons: [null, null, null],
+                },
+                {
+                  num: 3,
+                  title: "You take over when it matters",
+                  desc: "Every chat shows up in your inbox. When a customer needs a person, the AI steps aside and tells you why. Reply yourself, then let it continue.",
+                  tags: ["One inbox", "You get alerted", "Full chat history"],
+                  tagIcons: [null, null, null],
+                },
+              ].map((step, i) => (
+                <Reveal key={i} delay={i * 90}>
+                  <div className="grid grid-cols-[64px_1fr] gap-[22px] relative pb-10">
+                    {i < 2 && (
+                      <div className="absolute left-[31px] top-16 bottom-2 w-[2px]" style={{ background: "repeating-linear-gradient(to bottom, #BCE5CB 0 6px, transparent 6px 12px)" }} />
+                    )}
+                    <div className="w-[62px] h-[62px] rounded-[18px] bg-[#081811] text-lime2 font-disp text-[24px] font-[800] flex items-center justify-center shadow-[0_10px_24px_-8px_rgba(11,27,18,.4)]">
+                      {step.num}
+                    </div>
+                    <div>
+                      <h3 className="font-disp text-[21px] mb-[6px]">{step.title}</h3>
+                      <p className="text-muted max-w-[560px]">{step.desc}</p>
+                      <div className="flex gap-2 mt-3 flex-wrap">
+                        {step.tags.map((t, j) => (
+                          <span key={j} className="text-[12px] font-semibold bg-white border border-[#D2DCD1] rounded-full px-3 py-[5px] text-grn-d flex items-center gap-[5px]">
+                            {step.tagIcons[j]} {t}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              ))}
+            </div>
           </div>
+
+          {/* RIGHT — vertical image, reveals on scroll */}
+          <Reveal delay={150} className="hidden lg:block">
+            <div className="relative max-w-[400px] mx-auto">
+              <div className="absolute -inset-5 rounded-[26px] pointer-events-none" style={{ background: "radial-gradient(circle at 50% 30%, rgba(20,154,91,.14), transparent 70%)" }} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/how-it-works.jpg"
+                alt="A business owner managing customer conversations on Cchat"
+                className="relative w-full h-auto rounded-[20px] shadow-[0_30px_70px_-25px_rgba(11,27,18,.35)] ring-1 ring-[#E3E9E1] object-cover aspect-[2/3]"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+            </div>
+          </Reveal>
         </div>
       </section>
 
