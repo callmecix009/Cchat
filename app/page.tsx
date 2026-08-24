@@ -139,29 +139,33 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <header className="relative overflow-hidden bg-[#081811] text-[#EAF4EE] pt-[120px] pb-[70px] px-[5vw]">
-        <div
-          className="absolute inset-0 opacity-40 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(rgba(143,240,180,.06) 1px, transparent 1px)",
-            backgroundSize: "30px 30px",
-          }}
+      <header className="relative min-h-[680px] overflow-hidden bg-[#081811] text-[#EAF4EE]">
+        {/* BACKGROUND LAYER — the actual robot image fills the hero */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/hero-robot.jpg"
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="hero-img absolute inset-0 h-full w-full object-cover object-[72%_center]"
         />
-        <div className="absolute w-[480px] h-[480px] rounded-full -top-[180px] right-[10%] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(20,154,91,.15), transparent 65%)" }} />
+        {/* readability gradient — left side dark for text, robot stays visible */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#081811] via-[#081811]/80 to-[#081811]/5" />
+        <div className="absolute inset-0 bg-[#081811]/70 lg:hidden" />
 
-        <div className="relative max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-14 items-center">
-          {/* LEFT — all hero content */}
-          <div className="text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 text-[12.5px] font-bold tracking-[.14em] uppercase text-lime border border-[rgba(143,240,180,.3)] px-[14px] py-[6px] rounded-full bg-[rgba(143,240,180,.06)]">
-              <ZapIcon size={13} /> AI WhatsApp agent for small businesses
+        {/* CONTENT LAYER — everything on the left */}
+        <div className="relative z-10 mx-auto flex min-h-[680px] max-w-[1200px] items-center px-[5vw] pt-[130px] pb-[80px]">
+          <div className="max-w-[620px] text-center mx-auto lg:mx-0 lg:text-left">
+            <span className="inline-flex items-center gap-2 text-[12.5px] font-bold tracking-[.14em] uppercase text-lime border border-[rgba(143,240,180,.3)] px-[14px] py-[6px] rounded-full bg-[rgba(143,240,180,.08)]">
+              <ZapIcon size={13} /> AI — your super agent for small business
             </span>
             <h1 className="font-disp font-[800] tracking-[-.025em] mt-5 mb-[18px] leading-[1.04] text-[clamp(36px,4.4vw,58px)]">
-              Your WhatsApp customers get answers <em className="not-italic text-lime2 relative">
-                right away.
+              Turn every conversation <em className="not-italic text-lime2 relative">
+                into a customer.
                 <span className="absolute left-0 right-0 bottom-1 h-[10px] bg-[rgba(83,232,155,.18)] -z-10 rounded-[3px]" />
               </em>
             </h1>
-            <p className="text-[#B9CDBF] text-[16.5px] max-w-[540px] mx-auto lg:mx-0 leading-[1.6]">
+            <p className="text-[#C6D8CB] text-[16.5px] max-w-[540px] mx-auto lg:mx-0 leading-[1.6]">
               Cchat answers your customers on WhatsApp — day and night, in Swahili or English.
               When a chat needs you, it comes straight to you.
             </p>
@@ -170,37 +174,21 @@ export default function LandingPage() {
                 href="/sign-up"
                 className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[10px] bg-lime2 text-[#06170D] font-semibold text-[15px] hover:bg-[#6ff0a8] transition-all hover:-translate-y-[1px]"
               >
-                Start free <ArrowIcon size={16} />
+                Start Now <ArrowIcon size={16} />
               </Link>
-              <Link
-                href="/sign-up"
+              <a
+                href="#how"
                 className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[10px] font-semibold text-[15px] border border-[rgba(143,240,180,.35)] text-[#EAF4EE] bg-transparent hover:border-lime hover:text-lime transition-all hover:-translate-y-[1px]"
               >
-                <ChatIcon size={16} /> Connect your WhatsApp
-              </Link>
+                Learn More
+              </a>
             </div>
-            <div className="flex gap-[18px] flex-wrap justify-center lg:justify-start text-[#8FAA99] text-[13px] font-medium">
+            <div className="flex gap-[18px] flex-wrap justify-center lg:justify-start text-[#A8C2B1] text-[13px] font-medium">
               <span className="flex items-center gap-[6px]"><CheckIcon /> Built for Tanzania</span>
               <span className="flex items-center gap-[6px]"><CheckIcon /> Swahili-first</span>
               <span className="flex items-center gap-[6px]"><CheckIcon /> You stay in control</span>
-              <span className="flex items-center gap-[6px]"><CheckIcon /> Your payments stay yours</span>
             </div>
             <div className="text-[12.5px] text-lime font-semibold mt-4">3-day free trial · TSh 12,000/mo · save 20% yearly · cancel anytime</div>
-          </div>
-
-          {/* RIGHT — robot image, gentle entrance on load */}
-          <div className="hero-img-wrap relative">
-            <div className="absolute -inset-6 rounded-[28px] pointer-events-none" style={{ background: "radial-gradient(circle at 60% 40%, rgba(20,154,91,.22), transparent 70%)" }} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/hero-robot.jpg"
-              alt="Cchat AI assistant working on a laptop"
-              width={1400}
-              height={875}
-              fetchPriority="high"
-              decoding="async"
-              className="hero-img relative w-full h-auto rounded-[22px] shadow-[0_40px_90px_-30px_rgba(0,0,0,.6)] ring-1 ring-[rgba(143,240,180,.18)] object-cover aspect-[16/10]"
-            />
           </div>
         </div>
       </header>
@@ -265,26 +253,22 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* RIGHT — vertical image, reveals on scroll */}
+          {/* RIGHT — the actual vertical image, reveals on scroll */}
           <Reveal delay={150} className="hidden lg:block">
-            <div className="relative max-w-[400px] mx-auto">
-              <div className="absolute -inset-5 rounded-[26px] pointer-events-none" style={{ background: "radial-gradient(circle at 50% 30%, rgba(20,154,91,.14), transparent 70%)" }} />
-              <div className="relative w-full aspect-[2/3] rounded-[20px] overflow-hidden shadow-[0_30px_70px_-25px_rgba(11,27,18,.35)] ring-1 ring-[#E3E9E1] bg-gradient-to-br from-[#0C2417] via-[#123A26] to-[#149A5B] flex items-center justify-center">
-                <div className="absolute inset-0 opacity-25" style={{ backgroundImage: "radial-gradient(rgba(143,240,180,.25) 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
-                <div className="relative text-center px-8">
-                  <CchatLogo size={54} decorative className="mx-auto mb-3 opacity-90" />
-                  <p className="text-[#B9CDBF] text-[13px] font-medium leading-snug">Your customers, one inbox.</p>
-                </div>
-              </div>
+            <div className="relative w-full max-w-[420px] mx-auto">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/how-it-works.jpg"
-                alt="A business owner managing customer conversations on Cchat"
+                alt="Business owner using Cchat"
+                width={768}
+                height={1340}
                 loading="lazy"
                 decoding="async"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="w-full h-auto object-contain"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
+                  const el = e.target as HTMLImageElement;
+                  el.style.display = "none";
+                  el.parentElement?.style.setProperty("display", "none");
                 }}
               />
             </div>
