@@ -261,7 +261,7 @@ export default function LandingPage() {
                 src="/images/how-it-works.jpg"
                 alt="Business owner using Cchat"
                 width={768}
-                height={1340}
+                height={1376}
                 loading="lazy"
                 decoding="async"
                 className="w-full h-auto object-contain"
