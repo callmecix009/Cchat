@@ -193,8 +193,12 @@ export default function LandingPage() {
             <div className="absolute -inset-6 rounded-[28px] pointer-events-none" style={{ background: "radial-gradient(circle at 60% 40%, rgba(20,154,91,.22), transparent 70%)" }} />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/hero-robot.png"
+              src="/images/hero-robot.jpg"
               alt="Cchat AI assistant working on a laptop"
+              width={1400}
+              height={875}
+              fetchPriority="high"
+              decoding="async"
               className="hero-img relative w-full h-auto rounded-[22px] shadow-[0_40px_90px_-30px_rgba(0,0,0,.6)] ring-1 ring-[rgba(143,240,180,.18)] object-cover aspect-[16/10]"
             />
           </div>
@@ -265,11 +269,20 @@ export default function LandingPage() {
           <Reveal delay={150} className="hidden lg:block">
             <div className="relative max-w-[400px] mx-auto">
               <div className="absolute -inset-5 rounded-[26px] pointer-events-none" style={{ background: "radial-gradient(circle at 50% 30%, rgba(20,154,91,.14), transparent 70%)" }} />
+              <div className="relative w-full aspect-[2/3] rounded-[20px] overflow-hidden shadow-[0_30px_70px_-25px_rgba(11,27,18,.35)] ring-1 ring-[#E3E9E1] bg-gradient-to-br from-[#0C2417] via-[#123A26] to-[#149A5B] flex items-center justify-center">
+                <div className="absolute inset-0 opacity-25" style={{ backgroundImage: "radial-gradient(rgba(143,240,180,.25) 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+                <div className="relative text-center px-8">
+                  <CchatLogo size={54} decorative className="mx-auto mb-3 opacity-90" />
+                  <p className="text-[#B9CDBF] text-[13px] font-medium leading-snug">Your customers, one inbox.</p>
+                </div>
+              </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/how-it-works.jpg"
                 alt="A business owner managing customer conversations on Cchat"
-                className="relative w-full h-auto rounded-[20px] shadow-[0_30px_70px_-25px_rgba(11,27,18,.35)] ring-1 ring-[#E3E9E1] object-cover aspect-[2/3]"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
                 }}
