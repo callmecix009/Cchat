@@ -160,7 +160,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               expiresAt: settings?.expiresAt ?? null,
             });
             const tone =
-              info.tone === "premium"
+              info.tone === "premium" || info.tone === "extra"
                 ? "bg-lime2 text-[#06170D]"
                 : info.tone === "trial"
                   ? "bg-[rgba(232,162,34,.15)] text-[#F5C563] border border-[rgba(232,162,34,.35)]"
@@ -176,8 +176,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {info.tone === "none"
                     ? "12,000 TSh/mo · 3-day free trial"
                     : info.tone === "trial"
-                      ? "Full access while trialing"
-                      : "Thanks for supporting Cchat 💚"}
+                      ? "Full access while you try Cchat"
+                      : info.tone === "extra"
+                        ? "Yearly plan · thanks for the support 💚"
+                        : "Monthly plan · thanks for the support 💚"}
                 </div>
               </Link>
             );

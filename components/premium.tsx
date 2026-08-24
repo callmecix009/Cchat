@@ -19,14 +19,12 @@ export function planBadgeInfo(s: PlanState) {
     ? Math.max(0, Math.ceil((new Date(s.trialEndsAt).getTime() - now) / 86400000))
     : 0;
   if (s.status === "trialing" && trialLeft > 0) {
-    return { label: `Free trial · ${trialLeft}d left`, tone: "trial" as const, crown: true };
+    return { label: `Free trial · ${trialLeft}d left`, tone: "trial" as const, crown: true, name: "Free Trial" as const };
   }
   if (s.status === "active") {
-    return {
-      label: s.plan === "yearly" ? "Premium · Yearly" : "Premium · Monthly",
-      tone: "premium" as const,
-      crown: true,
-    };
+    return s.plan === "yearly"
+      ? { label: "Extra Premium", tone: "extra" as const, crown: true, name: "Extra Premium" as const }
+      : { label: "Premium", tone: "premium" as const, crown: true, name: "Premium" as const };
   }
-  return { label: "Upgrade", tone: "none" as const, crown: false };
+  return { label: "Upgrade", tone: "none" as const, crown: false, name: "None" as const };
 }

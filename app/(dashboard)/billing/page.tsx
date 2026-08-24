@@ -1,17 +1,17 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { CrownIcon, planBadgeInfo } from "@/components/premium";
+import { PremiumBadge, ExtraPremiumBadge, MiniPlanBadge } from "@/components/plan-badges";
 
 const FEATURES = [
   "12,000 AI messages every month",
-  "Live stock & price sync",
-  "Swahili-first AI with auto English",
-  "Human takeover & smart handoffs",
-  "Products, services & policies brain",
-  "Forever-stored inbox",
-  "Sales tracking & revenue stats",
+  "Your products, prices and stock, always current",
+  "Swahili first, English automatic",
+  "You take over any chat, any time",
+  "Your rules for delivery, returns and warranties",
+  "Every conversation kept in one inbox",
+  "Sales tracking and revenue at a glance",
 ];
 
 function Check() {
@@ -29,7 +29,7 @@ export default function BillingPage() {
     trialEndsAt: string | null;
     expiresAt: string | null;
   } | null>(null);
-  const [yearly, setYearly] = useState(true);
+  const [yearly, setYearly] = useState(false);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -49,7 +49,7 @@ export default function BillingPage() {
 
   const info = status
     ? planBadgeInfo(status)
-    : { label: "…", tone: "none" as const, crown: false };
+    : { label: "…", tone: "none" as const, crown: false, name: "None" as const };
   const trialLeft = status?.trialEndsAt
     ? Math.max(
         0,
@@ -63,60 +63,67 @@ export default function BillingPage() {
     );
   }
 
+  const currentBadge =
+    info.tone === "extra" ? (
+      <MiniPlanBadge kind="extra" size={52} />
+    ) : info.tone === "premium" ? (
+      <MiniPlanBadge kind="premium" size={52} />
+    ) : (
+      <span
+        className={`w-[52px] h-[52px] rounded-[13px] flex items-center justify-center flex-none ${
+          info.tone === "trial" ? "bg-amb-bg text-amber-600" : "bg-[#EEF2ED] text-muted"
+        }`}
+      >
+        <CrownIcon className="w-6 h-6" />
+      </span>
+    );
+
   return (
     <div className="viewwrap max-w-[1100px] mx-auto pb-10">
       <div className="section-h mb-6">
         <div>
           <h2>Billing</h2>
-          <p>One simple plan. Pay with M-Pesa, Tigo Pesa or card via Pesapal.</p>
+          <p>One simple plan. Pay with M-Pesa, Tigo Pesa or card.</p>
         </div>
       </div>
 
       {/* current status strip */}
       <div className="bg-white border border-cborder rounded-[16px] px-5 py-4 flex items-center justify-between flex-wrap gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <span
-            className={`w-10 h-10 rounded-[11px] flex items-center justify-center ${
-              info.tone === "premium"
-                ? "bg-grn-bg text-grn-d"
-                : info.tone === "trial"
-                  ? "bg-amb-bg text-amber-600"
-                  : "bg-[#EEF2ED] text-muted"
-            }`}
-          >
-            <CrownIcon className="w-5 h-5" />
-          </span>
+          {currentBadge}
           <div>
-            <div className="font-bold text-sm text-dark">{info.label}</div>
+            <div className="font-bold text-sm text-dark">{info.name}</div>
             <div className="text-[12px] text-muted">
               {status?.status === "trialing" && trialLeft > 0
-                ? `Full access · ${trialLeft} day${trialLeft === 1 ? "" : "s"} remaining`
+                ? `Free Trial · ${trialLeft} day${trialLeft === 1 ? "" : "s"} left`
                 : status?.status === "active"
-                  ? "All features unlocked"
-                  : "Start your 7-day free trial anytime"}
+                  ? info.tone === "extra"
+                    ? "Extra Premium · yearly subscription active"
+                    : "Premium · monthly subscription active"
+                  : "Start your 3-day free trial anytime"}
             </div>
           </div>
         </div>
-          <div className="flex flex-col items-end gap-1">
-            <span className="livechip"><span className="dot g" /> Secure payment</span>
-            <span className="text-[11px] text-muted">M-Pesa · Tigo Pesa · Airtel Money · Card</span>
-          </div>
+        <div className="flex flex-col items-end gap-1">
+          <span className="livechip"><span className="dot g" /> Secure payment</span>
+          <span className="text-[11px] text-muted">M-Pesa · Tigo Pesa · Airtel Money · Card</span>
+        </div>
       </div>
 
-      {/* pricing-2 style grid */}
+      {/* pricing grid */}
       <div className="border border-cborder rounded-[18px] overflow-hidden">
         <div className="grid grid-cols-1 gap-px bg-[#E4EDE5] md:grid-cols-2 lg:grid-cols-3">
-          <div className="flex flex-col justify-center bg-white p-8 md:col-span-2 lg:col-span-1 lg:row-span-1">
+          <div className="flex flex-col justify-center bg-white p-8 md:col-span-2 lg:col-span-1">
             <p className="mb-5 text-muted text-[12px] font-bold uppercase tracking-wider">
               Pricing
             </p>
             <h1 className="font-disp font-extrabold text-[30px] leading-[1.08] tracking-tight text-dark">
               One plan.
               <br />
-              Zero drama.
+              Everything included.
             </h1>
             <p className="mt-3 text-muted text-[13.5px] leading-relaxed">
-              Everything included on every plan. Start free — no card needed.
+              Start with 3 days free — no card needed.
             </p>
             <div className="mt-5 inline-flex rounded-full border border-cborder p-1 w-fit">
               <button
@@ -134,30 +141,30 @@ export default function BillingPage() {
             </div>
           </div>
 
-          {/* MONTHLY */}
+          {/* PREMIUM — monthly */}
           <PlanCard
-            name={yearly ? "Monthly" : "Monthly"}
+            name="Premium"
             price="12,000"
             period="TSh / month"
-            description="Full agent, billed every month."
+            description="Everything included, billed monthly."
             cta="Subscribe"
-            popular={false}
-            highlight={false}
+            highlight={!yearly}
+            badgeKind={yearly ? undefined : "premium"}
             onPay={() => pay("monthly")}
           />
 
-          {/* YEARLY */}
+          {/* EXTRA PREMIUM — yearly */}
           <PlanCard
-            name="Yearly"
+            name="Extra Premium"
             price="115,200"
             period="TSh / year"
-            description={"Billed once a year."}
-            badge="SAVE 20%"
+            description="Same everything, billed once a year."
             cta="Subscribe"
-            popular
             highlight={yearly}
+            badge="SAVE 20%"
+            badgeKind={yearly ? "extra" : undefined}
+            footnote="Works out to 9,600 TSh / month"
             onPay={() => pay("yearly")}
-            footnote="≈ 9,600 TSh / month"
           />
         </div>
 
@@ -175,9 +182,8 @@ export default function BillingPage() {
           </ul>
           <div className="rulecard mt-5">
             <span>
-              <b>7-day free trial</b> on every new account — full access, no card required.
-              We&apos;ll remind you a day before it ends. Your customers&apos; money never
-              touches Cchat.
+              <b>3-day free trial</b> on every new account — full access, no card required.
+              Your customers&apos; money never touches Cchat.
             </span>
           </div>
         </div>
@@ -192,8 +198,8 @@ function PlanCard({
   period,
   description,
   badge,
+  badgeKind,
   cta,
-  popular,
   highlight,
   footnote,
   onPay,
@@ -203,8 +209,8 @@ function PlanCard({
   period: string;
   description: string;
   badge?: string;
+  badgeKind?: "premium" | "extra";
   cta: string;
-  popular?: boolean;
   highlight?: boolean;
   footnote?: string;
   onPay: () => void;
@@ -215,18 +221,22 @@ function PlanCard({
         highlight ? "shadow-[inset_0_0_0_2px_#149A5B]" : ""
       }`}
     >
-      {(popular || badge) && (
+      {badge && (
         <span
-          className={`absolute -top-[1px] right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-b-[8px] text-[10.5px] font-extrabold uppercase tracking-wider ${
-            popular ? "bg-grn text-white" : "bg-amb-bg text-amber-600"
-          }`}
+          className={`absolute -top-[1px] right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-b-[8px] text-[10.5px] font-extrabold uppercase tracking-wider bg-amb-bg text-amber-600`}
         >
-          {badge === "SAVE 20%" && <CrownIcon className="w-3 h-3" />}
-          {badge ?? "Popular"}
+          <CrownIcon className="w-3 h-3" /> {badge}
         </span>
       )}
-      <div className={`p-8 border-b ${highlight ? "border-[#BCE5CB]" : "border-[#EEF2ED]"}`}>
-        <p className="mb-5 text-muted text-[12px] font-bold uppercase tracking-wider">{name}</p>
+      <div className={`p-8 border-b ${highlight ? "border-[#BCE5CB]" : "border-[#EEF2ED]"} flex flex-col flex-1`}>
+        <div className="mb-4 flex items-center justify-center">
+          {badgeKind === "extra" ? (
+            <ExtraPremiumBadge size={92} />
+          ) : badgeKind === "premium" ? (
+            <PremiumBadge size={92} />
+          ) : null}
+        </div>
+        <p className="mb-4 text-muted text-[12px] font-bold uppercase tracking-wider">{name}</p>
         <div className="mb-1.5 flex items-baseline gap-2">
           <h3 className="font-disp font-extrabold text-[38px] leading-none tracking-tight text-dark">
             {price}
@@ -234,10 +244,10 @@ function PlanCard({
           <span className="text-muted text-[12px]">{period}</span>
         </div>
         {footnote && <p className="text-[12px] text-grn-d font-semibold mb-1">{footnote}</p>}
-        <p className="mb-7 text-muted text-[13px] line-clamp-2">{description}</p>
+        <p className="mb-7 text-muted text-[13px]">{description}</p>
         <button
           onClick={onPay}
-          className={`btn wide ${highlight || popular ? "pri" : "ghost"}`}
+          className={`btn wide ${highlight ? "pri" : "ghost"}`}
         >
           {cta}
         </button>

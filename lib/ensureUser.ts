@@ -30,7 +30,7 @@ export async function ensureUserRow(clerkId: string) {
       phone,
       plan: 'trial',
       subscriptionStatus: 'trialing',
-      trialEndsAt: new Date(Date.now() + 7 * 86400000),
+      trialEndsAt: new Date(Date.now() + 3 * 86400000),
     })
     .onConflictDoNothing({ target: users.clerkId });
 
