@@ -124,7 +124,7 @@ export default function ServicesPage() {
               </div>
               <div className="row">
                 <span>Booking</span>
-                <b>{s.booking ? "Required ✅" : "Walk-in ok"}</b>
+                <b>{s.booking ? "Required" : "Walk-in ok"}</b>
               </div>
               <div className="row">
                 <span>Warranty</span>

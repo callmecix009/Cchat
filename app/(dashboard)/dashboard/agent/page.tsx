@@ -197,7 +197,7 @@ export default function ChatAgentPage() {
       <div className="agentgrid">
         <div className="phone">
           <div className="ph">
-            <span className="avatar">{isOwner ? "👤" : "🧪"}</span>
+            <span className="avatar">{isOwner ? "Y" : "C"}</span>
             <div>
               <div className="nm">{isOwner ? "You ↔ your AI assistant" : "Test customer"}</div>
               <div className="st">{isOwner ? "Answers with your real business data" : "Simulated — using live products, services & policies"}</div>
@@ -226,7 +226,7 @@ export default function ChatAgentPage() {
                 <span className="daysep">Today</span>
                 {isOwner ? (
                   <span className="bub a" style={{ maxWidth: "85%" }}>
-                    Habari {state.business.owner.split(" ")[0]}! 👋 I&apos;m your business assistant. Ask me anything about your shop — sales, stock, customers, handoffs.
+                    Habari {state.business.owner.split(" ")[0]}! I&apos;m your business assistant. Ask me anything about your shop — sales, stock, customers, handoffs.
                   </span>
                 ) : (
                   <>

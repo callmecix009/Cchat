@@ -90,6 +90,7 @@ type BizSettings = {
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const [settings, setSettings] = useState<BizSettings | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -134,8 +135,13 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
   return (
     <div className="flex h-screen overflow-hidden">
+      {/* mobile overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-[998] md:hidden bg-black/40" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* sidebar */}
-      <aside className="w-[236px] flex-none hidden md:flex flex-col bg-[#0C2417] text-[#C9DCCE]">
+      <aside className={`w-[236px] flex-none flex flex-col bg-[#0C2417] text-[#C9DCCE] fixed inset-y-0 left-0 z-[999] transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         <Link href="/" className="flex items-center gap-2.5 px-5 pt-5 pb-3.5 text-white font-disp font-extrabold text-lg">
           <CchatLogo size={32} decorative className="shrink-0" />
           Cchat
@@ -145,6 +151,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             <Link
               key={n.id}
               href={n.href}
+              onClick={() => setSidebarOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm font-semibold text-[#A9C2B0] hover:bg-white/5 hover:text-white transition-colors"
             >
               <span className="opacity-90">{ICONS[n.icon]}</span>
@@ -179,8 +186,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                     : info.tone === "trial"
                       ? "Full access while you try Cchat"
                       : info.tone === "extra"
-                        ? "Yearly plan · thanks for the support ðŸ’š"
-                        : "Monthly plan · thanks for the support ðŸ’š"}
+                        ? "Yearly plan · thanks for the support "
+                        : "Monthly plan · thanks for the support "}
                 </div>
               </Link>
             );
@@ -191,6 +198,15 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       {/* main */}
       <div className="flex-1 flex flex-col min-w-0 bg-surface">
         <header className="h-[62px] flex-none bg-white border-b border-cborder flex items-center gap-3.5 px-5">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="md:hidden flex-none text-dark p-1 -ml-1"
+            aria-label="Toggle menu"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
           <Link href="/settings" className="flex items-center gap-2.5 min-w-0 group">
             {logo ? (
               <span className="w-9 h-9 rounded-[10px] overflow-hidden flex-none ring-1 ring-cborder">

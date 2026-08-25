@@ -609,7 +609,7 @@ export default async function DashboardPage() {
                 Catalog is empty — add products and the AI tracks stock automatically.
               </div>
             ) : lowStock.length === 0 ? (
-              <div className="py-10 text-center text-[13px] text-grn-d font-semibold">🎉 Everything is healthy.</div>
+              <div className="py-10 text-center text-[13px] text-grn-d font-semibold">Everything is healthy.</div>
             ) : (
               <ul className="flex flex-col divide-y divide-[#F1F5F0]">
                 {lowStock.slice(0, 6).map((p) => (

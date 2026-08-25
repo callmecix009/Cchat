@@ -112,8 +112,25 @@ const PRICING_FEATURES = [
   "Every conversation kept in one inbox",
 ];
 
+function MenuIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  );
+}
+
+function CloseIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [mobileMenu, setMobileMenu] = useState(false);
 
   return (
     <div className="min-h-screen font-body text-dark">
@@ -130,13 +147,47 @@ export default function LandingPage() {
           <a href="#pricing" className="hover:text-lime transition-colors">Pricing</a>
           <a href="#faq" className="hover:text-lime transition-colors">FAQ</a>
         </div>
-        <Link
-          href="/sign-up"
-          className="ml-auto md:ml-0 inline-flex items-center gap-2 px-3 py-[6px] rounded-lg bg-lime2 text-[#06170D] text-[13px] font-semibold hover:bg-[#6ff0a8] transition-colors"
-        >
-          Start free
-        </Link>
+        <div className="flex items-center gap-3 ml-auto md:ml-0">
+          <Link
+            href="/sign-up"
+            className="inline-flex items-center gap-2 px-3 py-[6px] rounded-lg bg-lime2 text-[#06170D] text-[13px] font-semibold hover:bg-[#6ff0a8] transition-colors"
+          >
+            Start free
+          </Link>
+          <button
+            onClick={() => setMobileMenu(!mobileMenu)}
+            className="md:hidden text-white p-1 -mr-1"
+            aria-label="Toggle menu"
+          >
+            {mobileMenu ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
       </nav>
+
+      {/* MOBILE MENU OVERLAY */}
+      {mobileMenu && (
+        <div className="fixed inset-0 z-[899] md:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileMenu(false)} />
+          <div className="absolute top-[61px] left-0 right-0 bg-[#081811] border-b border-[rgba(143,240,180,.15)] px-[5vw] py-6 space-y-4">
+            {[
+              { href: "#how", label: "How it works" },
+              { href: "#features", label: "Features" },
+              { href: "#languages", label: "Languages" },
+              { href: "#pricing", label: "Pricing" },
+              { href: "#faq", label: "FAQ" },
+            ].map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenu(false)}
+                className="block text-[16px] font-medium text-[#B9CDBF] hover:text-lime transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* HERO */}
       <header className="relative min-h-[680px] overflow-hidden bg-[#081811] text-[#EAF4EE]">
@@ -294,13 +345,13 @@ export default function LandingPage() {
                 <h3 className="font-disp text-[17.5px] mb-[6px]">Keep your AI up to date</h3>
                 <p className="text-muted text-[13.5px] leading-[1.55]">Update your products, prices and stock in Cchat, and your AI uses the latest information when talking to customers. Change a price once — every customer hears the new one.</p>
                 <div className="flex items-center gap-[10px] mt-[18px] flex-wrap">
-                  <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold flex items-center gap-[7px]">📱📱📱 3 iPhones in stock</span>
+                  <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold flex items-center gap-[7px]">3 iPhones in stock</span>
                   <span className="text-[#8B9B8F]"><ArrowIcon size={15} /></span>
-                  <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold">🛒 One sells…</span>
+                  <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold">One sells...</span>
                   <span className="text-[#8B9B8F]"><ArrowIcon size={15} /></span>
-                  <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold">💬 &ldquo;Kuna iPhone 13?&rdquo;</span>
+                  <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold">&ldquo;Kuna iPhone 13?&rdquo;</span>
                   <span className="text-[#8B9B8F]"><ArrowIcon size={15} /></span>
-                  <span className="bg-grn-bg border border-grn-br rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold text-grn-d">✅ &ldquo;Zimebaki 2 tu&rdquo;</span>
+                  <span className="bg-grn-bg border border-grn-br rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold text-grn-d">&ldquo;Zimebaki 2 tu&rdquo;</span>
                 </div>
               </div>
             </Reveal>
@@ -402,7 +453,7 @@ export default function LandingPage() {
                 Habari! iPhone 11 iko na bei gani? <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:02</time>
               </span>
               <span className="max-w-[80%] bg-[#D9FDD3] px-[11px] py-[7px] rounded-[11px] rounded-tr-[3px] text-[14px] leading-[1.4] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-end text-dark">
-                Habari boss! 👋 iPhone 11 64GB — TZS 720,000, tuna 3. <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:02</time>
+                Habari boss! iPhone 11 64GB — TZS 720,000, tuna 3. <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:02</time>
               </span>
               <span className="max-w-[80%] bg-white px-[11px] py-[7px] rounded-[11px] rounded-tl-[3px] text-[14px] leading-[1.4] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-start text-dark">
                 Actually, can you deliver to Mikocheni? <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:03</time>
@@ -411,7 +462,7 @@ export default function LandingPage() {
                 ⇄ switches to English instantly
               </span>
               <span className="max-w-[80%] bg-[#D9FDD3] px-[11px] py-[7px] rounded-[11px] rounded-tr-[3px] text-[14px] leading-[1.4] shadow-[0_1px_1px_rgba(0,0,0,.09)] self-end text-dark">
-                Of course! Mikocheni delivery is TZS 7,000, within 2–4 hours 🚚 <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:03</time>
+                Of course! Mikocheni delivery is TZS 7,000, within 2–4 hours <time className="block text-right text-[9px] text-black/38 mt-[2px]">10:03</time>
               </span>
             </div>
           </Reveal>
@@ -536,7 +587,7 @@ export default function LandingPage() {
               Cchat
             </div>
             <p className="text-[13.5px] max-w-[280px] leading-[1.6]">
-              An AI assistant that answers your WhatsApp customers. Built in Dar es Salaam. 🇹🇿
+              An AI assistant that answers your WhatsApp customers. Built in Dar es Salaam.
             </p>
           </div>
           <div>

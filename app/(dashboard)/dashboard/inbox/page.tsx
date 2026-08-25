@@ -227,7 +227,7 @@ export default function InboxPage() {
   const prevText = (c: Convo) => {
     const last = c.msgs[c.msgs.length - 1];
     if (!last) return "";
-    return (last.from === "ai" ? "🤖 " : last.from === "me" ? "✍️ " : "") + (last.text || "");
+    return (last.from === "ai" ? "AI: " : last.from === "me" ? "You: " : "") + (last.text || "");
   };
 
   return (

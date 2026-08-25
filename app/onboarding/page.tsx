@@ -73,7 +73,7 @@ const ONB_STEPS: StepDef[] = [
   {t:'AI personality & style',d:'The character of your agent.',f:[
     [66,'text','Describe your brand voice in three words','Warm, honest, fast'],
     [67,'radio','Should the AI use humor?',null,['A little','Often','Never']],
-    [68,'text','How should the AI end conversations?','Karibu tena! 🙏'],
+    [68,'text','How should the AI end conversations?','Karibu tena!'],
     [69,'radio','Ask follow-up questions to guide customers (budget, model, colour, use case)?',null,['Yes','No']],
     [70,'radio','Upsell / cross-sell (e.g. case with a phone)?',null,['Yes','No']],
     [71,'radio','How long should answers be?',null,['Short WhatsApp-style','Detailed']],
