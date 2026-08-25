@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { SignIn } from "@clerk/nextjs";
 import AuthShell from "@/components/AuthShell";

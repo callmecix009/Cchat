@@ -12,6 +12,13 @@ const isPublicRoute = createRouteMatcher([
 const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
 
 export default clerkMiddleware(async (auth, request) => {
+  if (!process.env.CLERK_SECRET_KEY) {
+    // Keys not configured yet — serve public pages instead of crashing.
+    if (!isPublicRoute(request)) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+    return;
+  }
   const { userId } = await auth();
   const path = request.nextUrl.pathname;
 

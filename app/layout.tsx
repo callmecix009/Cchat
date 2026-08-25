@@ -19,12 +19,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const pk = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
   return (
     <html lang="en" className={`${instrumentSans.variable} ${splineMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-body bg-surface text-dark">
-        <ClerkProvider>
-          {children}
-        </ClerkProvider>
+        {pk ? <ClerkProvider>{children}</ClerkProvider> : children}
       </body>
     </html>
   );
