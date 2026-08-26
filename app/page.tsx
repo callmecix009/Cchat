@@ -611,7 +611,11 @@ export default function LandingPage() {
         </div>
         <div className="max-w-[1200px] mx-auto flex justify-between gap-3 pt-[22px] text-[12.5px] flex-wrap">
           <span>© 2026 Cchat · 3-day free trial · 12,000 TSh/mo or save 20% yearly</span>
-          <span>Cchat never processes customer payments.</span>
+          <div className="flex gap-3">
+            <Link href="/privacy" className="hover:text-lime transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-lime transition-colors">Terms of Service</Link>
+            <Link href="/acceptable-use" className="hover:text-lime transition-colors">Acceptable Use</Link>
+          </div>
         </div>
       </footer>
     </div>

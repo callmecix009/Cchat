@@ -45,27 +45,18 @@ export default function InboxPage() {
   const [freeText, setFreeText] = useState("");
 
   useEffect(() => {
-    fetch("/api/inbox")
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null)
-      .then((d) => {
-        const list: Convo[] = d?.conversations ?? [];
-        setConversations(list);
-        setOpenId((prev) => prev && list.some((c) => c.id === prev) ? prev : list[0]?.id ?? null);
-      })
-      .finally(() => setLoaded(true));
-    fetch("/api/settings")
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null)
-      .then((d) => {
-        if (d) setWa({ connected: !!d.whatsappConnected, paused: !!d.whatsappPaused });
-      });
-    fetch("/api/workspace")
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null)
-      .then((d) => {
-        if (d) setProducts(d.products ?? []);
-      });
+    // Run all independent fetches in parallel
+    Promise.all([
+      fetch("/api/inbox").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch("/api/settings").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch("/api/workspace").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ]).then(([inboxData, settingsData, workspaceData]) => {
+      const list: Convo[] = inboxData?.conversations ?? [];
+      setConversations(list);
+      setOpenId((prev) => prev && list.some((c) => c.id === prev) ? prev : list[0]?.id ?? null);
+      if (settingsData) setWa({ connected: !!settingsData.whatsappConnected, paused: !!settingsData.whatsappPaused });
+      if (workspaceData) setProducts(workspaceData.products ?? []);
+    }).finally(() => setLoaded(true));
   }, []);
 
   const open = conversations.find((c) => c.id === openId) ?? null;

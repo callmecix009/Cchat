@@ -131,29 +131,6 @@ export default async function DashboardPage() {
 
   let bizSettings: { name?: string; desc?: string; city?: string; phone?: string; owner?: string } | null = null;
   let businessLogo: string | null = null;
-  try {
-    if (row) {
-      const s = await db.select().from(settings).where(eq(settings.userId, row.id)).limit(1);
-      if (s.length) {
-        bizSettings = (s[0].business ?? null) as { name?: string; desc?: string; city?: string; phone?: string; owner?: string } | null;
-        businessLogo = s[0].logo ?? null;
-      }
-    }
-  } catch (e) {
-    console.error("Dashboard business profile error:", e);
-  }
-
-  const onboardName = (data[1] as string) || "";
-  const businessName = bizSettings?.name?.trim() || onboardName || "";
-  const hasBusinessName = !!businessName;
-  const displayName = hasBusinessName ? businessName : "Set up your business";
-  const description =
-    bizSettings?.desc ||
-    (data[2] as string) ||
-    (hasBusinessName ? "Your AI WhatsApp agent is standing by." : "Add your business name in Business Profile to get started.");
-  const city = bizSettings?.city || (data[3] as string) || "";
-  const phone = bizSettings?.phone || (data[43] as string) || row?.phone || "";
-  const owner = bizSettings?.owner || name.split(" ")[0] || "Boss";
 
   const isDemoOwner = row?.isDemoOwner ?? false;
 
@@ -192,18 +169,37 @@ export default async function DashboardPage() {
       }));
       catalogProducts = seed.products;
       threshold = seed.lowStockThreshold;
+
+      if (row) {
+        const s = await db.select().from(settings).where(eq(settings.userId, row.id)).limit(1);
+        if (s.length) {
+          bizSettings = (s[0].business ?? null) as { name?: string; desc?: string; city?: string; phone?: string; owner?: string } | null;
+          businessLogo = s[0].logo ?? null;
+        }
+      }
     } else if (row) {
-      const convRows = await db
-        .select({
+      // Run all independent queries in parallel
+      const [convRows, saleRows, productRows, polRes, waRes, s] = await Promise.all([
+        db.select({
           id: conversations.id,
           contactName: conversations.contactName,
           contactPhone: conversations.contactPhone,
           status: conversations.status,
           outcome: conversations.outcome,
           createdAt: conversations.createdAt,
-        })
-        .from(conversations)
-        .where(eq(conversations.userId, row.id));
+        }).from(conversations).where(eq(conversations.userId, row.id)),
+        db.select().from(salesTable)
+          .where(eq(salesTable.userId, row.id))
+          .orderBy(desc(salesTable.createdAt))
+          .limit(12),
+        db.select().from(productsTable)
+          .where(eq(productsTable.userId, row.id))
+          .orderBy(productsTable.sortOrder),
+        db.select().from(policiesTable).where(eq(policiesTable.userId, row.id)).limit(1),
+        db.select().from(whatsappConnections).where(eq(whatsappConnections.userId, row.id)).limit(1),
+        db.select().from(settings).where(eq(settings.userId, row.id)).limit(1),
+      ]);
+
       convos = convRows.map((c) => ({
         id: c.id,
         name: c.contactName || c.contactPhone || "Customer",
@@ -213,6 +209,36 @@ export default async function DashboardPage() {
         createdAt: c.createdAt,
       }));
 
+      saleEvents = saleRows.map((s) => ({
+        productName: s.productName,
+        qty: s.qty,
+        amount: s.amount,
+        t: s.createdAt,
+      }));
+
+      catalogProducts = productRows.map((r) => ({
+        id: r.id,
+        name: r.name,
+        cat: r.cat,
+        price: r.price,
+        stock: r.stock,
+        emoji: r.emoji,
+        cl: r.color,
+        kw: Array.isArray(r.keywords) ? r.keywords : [],
+        sold: r.sold,
+        hidden: r.hidden,
+      }));
+
+      const pol = polRes[0];
+      if (pol) threshold = pol.lowStockThreshold ?? 3;
+      wa = waRes[0];
+
+      if (s.length) {
+        bizSettings = (s[0].business ?? null) as { name?: string; desc?: string; city?: string; phone?: string; owner?: string } | null;
+        businessLogo = s[0].logo ?? null;
+      }
+
+      // Messages query depends on conversations (needs ids)
       const ids = convRows.map((c) => c.id);
       const cutoff = dayKey(new Date());
       cutoff.setDate(cutoff.getDate() - 62);
@@ -237,50 +263,22 @@ export default async function DashboardPage() {
             t: m.createdAt,
           }));
       }
-
-      const saleRows = await db
-        .select()
-        .from(salesTable)
-        .where(eq(salesTable.userId, row.id))
-        .orderBy(desc(salesTable.createdAt))
-        .limit(12);
-      saleEvents = saleRows.map((s) => ({
-        productName: s.productName,
-        qty: s.qty,
-        amount: s.amount,
-        t: s.createdAt,
-      }));
-
-      catalogProducts = await db
-        .select()
-        .from(productsTable)
-        .where(eq(productsTable.userId, row.id))
-        .orderBy(productsTable.sortOrder)
-        .then((rs) =>
-          rs.map((r) => ({
-            id: r.id,
-            name: r.name,
-            cat: r.cat,
-            price: r.price,
-            stock: r.stock,
-            emoji: r.emoji,
-            cl: r.color,
-            kw: Array.isArray(r.keywords) ? r.keywords : [],
-            sold: r.sold,
-            hidden: r.hidden,
-          }))
-        );
-      await db.select().from(servicesTable).where(eq(servicesTable.userId, row.id)).then(() => undefined);
-
-      const pol = (await db.select().from(policiesTable).where(eq(policiesTable.userId, row.id)).limit(1))[0];
-      if (pol) threshold = pol.lowStockThreshold ?? 3;
-
-      const waRes = await db.select().from(whatsappConnections).where(eq(whatsappConnections.userId, row.id)).limit(1);
-      wa = waRes[0];
     }
   } catch (e) {
     console.error("Dashboard data error:", e);
   }
+
+  const onboardName = (data[1] as string) || "";
+  const businessName = bizSettings?.name?.trim() || onboardName || "";
+  const hasBusinessName = !!businessName;
+  const displayName = hasBusinessName ? businessName : "Set up your business";
+  const description =
+    bizSettings?.desc ||
+    (data[2] as string) ||
+    (hasBusinessName ? "Your AI WhatsApp agent is standing by." : "Add your business name in Business Profile to get started.");
+  const city = bizSettings?.city || (data[3] as string) || "";
+  const phone = bizSettings?.phone || (data[43] as string) || row?.phone || "";
+  const owner = bizSettings?.owner || name.split(" ")[0] || "Boss";
 
   // ── aggregates ──
   const startToday = dayKey(new Date());
