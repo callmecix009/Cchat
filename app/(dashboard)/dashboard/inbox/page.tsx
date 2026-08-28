@@ -97,6 +97,11 @@ export default function InboxPage() {
       reason: c.reason || "Owner took over",
       msgs: [...c.msgs, { from: "sys", text: "Owner took over — AI paused", t: Date.now() }],
     }));
+    fetch("/api/inbox/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId: id, status: "waiting" }),
+    }).catch(() => {});
   };
   const endTakeOver = (id: string) => {
     update(id, (c) => ({
@@ -106,6 +111,11 @@ export default function InboxPage() {
       reason: null,
       msgs: [...c.msgs, { from: "sys", text: "AI resumed handling", t: Date.now() }],
     }));
+    fetch("/api/inbox/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId: id, status: "ai" }),
+    }).catch(() => {});
   };
   const closeConvo = (id: string) => {
     update(id, (c) => ({
@@ -114,9 +124,19 @@ export default function InboxPage() {
       takeover: false,
       msgs: [...c.msgs, { from: "sys", text: "Conversation closed", t: Date.now() }],
     }));
+    fetch("/api/inbox/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId: id, status: "closed" }),
+    }).catch(() => {});
   };
   const reopenConvo = (id: string) => {
     update(id, (c) => ({ ...c, status: "ai" }));
+    fetch("/api/inbox/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId: id, status: "ai" }),
+    }).catch(() => {});
   };
   const sendReply = async (id: string) => {
     const t = reply.trim();

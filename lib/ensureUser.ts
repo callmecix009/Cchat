@@ -28,9 +28,8 @@ export async function ensureUserRow(clerkId: string) {
       email,
       name,
       phone,
-      plan: 'trial',
-      subscriptionStatus: 'trialing',
-      trialEndsAt: new Date(Date.now() + 3 * 86400000),
+      plan: 'free',
+      subscriptionStatus: 'inactive',
     })
     .onConflictDoNothing({ target: users.clerkId });
 

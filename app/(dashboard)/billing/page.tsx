@@ -30,17 +30,18 @@ export default function BillingPage() {
     expiresAt: string | null;
   } | null>(null);
   const [yearly, setYearly] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("/api/settings")
+    fetch("/api/billing")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (d) {
+        if (d && !d.error) {
           setStatus({
-            status: d.planStatus ?? "inactive",
+            status: d.status ?? "inactive",
             plan: d.plan ?? null,
             trialEndsAt: d.trialEndsAt ?? null,
-            expiresAt: d.expiresAt ?? null,
+            expiresAt: d.subscriptionExpiresAt ?? null,
           });
         }
       })
@@ -57,10 +58,40 @@ export default function BillingPage() {
       )
     : 0;
 
-  function pay(plan: "monthly" | "yearly") {
-    alert(
-      `Secure checkout for the ${plan} plan is coming soon.\n\nYou'll pay with M-Pesa, Tigo Pesa, Airtel Money or card.`
-    );
+  async function startTrial() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/billing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "start_trial" }),
+      });
+      if (res.ok) {
+        setStatus((prev) => prev ? { ...prev, status: "trialing", trialEndsAt: new Date(Date.now() + 3 * 86400000).toISOString() } : prev);
+      }
+    } catch {}
+    setLoading(false);
+  }
+
+  async function subscribe(plan: "monthly" | "yearly") {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/billing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "subscribe", plan }),
+      });
+      if (res.ok) {
+        const duration = plan === "yearly" ? 365 : 30;
+        setStatus((prev) => prev ? {
+          ...prev,
+          status: "active",
+          plan,
+          expiresAt: new Date(Date.now() + duration * 86400000).toISOString(),
+        } : prev);
+      }
+    } catch {}
+    setLoading(false);
   }
 
   const currentBadge =
@@ -157,7 +188,7 @@ export default function BillingPage() {
             cta="Subscribe"
             highlight={!yearly}
             badgeKind={yearly ? undefined : "premium"}
-            onPay={() => pay("monthly")}
+            onPay={() => subscribe("monthly")}
           />
 
           {/* EXTRA PREMIUM — yearly */}
@@ -171,7 +202,7 @@ export default function BillingPage() {
             badge="SAVE 20%"
             badgeKind={yearly ? "extra" : undefined}
             footnote="Works out to 9,600 TSh / month"
-            onPay={() => pay("yearly")}
+            onPay={() => subscribe("yearly")}
           />
         </div>
 
@@ -192,6 +223,25 @@ export default function BillingPage() {
               <b>3-day free trial</b> on every new account — full access, no card required.
               Your customers&apos; money never touches Cchat.
             </span>
+            {!trialActive && !trialExpired && (
+              <button
+                onClick={startTrial}
+                disabled={loading}
+                className="mt-3 px-4 py-2 bg-grn text-white rounded-lg text-sm font-semibold hover:bg-grn-d transition-colors disabled:opacity-50"
+              >
+                {loading ? "Starting..." : "Start Free Trial"}
+              </button>
+            )}
+            {trialActive && (
+              <div className="mt-2 text-sm font-semibold text-grn-d">
+                Active — {trialLeft} day{trialLeft === 1 ? "" : "s"} remaining
+              </div>
+            )}
+            {trialExpired && (
+              <div className="mt-2 text-sm font-semibold text-amber-600">
+                Trial expired — choose a plan below to continue
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -44,6 +44,7 @@ export default function ProductsPage() {
         if (d) {
           setProducts(d.products ?? []);
           if (d.policies?.outOfStockBehavior) setBehavior(d.policies.outOfStockBehavior);
+          if (typeof d.lowStockThreshold === "number") setThreshold(d.lowStockThreshold);
         }
       })
       .finally(() => setLoaded(true));
@@ -73,7 +74,11 @@ export default function ProductsPage() {
     fetch("/api/workspace", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ products: list, lowStockThreshold: threshold }),
+      body: JSON.stringify({
+        products: list,
+        lowStockThreshold: threshold,
+        policies: { outOfStockBehavior: behavior },
+      }),
     }).catch(() => {});
   };
 
@@ -167,17 +172,28 @@ export default function ProductsPage() {
             onChange={(e) => {
               const t = Math.max(1, Number(e.target.value) || 1);
               setThreshold(t);
-              fetch("/api/workspace", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ products, lowStockThreshold: t }),
-              }).catch(() => {});
+              clearTimeout((window as any).__thresholdTimer);
+              (window as any).__thresholdTimer = setTimeout(() => {
+                fetch("/api/workspace", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ products, lowStockThreshold: t, policies: { outOfStockBehavior: behavior } }),
+                }).catch(() => {});
+              }, 500);
             }}
           />
         </div>
         <div className="field" style={{ margin: 0 }}>
           <label>When out of stock, AI should…</label>
-          <select className="inp" value={behavior} onChange={(e) => setBehavior(e.target.value as typeof behavior)}>
+          <select className="inp" value={behavior} onChange={(e) => {
+            const v = e.target.value as typeof behavior;
+            setBehavior(v);
+            fetch("/api/workspace", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ products, lowStockThreshold: threshold, policies: { outOfStockBehavior: v } }),
+            }).catch(() => {});
+          }}>
             <option value="both">Suggest alternatives + offer restock notify</option>
             <option value="suggest">Suggest alternatives only</option>
             <option value="notify">Offer to notify when back</option>

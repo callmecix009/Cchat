@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CchatLogo from "@/components/branding/CchatLogo";
@@ -138,9 +138,26 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
   const [dynLists, setDynLists] = useState<Record<string, Record<string, string>[]>>({});
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/onboarding')
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+      .then((d) => {
+        if (d?.answers && Object.keys(d.answers).length > 0) {
+          const normalized: Record<number, string | string[]> = {};
+          for (const [k, v] of Object.entries(d.answers)) {
+            normalized[Number(k)] = v as string | string[];
+          }
+          setAnswers(normalized);
+        }
+        setLoaded(true);
+      });
+  }, []);
 
   const st = ONB_STEPS[step];
-  const pct = Math.round((step / ONB_STEPS.length) * 100);
+  const pct = Math.round(((step + 1) / ONB_STEPS.length) * 100);
 
   const update = useCallback((q: number, val: string | string[]) => {
     setAnswers(prev => ({ ...prev, [q]: val }));
@@ -182,15 +199,18 @@ export default function OnboardingPage() {
 
   const launch = async () => {
     try {
-      await fetch('/api/onboarding', {
+      const res = await fetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ answers, dynLists }),
       });
+      if (!res.ok) {
+        console.error('Onboarding save failed:', await res.text());
+      }
     } catch (e) {
-      console.error('Save failed, continuing anyway', e);
+      console.error('Save failed', e);
     }
-    router.push('/dashboard');
+    router.push('/billing');
   };
 
   const renderField = (f: FieldDef, idx: number) => {

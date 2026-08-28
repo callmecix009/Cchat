@@ -119,7 +119,7 @@ export default function ChatAgentPage() {
     timers.current.push(setTimeout(() => push(0), 800 + Math.random() * 600));
   }, []);
 
-  const send = () => {
+  const send = async () => {
     const t = input.trim();
     if (!t) return;
     setInput("");
@@ -139,17 +139,30 @@ export default function ChatAgentPage() {
     }
     const lang = detectLang(t, st);
     setTestConvo((prev) => ({ ...prev, lang, msgs: [...prev.msgs, { from: "c", text: t, t: Date.now() }] }));
-    const r = agentBrain(t, lang, st);
-    if (r.fx.handoff) {
-      setTestConvo((prev) => ({
-        ...prev,
-        takeover: true,
-        msgs: [...prev.msgs, { from: "sys", text: "Handoff → " + ownerFirst + " · " + r.fx.handoff, t: Date.now() }],
+
+    setTyping(true);
+    try {
+      const history = testConvo.msgs.map((m) => ({
+        role: m.from === "c" ? "user" as const : "assistant" as const,
+        content: m.text,
       }));
-      pushReplies([...r.out, "…"], "test");
-      setToast("Handoff in test chat — " + r.fx.handoff + " — you are now replying");
-    } else {
-      pushReplies(r.out, "test");
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [...history, { role: "user", content: t }] }),
+      });
+      const data = await res.json();
+      if (res.ok && data.reply) {
+        pushReplies([data.reply], "test");
+      } else if (data.error === "DEEPSEEK_NOT_CONFIGURED") {
+        pushReplies(["AI is not configured yet. Add DEEPSEEK_API_KEY to your environment variables to enable the AI brain."], "test");
+      } else {
+        pushReplies(["Sorry, I couldn't process that right now. Please try again."], "test");
+      }
+    } catch {
+      pushReplies(["Connection error. Please try again."], "test");
+    } finally {
+      setTyping(false);
     }
   };
 

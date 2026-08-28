@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, boolean, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, boolean, jsonb, index } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
@@ -34,7 +34,7 @@ export const conversations = pgTable('conversations', {
   outcome: text('outcome'),
   soldProduct: text('sold_product'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-});
+}, (t) => [index('conversations_user_id_idx').on(t.userId)]);
 
 export const messages = pgTable('messages', {
   id: text('id').primaryKey(),
@@ -43,7 +43,7 @@ export const messages = pgTable('messages', {
   content: text('content').notNull(),
   aiHandled: boolean('ai_handled').default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-});
+}, (t) => [index('messages_conversation_id_idx').on(t.conversationId)]);
 
 export const commands = pgTable('commands', {
   id: text('id').primaryKey(),
@@ -91,7 +91,7 @@ export const products = pgTable('products', {
   sortOrder: integer('sort_order').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => [index('products_user_id_idx').on(t.userId)]);
 
 export const services = pgTable('services', {
   id: text('id').primaryKey(),
@@ -105,7 +105,7 @@ export const services = pgTable('services', {
   warranty: text('warranty').default('').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (t) => [index('services_user_id_idx').on(t.userId)]);
 
 export const policies = pgTable('policies', {
   userId: text('user_id').primaryKey().references(() => users.id, { onDelete: 'cascade' }),
@@ -137,4 +137,4 @@ export const sales = pgTable('sales', {
   unitPrice: integer('unit_price').default(0).notNull(),
   amount: integer('amount').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-});
+}, (t) => [index('sales_user_id_idx').on(t.userId)]);
