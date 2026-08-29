@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
@@ -154,6 +154,92 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       mounted = false;
     };
   }, [router]);
+
+  // ---- Global pop-up notifications ----
+  const [toasts, setToasts] = useState<Array<{ id: string; title: string; msg: string; tone: "info" | "warn" | "err" }>>([]);
+  const prevInboxRef = useRef<Map<string, number>>(new Map());
+  const seenLowStockRef = useRef<Set<string>>(new Set());
+  const isFirstInboxPoll = useRef(true);
+
+  const pushToast = useCallback((title: string, msg: string, tone: "info" | "warn" | "err" = "info") => {
+    const id = Math.random().toString(36).slice(2, 9);
+    setToasts((t) => [...t, { id, title, msg, tone }]);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 4200);
+  }, []);
+
+  useEffect(() => {
+    if (!accessChecked) return;
+    let timer: ReturnType<typeof setInterval>;
+    let stopped = false;
+
+    const poll = async () => {
+      try {
+        // 1) Inbox: new customer messages (even when AI is handling)
+        const inboxRes = await fetch("/api/inbox").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        const convos: Array<any> = inboxRes?.conversations ?? [];
+        if (!stopped && convos.length) {
+          const now = Date.now();
+          for (const c of convos) {
+            const msgs: any[] = c.msgs ?? [];
+            if (!msgs.length) continue;
+            const last = msgs[msgs.length - 1];
+            // Only notify for customer messages received in last 90s and not yet seen
+            if (last.from === "c" && now - last.t < 90_000) {
+              const prevT = prevInboxRef.current.get(c.id) ?? 0;
+              if (!isFirstInboxPoll.current && last.t > prevT) {
+                pushToast(`New message from ${c.name}`, (last.text || "").slice(0, 80), "info");
+              }
+              prevInboxRef.current.set(c.id, last.t);
+            } else if (last.t) {
+              // Keep track of latest t even for non-customer to avoid re-notifying
+              const prevT = prevInboxRef.current.get(c.id) ?? 0;
+              if (last.t > prevT) prevInboxRef.current.set(c.id, last.t);
+            }
+            // Handoff needs human
+            if (c.status === "waiting" && c.reason && !isFirstInboxPoll.current) {
+              // Only once per conversation per session
+              const key = `handoff-${c.id}`;
+              if (!seenLowStockRef.current.has(key)) {
+                seenLowStockRef.current.add(key);
+                pushToast(`Handoff: ${c.name} needs you`, c.reason.slice(0, 80), "warn");
+              }
+            }
+          }
+          isFirstInboxPoll.current = false;
+        }
+
+        // 2) Out of stock / low stock
+        const ws = await fetch("/api/workspace").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        if (!stopped && ws?.products?.length) {
+          const threshold = ws.lowStockThreshold ?? ws.policies?.lowStockThreshold ?? 3;
+          for (const p of ws.products as Array<any>) {
+            if (p.stock === 0 && !p.hidden) {
+              const key = `oos-${p.id}`;
+              if (!seenLowStockRef.current.has(key)) {
+                seenLowStockRef.current.add(key);
+                pushToast(`Out of stock: ${p.name}`, `Stock is 0 — AI will offer alternatives or notify list.`, "err");
+              }
+            } else if (p.stock > 0 && p.stock <= threshold && !p.hidden) {
+              const key = `low-${p.id}-${p.stock}`;
+              if (!seenLowStockRef.current.has(key)) {
+                seenLowStockRef.current.add(key);
+                pushToast(`Low stock: ${p.name}`, `Only ${p.stock} left — restock soon.`, "warn");
+              }
+            }
+          }
+        }
+      } catch {}
+    };
+
+    // Initial poll after 4s, then every 15s
+    const initial = setTimeout(poll, 4000);
+    timer = setInterval(poll, 15000);
+    return () => {
+      stopped = true;
+      clearTimeout(initial);
+      clearInterval(timer);
+    };
+  }, [accessChecked, pushToast]);
 
   // While checking, still show shell but with subtle loading - don't block entire app with spinner
   // Only block if we haven't checked yet and no settings loaded
@@ -335,6 +421,34 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </div>
         </header>
         <main className="flex-1 overflow-auto p-3 sm:p-6">{children}</main>
+      </div>
+
+      {/* Global pop-up toasts */}
+      <div className="fixed top-3 right-2 sm:right-4 z-[5000] flex flex-col gap-2 pointer-events-none max-w-[calc(100vw-16px)] sm:max-w-[380px]">
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className={`toast ${t.tone === "warn" ? "warn" : t.tone === "err" ? "err" : ""} pointer-events-auto flex`}
+            style={{ animation: "tin .28s cubic-bezier(.2,.9,.3,1.1)" }}
+          >
+            <span className="ti mt-0.5">
+              {t.tone === "err" ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+              ) : t.tone === "warn" ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+              )}
+            </span>
+            <div className="min-w-0">
+              <b className="block text-[13px] leading-[1.3] truncate">{t.title}</b>
+              <span className="block text-[12.5px] opacity-85 leading-[1.4] line-clamp-2">{t.msg}</span>
+            </div>
+            <button onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))} className="ml-auto -mr-1 p-1 opacity-60 hover:opacity-100 shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );

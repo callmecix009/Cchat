@@ -217,6 +217,25 @@ export default function OnboardingPage() {
     } catch (e) {
       console.error('Save failed', e);
     }
+    // If user already has active trial/subscription, don't show payment again
+    try {
+      const b = await fetch('/api/billing').then(r => r.ok ? r.json() : null).catch(() => null);
+      const status = b?.status;
+      const trialEnds = b?.trialEndsAt ? new Date(b.trialEndsAt).getTime() : 0;
+      const isTrialing = status === 'trialing' && trialEnds > Date.now();
+      const isActive = status === 'active';
+      const isDemo = b?.isDemo === true;
+      if (isDemo || isTrialing || isActive) {
+        router.push('/dashboard');
+        return;
+      }
+      // Check if trial already expired -> still need plan selection
+      if (status === 'expired' || status === 'inactive' || status === 'canceled') {
+        router.push('/plan-selection');
+        return;
+      }
+    } catch {}
+    // Fallback for new users: go to plan selection
     router.push('/plan-selection');
   };
 
