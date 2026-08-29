@@ -44,7 +44,7 @@ const ONB_STEPS: StepDef[] = [
     [39,'radio','Do services need an appointment/booking?',null,['Some do','All do','Walk-in only']],
     [40,'radio','Do repaired items get a warranty?',null,['Yes — 30 days','Yes — 90 days','No warranty']],
     [41,'text','What does the service warranty NOT cover?','New physical damage after repair']]},
-  {t:'Payments',d:'Information only. Cchat never processes money — the AI simply tells customers your methods.',f:[
+  {t:'Payments',d:'Information only. C-chat never processes money — the AI simply tells customers your methods.',f:[
     [42,'check','Which payment methods do you accept?',null,['M-Pesa','Tigo Pesa','Airtel Money','Cash','Bank transfer','Cards']],
     [43,'text','Mobile money: which name/number should customers pay to?','0757 123 456 — JUMA HASSAN'],
     [44,'radio','Do you require a deposit for orders or repairs?',null,['Yes — 50%','Yes — other','No deposit']],
@@ -306,7 +306,7 @@ export default function OnboardingPage() {
       <div className="max-w-[780px] mx-auto mb-7 flex justify-between items-center gap-[14px] flex-wrap">
         <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
           <CchatLogo size={32} decorative className="shrink-0" />
-          Cchat
+          C-chat
           <span className="text-[#8FAA99] font-medium text-[14px] ml-1">· Setup Guide</span>
         </div>
         <Link href="/dashboard" className="inline-flex items-center gap-2 px-3 py-[6px] rounded-lg border border-[rgba(143,240,180,.3)] text-[#B9CDBF] text-[13px] font-semibold hover:border-lime hover:text-lime transition-colors bg-transparent">

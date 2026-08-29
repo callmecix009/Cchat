@@ -482,7 +482,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* ─── analytics grid (dashboard-3 layout, Cchat palette) ─── */}
+      {/* ─── analytics grid (dashboard-3 layout, C-chat palette) ─── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCards items={stats} />
 

@@ -514,7 +514,7 @@ export default function SettingsPage() {
           <div>
             <Polsec icon={<GearIcon />} title="Account & Security">
               <p className="text-[13px] text-muted mb-3 leading-[1.5]">
-                Change your email, password and security settings. This is managed securely by Clerk — your Cchat business data stays separate.
+                Change your email, password and security settings. This is managed securely by Clerk — your C-chat business data stays separate.
               </p>
               <div className="rounded-[12px] border border-cborder overflow-hidden bg-white">
                 <div className="max-h-[720px] overflow-auto overscroll-contain">

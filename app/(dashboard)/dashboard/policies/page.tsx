@@ -158,7 +158,7 @@ export default function PoliciesPage() {
           <Icon name="card" size={17} /> Payment methods
         </h3>
         <div className="psub">
-          Listed so the AI can <b>communicate</b> them. Cchat never processes payments — money moves directly between you and your customer.
+          Listed so the AI can <b>communicate</b> them. C-chat never processes payments — money moves directly between you and your customer.
         </div>
         <div>
           {p.payments.map((pay, i) => (

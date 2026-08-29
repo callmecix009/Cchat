@@ -221,7 +221,7 @@ export default function BillingPage() {
           <div className="rulecard mt-5">
             <span>
               <b>3-day free trial</b> on every new account — full access, no card required.
-              Your customers&apos; money never touches Cchat.
+              Your customers&apos; money never touches C-chat.
             </span>
             {!trialActive && !trialExpired && (
               <button

@@ -38,23 +38,28 @@ export async function GET() {
       }
     }
 
-    // Fetch conversations with lastReadAt if column exists (handle missing column gracefully)
-    let rows: any[] = [];
+    // Fetch conversations (explicit columns to avoid missing last_read_at column before migration)
+    const rows: any[] = await db
+      .select({
+        id: conversations.id,
+        userId: conversations.userId,
+        contactName: conversations.contactName,
+        contactPhone: conversations.contactPhone,
+        status: conversations.status,
+        outcome: conversations.outcome,
+        soldProduct: conversations.soldProduct,
+        createdAt: conversations.createdAt,
+      })
+      .from(conversations)
+      .where(eq(conversations.userId, user.id))
+      .orderBy(desc(conversations.createdAt));
+
+    // Try to fetch lastReadAt separately if column exists (gracefully handle missing column)
+    let lastReadMap = new Map<string, number>();
     try {
-      rows = await db
-        .select()
-        .from(conversations)
-        .where(eq(conversations.userId, user.id))
-        .orderBy(desc(conversations.createdAt));
-    } catch (e: any) {
-      const msg = String(e?.message || "");
-      if (msg.includes("last_read_at")) {
-        // Fallback without lastReadAt if migration not yet applied
-        const { conversations: convNoRead } = await import("@/lib/db/schema");
-        rows = await db.select().from(convNoRead).where(eq(convNoRead.userId, user.id)).orderBy(desc(convNoRead.createdAt));
-        rows = rows.map((r: any) => ({ ...r, lastReadAt: null }));
-      } else throw e;
-    }
+      const withRead: any[] = await db.select({ id: conversations.id, lastReadAt: (conversations as any).lastReadAt }).from(conversations).where(eq(conversations.userId, user.id));
+      for (const r of withRead) if (r.lastReadAt) lastReadMap.set(r.id, new Date(r.lastReadAt).getTime());
+    } catch {}
 
     const msgsByConvo = new Map<string, ConvoMsg[]>();
     if (rows.length) {
@@ -78,15 +83,11 @@ export async function GET() {
 
     const dbConvos: any[] = rows.map((r) => {
       const msgs = msgsByConvo.get(r.id) ?? [];
-      const lastReadAt = (r as any).lastReadAt ? new Date((r as any).lastReadAt).getTime() : 0;
-      // Unread = customer messages after lastReadAt
-      // If never read (null/0), consider only messages in last 7 days as unread for demo initial state? For now, if lastReadAt is 0, treat as 0 unread for old demo data to avoid flooding
+      const lastReadAt = lastReadMap.get(r.id) ?? 0;
       let unreadCount = 0;
-      if ((r as any).lastReadAt) {
+      if (lastReadMap.has(r.id)) {
         unreadCount = msgs.filter((m) => m.from === "c" && m.t > lastReadAt).length;
       } else {
-        // For existing rows without lastReadAt, check if last message is recent customer message (< 2h) -> count as unread
-        // Otherwise 0 to avoid showing all old demo as unread
         const last = msgs[msgs.length - 1];
         if (last && last.from === "c" && Date.now() - last.t < 2 * 3600000) {
           unreadCount = 1;
@@ -108,7 +109,7 @@ export async function GET() {
         outcome: r.outcome === "sold" || r.outcome === "no" ? r.outcome : null,
         soldProduct: r.soldProduct ?? null,
         unreadCount,
-        lastReadAt: (r as any).lastReadAt ?? null,
+        lastReadAt: lastReadMap.get(r.id) ? new Date(lastReadMap.get(r.id)!).toISOString() : null,
       };
     });
 

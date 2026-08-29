@@ -14,7 +14,7 @@ const splineMono = Spline_Sans_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cchat — AI WhatsApp Agent for Small Business",
+  title: "C-chat — AI WhatsApp Agent for Small Business",
   description: "Automate WhatsApp replies, run a 24/7 AI agent, and grow your business — all from one dashboard.",
 };
 

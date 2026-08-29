@@ -186,7 +186,7 @@ export default function PlanSelectionPage() {
       <header className="flex items-center gap-3 px-[5vw] py-5">
         <Link href="/" className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
           <CchatLogo size={32} decorative className="shrink-0" />
-          Cchat
+          C-chat
         </Link>
       </header>
 
@@ -203,14 +203,14 @@ export default function PlanSelectionPage() {
             <p className="text-[#B9CDBF] text-[16px] max-w-[600px] mx-auto">
               {billingStatus === "expired" ? (
                 <>
-                  Choose a plan to continue using Cchat. Monthly and Yearly payments will be enabled soon via Pesapal.
+                  Choose a plan to continue using C-chat. Monthly and Yearly payments will be enabled soon via Pesapal.
                   {trialEndsAt && (
                     <span className="block mt-2 text-sm text-[#8FAA99]">Trial ended on {new Date(trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
                   )}
                 </>
               ) : (
                 <>
-                  You&apos;ve completed onboarding. Now pick a plan to enter Cchat. The <span className="font-semibold text-lime">3-Day Free Trial</span> gives you full access immediately — no card needed.
+                  You&apos;ve completed onboarding. Now pick a plan to enter C-chat. The <span className="font-semibold text-lime">3-Day Free Trial</span> gives you full access immediately — no card needed.
                 </>
               )}
             </p>
@@ -224,7 +224,7 @@ export default function PlanSelectionPage() {
 
           <p className="text-center text-[#8FAA99] text-sm mt-8 max-w-[600px] mx-auto">
             Monthly and Yearly plans will be enabled once Pesapal payment integration is configured.
-            For now, start your <b className="text-lime">3-Day Free Trial</b> to use Cchat immediately.
+            For now, start your <b className="text-lime">3-Day Free Trial</b> to use C-chat immediately.
           </p>
 
           <div className="mt-10 text-center">
@@ -236,7 +236,7 @@ export default function PlanSelectionPage() {
       </main>
 
       <footer className="px-[5vw] py-6 border-t border-[rgba(143,240,180,.08)]">
-        <p className="text-center text-[12px] text-[#8FAA99]">© 2026 Cchat. Built in Dar es Salaam.</p>
+        <p className="text-center text-[12px] text-[#8FAA99]">© 2026 C-chat. Built in Dar es Salaam.</p>
       </footer>
     </div>
   );

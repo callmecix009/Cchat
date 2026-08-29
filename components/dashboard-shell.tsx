@@ -174,58 +174,77 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
     const poll = async () => {
       try {
-        // 1) Inbox: new customer messages (even when AI is handling)
+        // 1) Inbox: new customer messages (even when AI is handling) — show at most ONE per poll
         const inboxRes = await fetch("/api/inbox").then((r) => (r.ok ? r.json() : null)).catch(() => null);
         const convos: Array<any> = inboxRes?.conversations ?? [];
         if (!stopped && convos.length) {
           const now = Date.now();
+          let newestNewMsg: { c: any; last: any } | null = null;
+          let newestHandoff: any | null = null;
           for (const c of convos) {
             const msgs: any[] = c.msgs ?? [];
             if (!msgs.length) continue;
             const last = msgs[msgs.length - 1];
-            // Only notify for customer messages received in last 90s and not yet seen
-            if (last.from === "c" && now - last.t < 90_000) {
-              const prevT = prevInboxRef.current.get(c.id) ?? 0;
-              if (!isFirstInboxPoll.current && last.t > prevT) {
-                pushToast(`New message from ${c.name}`, (last.text || "").slice(0, 80), "info");
+            const prevT = prevInboxRef.current.get(c.id) ?? 0;
+            if (last.t > prevT) prevInboxRef.current.set(c.id, last.t);
+            if (!isFirstInboxPoll.current) {
+              if (last.from === "c" && now - last.t < 90_000 && last.t > prevT) {
+                if (!newestNewMsg || last.t > newestNewMsg.last.t) newestNewMsg = { c, last };
               }
-              prevInboxRef.current.set(c.id, last.t);
-            } else if (last.t) {
-              // Keep track of latest t even for non-customer to avoid re-notifying
-              const prevT = prevInboxRef.current.get(c.id) ?? 0;
-              if (last.t > prevT) prevInboxRef.current.set(c.id, last.t);
-            }
-            // Handoff needs human
-            if (c.status === "waiting" && c.reason && !isFirstInboxPoll.current) {
-              // Only once per conversation per session
-              const key = `handoff-${c.id}`;
-              if (!seenLowStockRef.current.has(key)) {
-                seenLowStockRef.current.add(key);
-                pushToast(`Handoff: ${c.name} needs you`, c.reason.slice(0, 80), "warn");
+              if (c.status === "waiting" && c.reason) {
+                const key = `handoff-${c.id}`;
+                if (!seenLowStockRef.current.has(key) && (!newestHandoff || c.t > newestHandoff.t)) {
+                  newestHandoff = c;
+                }
               }
             }
+          }
+          if (newestNewMsg) {
+            pushToast(`New message from ${newestNewMsg.c.name}`, (newestNewMsg.last.text || "").slice(0, 80), "info");
+          } else if (newestHandoff) {
+            const key = `handoff-${newestHandoff.id}`;
+            seenLowStockRef.current.add(key);
+            pushToast(`Handoff: ${newestHandoff.name} needs you`, newestHandoff.reason.slice(0, 80), "warn");
           }
           isFirstInboxPoll.current = false;
         }
 
-        // 2) Out of stock / low stock
+        // 2) Out of stock / low stock — at most ONE per poll, out-of-stock first
         const ws = await fetch("/api/workspace").then((r) => (r.ok ? r.json() : null)).catch(() => null);
-        if (!stopped && ws?.products?.length) {
+        if (!stopped && ws?.products?.length && !isFirstInboxPoll.current) {
           const threshold = ws.lowStockThreshold ?? ws.policies?.lowStockThreshold ?? 3;
+          let toNotify: any = null;
+          let toNotifyKind: "oos" | "low" | null = null;
           for (const p of ws.products as Array<any>) {
-            if (p.stock === 0 && !p.hidden) {
+            if (p.hidden) continue;
+            if (p.stock === 0) {
               const key = `oos-${p.id}`;
               if (!seenLowStockRef.current.has(key)) {
-                seenLowStockRef.current.add(key);
-                pushToast(`Out of stock: ${p.name}`, `Stock is 0 — AI will offer alternatives or notify list.`, "err");
-              }
-            } else if (p.stock > 0 && p.stock <= threshold && !p.hidden) {
-              const key = `low-${p.id}-${p.stock}`;
-              if (!seenLowStockRef.current.has(key)) {
-                seenLowStockRef.current.add(key);
-                pushToast(`Low stock: ${p.name}`, `Only ${p.stock} left — restock soon.`, "warn");
+                toNotify = p;
+                toNotifyKind = "oos";
+                break; // out-of-stock has priority
               }
             }
+          }
+          if (!toNotify) {
+            for (const p of ws.products as Array<any>) {
+              if (p.hidden || p.stock === 0) continue;
+              if (p.stock > 0 && p.stock <= threshold) {
+                const key = `low-${p.id}-${p.stock}`;
+                if (!seenLowStockRef.current.has(key)) {
+                  toNotify = p;
+                  toNotifyKind = "low";
+                  break;
+                }
+              }
+            }
+          }
+          if (toNotify && toNotifyKind === "oos") {
+            seenLowStockRef.current.add(`oos-${toNotify.id}`);
+            pushToast(`Out of stock: ${toNotify.name}`, `Stock is 0 — AI will offer alternatives or notify list.`, "err");
+          } else if (toNotify && toNotifyKind === "low") {
+            seenLowStockRef.current.add(`low-${toNotify.id}-${toNotify.stock}`);
+            pushToast(`Low stock: ${toNotify.name}`, `Only ${toNotify.stock} left — restock soon.`, "warn");
           }
         }
       } catch {}
@@ -248,7 +267,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       <div className="flex h-screen items-center justify-center bg-surface">
         <div className="text-center">
           <div className="w-8 h-8 border-3 border-lime border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-muted text-sm">Loading Cchat...</p>
+          <p className="text-muted text-sm">Loading C-chat...</p>
         </div>
       </div>
     );
@@ -308,7 +327,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       <aside className={`w-[236px] flex-none flex flex-col bg-[#0C2417] text-[#C9DCCE] fixed inset-y-0 left-0 z-[999] transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         <Link href="/" className="flex items-center gap-2.5 px-5 pt-5 pb-3.5 text-white font-disp font-extrabold text-lg">
           <CchatLogo size={32} decorative className="shrink-0" />
-          Cchat
+          C-chat
         </Link>
         <nav className="flex-1 overflow-auto px-2.5 py-1.5 space-y-0.5">
           {NAV.map((n) => (
@@ -353,7 +372,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                   {info.tone === "none"
                     ? "12,000 TSh/mo · 3-day free trial"
                     : info.tone === "trial"
-                      ? "Full access while you try Cchat"
+                      ? "Full access while you try C-chat"
                       : info.tone === "extra"
                         ? "Yearly plan · thanks for the support "
                         : "Monthly plan · thanks for the support "}

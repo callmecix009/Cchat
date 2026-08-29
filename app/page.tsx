@@ -95,9 +95,9 @@ function PlusIcon({ size = 17 }: { size?: number }) {
 }
 
 const FAQ_DATA = [
-  ["Does Cchat read all my WhatsApp?", "No. Cchat only handles customer conversations that come through your business number. Your personal chats are not touched."],
+  ["Does C-chat read all my WhatsApp?", "No. C-chat only handles customer conversations that come through your business number. Your personal chats are not touched."],
   ["What if the AI doesn't know an answer?", "It tells the customer it will check, and passes the chat to you. If you're away, it asks for the customer's name and number so you can call back."],
-  ["How do payments work?", "Your customers pay you directly — M-Pesa, Tigo Pesa, Airtel Money or cash. For your Cchat subscription, you pay TSh 12,000/month (or 115,200/year) after your 3-day free trial."],
+  ["How do payments work?", "Your customers pay you directly — M-Pesa, Tigo Pesa, Airtel Money or cash. For your C-chat subscription, you pay TSh 12,000/month (or 115,200/year) after your 3-day free trial."],
   ["Can it really speak proper Swahili?", "Yes. Swahili is the main language of the AI, and you can teach it your own slang during setup. When a customer writes in English, it switches."],
   ["What do I need to start?", "A WhatsApp Business number and about ten minutes for setup. No hardware, no developers. Every new account starts with a free 3-day trial."],
   ["Is there a contract?", "No. TSh 12,000/month, or save 20% with the yearly plan. Cancel anytime."],
@@ -138,7 +138,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-[900] flex items-center gap-6 px-[5vw] py-4 bg-[#081811]/95 backdrop-blur-sm border-b border-[rgba(143,240,180,.08)] transition-all">
         <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
           <CchatLogo size={32} decorative className="shrink-0" />
-          Cchat
+          C-chat
         </div>
         <div className="hidden md:flex items-center gap-6 ml-auto text-[14px] font-medium text-[#B9CDBF]">
           <a href="#how" className="hover:text-lime transition-colors">How it works</a>
@@ -217,7 +217,7 @@ export default function LandingPage() {
               </em>
             </h1>
             <p className="text-[#C6D8CB] text-[16.5px] max-w-[540px] mx-auto lg:mx-0 leading-[1.6]">
-              Cchat answers your customers on WhatsApp — day and night, in Swahili or English.
+              C-chat answers your customers on WhatsApp — day and night, in Swahili or English.
               When a chat needs you, it comes straight to you.
             </p>
             <div className="flex gap-3 mt-[26px] mb-5 flex-wrap justify-center lg:justify-start">
@@ -310,7 +310,7 @@ export default function LandingPage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/how-it-works.jpg"
-                alt="Business owner using Cchat"
+                alt="Business owner using C-chat"
                 width={768}
                 height={1376}
                 loading="lazy"
@@ -343,7 +343,7 @@ export default function LandingPage() {
                   <ZapIcon size={20} />
                 </div>
                 <h3 className="font-disp text-[17.5px] mb-[6px]">Keep your AI up to date</h3>
-                <p className="text-muted text-[13.5px] leading-[1.55]">Update your products, prices and stock in Cchat, and your AI uses the latest information when talking to customers. Change a price once — every customer hears the new one.</p>
+                <p className="text-muted text-[13.5px] leading-[1.55]">Update your products, prices and stock in C-chat, and your AI uses the latest information when talking to customers. Change a price once — every customer hears the new one.</p>
                 <div className="flex items-center gap-[10px] mt-[18px] flex-wrap">
                   <span className="bg-surface border border-[#E3E9E1] rounded-[10px] px-[13px] py-[9px] text-[12.5px] font-semibold flex items-center gap-[7px]">3 iPhones in stock</span>
                   <span className="text-[#8B9B8F]"><ArrowIcon size={15} /></span>
@@ -407,8 +407,8 @@ export default function LandingPage() {
                 </div>
                 <h3 className="font-disp text-[17.5px] mb-[6px]">Your money stays yours</h3>
                 <p className="text-muted text-[13.5px] leading-[1.55]">
-                  Customers pay you the way they always have — <b className="text-dark">M-Pesa, Tigo Pesa, Airtel Money, cash</b>. Cchat never processes or holds a payment.
-                  You only pay your Cchat subscription: TSh 12,000/month.
+                  Customers pay you the way they always have — <b className="text-dark">M-Pesa, Tigo Pesa, Airtel Money, cash</b>. C-chat never processes or holds a payment.
+                  You only pay your C-chat subscription: TSh 12,000/month.
                 </p>
               </div>
             </Reveal>
@@ -539,7 +539,7 @@ export default function LandingPage() {
             </ul>
             <p className="text-[12.5px] text-muted text-center mt-7 leading-[1.6] max-w-[540px] mx-auto">
               Every new account starts with a <b className="text-dark">3-day free trial</b>. Pay with M-Pesa, Tigo Pesa,
-              Airtel Money or card. Cchat <b className="text-dark">never</b> processes your customers&apos; payments.
+              Airtel Money or card. C-chat <b className="text-dark">never</b> processes your customers&apos; payments.
             </p>
           </Reveal>
         </div>
@@ -584,7 +584,7 @@ export default function LandingPage() {
           <div>
             <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight mb-[14px]">
               <CchatLogo size={32} decorative className="shrink-0" />
-              Cchat
+              C-chat
             </div>
             <p className="text-[13.5px] max-w-[280px] leading-[1.6]">
               An AI assistant that answers your WhatsApp customers. Built in Dar es Salaam.
@@ -610,7 +610,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto flex justify-between gap-3 pt-[22px] text-[12.5px] flex-wrap">
-          <span>© 2026 Cchat · 3-day free trial · 12,000 TSh/mo or save 20% yearly</span>
+          <span>© 2026 C-chat · 3-day free trial · 12,000 TSh/mo or save 20% yearly</span>
           <div className="flex gap-3">
             <Link href="/privacy" className="hover:text-lime transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-lime transition-colors">Terms of Service</Link>
