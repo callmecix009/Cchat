@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { initials, avColor, fmtDay, fmtClock, type Convo, type Product } from "@/lib/demo";
@@ -43,6 +43,7 @@ export default function InboxPage() {
   const [selProduct, setSelProduct] = useState<Product | null>(null);
   const [qty, setQty] = useState("1");
   const [freeText, setFreeText] = useState("");
+  const transcriptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Run all independent fetches in parallel
@@ -60,6 +61,12 @@ export default function InboxPage() {
   }, []);
 
   const open = conversations.find((c) => c.id === openId) ?? null;
+
+  useEffect(() => {
+    if (transcriptRef.current) {
+      transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
+    }
+  }, [open?.msgs?.length, openId]);
 
   const filtered = useMemo(() => {
     return conversations
@@ -412,7 +419,7 @@ export default function InboxPage() {
                 </div>
               )}
 
-              <div className="transcript">
+              <div className="transcript" ref={transcriptRef}>
                 {open.msgs.length === 0 && (
                   <div className="sysline">No messages in this conversation yet.</div>
                 )}

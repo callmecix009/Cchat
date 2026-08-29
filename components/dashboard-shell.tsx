@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
@@ -89,8 +90,10 @@ type BizSettings = {
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
+  const router = useRouter();
   const [settings, setSettings] = useState<BizSettings | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [accessChecked, setAccessChecked] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -119,11 +122,60 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     return () => window.removeEventListener("seechat:business-updated", load);
   }, [load]);
 
+  // Check subscription access - non-blocking, redirects only when clearly expired/inactive
+  useEffect(() => {
+    let mounted = true;
+    const checkAccess = async () => {
+      try {
+        const res = await fetch("/api/billing");
+        if (!res.ok) {
+          if (mounted) setAccessChecked(true);
+          return;
+        }
+        const data = await res.json();
+        const isBlocked = data && (data.status === "expired" || data.status === "inactive" || data.status === "canceled");
+        if (mounted && isBlocked) {
+          const currentPath = window.location.pathname;
+          const allowed = ["/plan-selection", "/settings", "/onboarding", "/billing", "/privacy", "/terms", "/acceptable-use"];
+          const isAllowed = allowed.some((p) => currentPath.startsWith(p));
+          if (!isAllowed) {
+            router.push("/plan-selection");
+            return;
+          }
+        }
+      } catch {
+        // Ignore errors - allow access on failure
+      } finally {
+        if (mounted) setAccessChecked(true);
+      }
+    };
+    checkAccess();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
+
+  // While checking, still show shell but with subtle loading - don't block entire app with spinner
+  // Only block if we haven't checked yet and no settings loaded
+  if (!accessChecked && !settings) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-surface">
+        <div className="text-center">
+          <div className="w-8 h-8 border-3 border-lime border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-muted text-sm">Loading Cchat...</p>
+        </div>
+      </div>
+    );
+  }
+
   const businessName = settings?.business?.name?.trim() || "";
   const logo = settings?.logo || null;
   const hasIdentity = !!businessName;
   const waConnected = settings?.whatsappConnected ?? false;
   const waPaused = settings?.whatsappPaused ?? false;
+  const trialEndsAt = settings?.trialEndsAt ? new Date(settings.trialEndsAt) : null;
+  const trialDaysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86400000)) : 0;
+  const isTrialing = settings?.planStatus === "trialing" && trialDaysLeft > 0;
   const fallback = hasIdentity ? "AI live" : "Add your business name";
   const subline = !hasIdentity
     ? "Set up your business profile"
@@ -197,6 +249,15 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
       {/* main */}
       <div className="flex-1 flex flex-col min-w-0 bg-surface">
+        {isTrialing && trialEndsAt && (
+          <div className="flex-none bg-[#FEF9E7] border-b border-amber-200 px-5 py-2 flex items-center justify-between gap-3 text-sm">
+            <span className="flex items-center gap-2 font-medium text-amber-800">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              Free trial: {trialDaysLeft} day{trialDaysLeft === 1 ? "" : "s"} remaining — ends {trialEndsAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+            </span>
+            <Link href="/billing" className="text-xs font-bold px-3 py-1 rounded-full bg-amber-500 text-white hover:bg-amber-600 transition-colors">View plans</Link>
+          </div>
+        )}
         <header className="h-[62px] flex-none bg-white border-b border-cborder flex items-center gap-3.5 px-5">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}

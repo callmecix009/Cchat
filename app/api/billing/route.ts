@@ -18,6 +18,17 @@ export async function GET() {
       return NextResponse.json({ status: 'inactive', plan: null });
     }
     const u = row[0];
+    // Demo owner bypasses billing checks - always active for testing
+    if (u.isDemoOwner) {
+      return NextResponse.json({
+        status: "active",
+        plan: "trial",
+        trialEndsAt: new Date(Date.now() + 3 * 86400000).toISOString(),
+        subscriptionExpiresAt: null,
+        lastPaymentAt: null,
+        isDemo: true,
+      });
+    }
     const now = Date.now();
     const trialEnds = u.trialEndsAt ? new Date(u.trialEndsAt).getTime() : 0;
     const subEnds = u.subscriptionExpiresAt ? new Date(u.subscriptionExpiresAt).getTime() : 0;

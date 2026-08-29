@@ -16,12 +16,28 @@ export async function GET() {
   try {
     const user = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1);
     if (!user.length) {
-      return NextResponse.json({ answers: {}, onboarded: false });
+      return NextResponse.json({ answers: {}, dynLists: {}, onboarded: false });
     }
     const row = user[0];
-    const onb = row.onboardingData as { answers?: Record<number, string | string[]> } | null;
+    const onb = row.onboardingData as { answers?: Record<number, string | string[]>; dynLists?: Record<string, any> } | null;
+    // Fetch existing catalog for pre-population if dynLists empty
+    let dynLists = onb?.dynLists ?? null;
+    if (!dynLists || Object.keys(dynLists).length === 0) {
+      const prods = await db.select().from(productsTable).where(eq(productsTable.userId, row.id));
+      const svcs = await db.select().from(servicesTable).where(eq(servicesTable.userId, row.id));
+      if (prods.length || svcs.length) {
+        dynLists = {};
+        if (prods.length) {
+          dynLists.prods = prods.map((p) => ({ n: p.name, pr: String(p.price), st: String(p.stock), cat: p.cat, emoji: p.emoji }));
+        }
+        if (svcs.length) {
+          dynLists.svcs = svcs.map((s) => ({ n: s.name, d: s.desc, pr: String(s.price) }));
+        }
+      }
+    }
     return NextResponse.json({
       answers: onb?.answers ?? {},
+      dynLists: dynLists ?? {},
       onboarded: row.onboarded ?? false,
     });
   } catch (err) {
@@ -44,6 +60,7 @@ export async function POST(req: NextRequest) {
   }
 
   const answers = body?.answers ?? {};
+  const dynLists = body?.dynLists ?? {};
 
   try {
     const client = await clerkClient();
@@ -69,7 +86,7 @@ export async function POST(req: NextRequest) {
           name,
           phone,
           onboarded: true,
-          onboardingData: { answers },
+          onboardingData: { answers, dynLists },
           updatedAt: new Date(),
         })
         .where(eq(users.clerkId, userId));
@@ -81,7 +98,7 @@ export async function POST(req: NextRequest) {
         name,
         phone,
         onboarded: true,
-        onboardingData: { answers },
+        onboardingData: { answers, dynLists },
         plan: 'free',
         subscriptionStatus: 'inactive',
       });
@@ -148,6 +165,50 @@ export async function POST(req: NextRequest) {
         userId: userIdField,
         ...policyData,
       });
+    }
+
+    // 7. Handle dynamic product/service lists from onboarding
+    if (dynLists?.prods && Array.isArray(dynLists.prods) && dynLists.prods.length) {
+      const prods = (dynLists.prods as any[]).filter((p) => p?.n?.trim());
+      if (prods.length) {
+        await db.delete(productsTable).where(eq(productsTable.userId, userIdField));
+        await db.insert(productsTable).values(
+          prods.map((p: any, i: number) => ({
+            id: crypto.randomUUID(),
+            userId: userIdField,
+            name: String(p.n).trim().slice(0, 200),
+            cat: String(p.cat ?? answers[30] ?? "").slice(0, 80),
+            price: Math.max(0, Math.round(Number(p.pr) || 0)),
+            stock: Math.max(0, Math.round(Number(p.st) || 0)),
+            emoji: String(p.emoji ?? "📦").slice(0, 8),
+            color: "#E3F4E9",
+            keywords: String(p.n).toLowerCase().split(/\s+/).filter(Boolean).slice(0, 12),
+            sold: 0,
+            hidden: false,
+            sortOrder: i,
+          }))
+        );
+      }
+    }
+
+    if (dynLists?.svcs && Array.isArray(dynLists.svcs) && dynLists.svcs.length) {
+      const svcs = (dynLists.svcs as any[]).filter((s) => s?.n?.trim());
+      if (svcs.length) {
+        await db.delete(servicesTable).where(eq(servicesTable.userId, userIdField));
+        await db.insert(servicesTable).values(
+          svcs.map((s: any) => ({
+            id: crypto.randomUUID(),
+            userId: userIdField,
+            name: String(s.n).trim().slice(0, 200),
+            desc: String(s.d ?? "").slice(0, 600),
+            price: Math.max(0, Math.round(Number(s.pr) || 0)),
+            priceFrom: false,
+            duration: String(s.dur ?? "1 hour").slice(0, 60),
+            booking: true,
+            warranty: "",
+          }))
+        );
+      }
     }
 
     return NextResponse.json({ ok: true }, { status: 200 });

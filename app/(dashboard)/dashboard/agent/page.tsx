@@ -56,13 +56,15 @@ export default function ChatAgentPage() {
   const stateRef = useRef(state);
   stateRef.current = state;
 
-  const [tab, setTab] = useState<"test" | "owner">("test");
+  const [tab, setTab] = useState<"test" | "owner" | "assistant">("test");
   const [testConvo, setTestConvo] = useState<ConvoState>({ msgs: [], takeover: false });
   const [ownerConvo, setOwnerConvo] = useState<ConvoState>({ msgs: [], takeover: false });
+  const [assistantConvo, setAssistantConvo] = useState<ConvoState>({ msgs: [], takeover: false });
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const pbodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setToast(null), 4200);
@@ -100,7 +102,7 @@ export default function ChatAgentPage() {
     });
   }, []);
 
-  const pushReplies = useCallback((replies: string[], target: "test" | "owner") => {
+  const pushReplies = useCallback((replies: string[], target: "test" | "owner" | "assistant") => {
     setTyping(true);
     const push = (i: number) => {
       if (i >= replies.length) {
@@ -109,6 +111,7 @@ export default function ChatAgentPage() {
       }
       const msg: ConvoMsg = { from: "ai", text: replies[i], t: Date.now() };
       if (target === "owner") setOwnerConvo((c) => ({ ...c, msgs: [...c.msgs, msg] }));
+      else if (target === "assistant") setAssistantConvo((c) => ({ ...c, msgs: [...c.msgs, msg] }));
       else setTestConvo((c) => ({ ...c, msgs: [...c.msgs, msg] }));
       if (i < replies.length - 1) {
         timers.current.push(setTimeout(() => push(i + 1), 700 + Math.random() * 500));
@@ -124,7 +127,6 @@ export default function ChatAgentPage() {
     if (!t) return;
     setInput("");
     const st = stateRef.current;
-    const ownerFirst = st.business.owner.split(" ")[0];
 
     if (tab === "owner") {
       setOwnerConvo((c) => ({ ...c, msgs: [...c.msgs, { from: "c", text: t, t: Date.now() }] }));
@@ -132,6 +134,41 @@ export default function ChatAgentPage() {
       return;
     }
 
+    if (tab === "assistant") {
+      setAssistantConvo((prev) => ({ ...prev, msgs: [...prev.msgs, { from: "c", text: t, t: Date.now() }] }));
+      setTyping(true);
+      try {
+        const history = assistantConvo.msgs
+          .filter((m) => m.from !== "sys")
+          .map((m) => ({
+            role: m.from === "c" ? ("user" as const) : ("assistant" as const),
+            content: m.text,
+          }));
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: [...history, { role: "user", content: t }] }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.reply) {
+          pushReplies([data.reply], "assistant");
+        } else if (res.status === 503 || data.error?.includes("not configured") || data.error === "DEEPSEEK_NOT_CONFIGURED") {
+          pushReplies(
+            [
+              "DeepSeek is not configured yet. Add DEEPSEEK_API_KEY to your environment variables (server-side only). See https://api-docs.deepseek.com/api/create-chat-completion/",
+            ],
+            "assistant"
+          );
+        } else {
+          pushReplies([data.error || "Sorry, I couldn't process that right now. Please try again."], "assistant");
+        }
+      } catch {
+        pushReplies(["Connection error. Please try again."], "assistant");
+      }
+      return;
+    }
+
+    // test tab - customer simulation via DeepSeek
     const c = testConvo;
     if (c.takeover) {
       setTestConvo((prev) => ({ ...prev, msgs: [...prev.msgs, { from: "me", text: t, t: Date.now() }] }));
@@ -142,27 +179,32 @@ export default function ChatAgentPage() {
 
     setTyping(true);
     try {
-      const history = testConvo.msgs.map((m) => ({
-        role: m.from === "c" ? "user" as const : "assistant" as const,
-        content: m.text,
-      }));
+      const history = testConvo.msgs
+        .filter((m) => m.from !== "sys")
+        .map((m) => ({
+          role: m.from === "c" ? ("user" as const) : ("assistant" as const),
+          content: m.text,
+        }));
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [...history, { role: "user", content: t }] }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.reply) {
         pushReplies([data.reply], "test");
-      } else if (data.error === "DEEPSEEK_NOT_CONFIGURED") {
-        pushReplies(["AI is not configured yet. Add DEEPSEEK_API_KEY to your environment variables to enable the AI brain."], "test");
+      } else if (res.status === 503 || data.error?.includes("not configured")) {
+        pushReplies(
+          [
+            "AI is not configured yet. Add DEEPSEEK_API_KEY to your environment variables to enable the real AI brain. See https://api-docs.deepseek.com/",
+          ],
+          "test"
+        );
       } else {
-        pushReplies(["Sorry, I couldn't process that right now. Please try again."], "test");
+        pushReplies([data.error || "Sorry, I couldn't process that right now. Please try again."], "test");
       }
     } catch {
       pushReplies(["Connection error. Please try again."], "test");
-    } finally {
-      setTyping(false);
     }
   };
 
@@ -173,16 +215,23 @@ export default function ChatAgentPage() {
     }));
   };
 
-  const reset = () => setTestConvo({ msgs: [], takeover: false });
+  const reset = () => { setTestConvo({ msgs: [], takeover: false }); setAssistantConvo({ msgs: [], takeover: false }); };
 
   const isOwner = tab === "owner";
-  const convo = isOwner ? ownerConvo : testConvo;
-  const body = isOwner ? ownerConvo.msgs : testConvo.msgs;
+  const isAssistant = tab === "assistant";
+  const convo = isOwner ? ownerConvo : isAssistant ? assistantConvo : testConvo;
+  const body = isOwner ? ownerConvo.msgs : isAssistant ? assistantConvo.msgs : testConvo.msgs;
   const placeholder = isOwner
     ? "Ask about your business… e.g. “Summarize yesterday’s chats”"
-    : testConvo.takeover
-      ? "Reply as the owner…"
-      : "Andika kama mteja… e.g. “Kuna iPhone 13?”";
+    : isAssistant
+      ? "Ask your AI assistant… e.g. “Whats my best selling product?”"
+      : testConvo.takeover
+        ? "Reply as the owner…"
+        : "Andika kama mteja… e.g. “Kuna iPhone 13?”";
+
+  useEffect(() => {
+    if(pbodyRef.current) pbodyRef.current.scrollTop = pbodyRef.current.scrollHeight;
+  }, [body.length, typing, tab]);
 
   const ai = state.ai;
   const swPct = Math.round((state.stats.swMsgs / (state.stats.swMsgs + state.stats.enMsgs)) * 100);
@@ -205,19 +254,22 @@ export default function ChatAgentPage() {
         <button className={`atab ${tab === "owner" ? "on" : ""}`} onClick={() => setTab("owner")}>
           <Icon name="user" size={16} /> Owner mode <span className="td">· your business assistant</span>
         </button>
+        <button className={`atab ${tab === "assistant" ? "on" : ""}`} onClick={() => setTab("assistant")}>
+          <Icon name="zap" size={16} /> AI Assistant <span className="td">· real DeepSeek brain</span>
+        </button>
       </div>
 
       <div className="agentgrid">
         <div className="phone">
           <div className="ph">
-            <span className="avatar">{isOwner ? "Y" : "C"}</span>
+            <span className="avatar">{isOwner ? "Y" : isAssistant ? "AI" : "C"}</span>
             <div>
-              <div className="nm">{isOwner ? "You ↔ your AI assistant" : "Test customer"}</div>
-              <div className="st">{isOwner ? "Answers with your real business data" : "Simulated — using live products, services & policies"}</div>
+              <div className="nm">{isOwner ? "You ↔ your AI assistant" : isAssistant ? "AI Assistant · DeepSeek" : "Test customer"}</div>
+              <div className="st">{isOwner ? "Answers with your real business data" : isAssistant ? "Real DeepSeek brain · uses your live business data" : "Simulated — using live products, services & policies"}</div>
             </div>
             <span style={{ marginLeft: "auto" }}>
-              {!isOwner && (
-                <button className="btn xs" style={{ background: "rgba(255,255,255,.14)", color: "#fff" }} onClick={reset}>
+              {(tab !== "owner") && (
+                <button className="btn xs" style={{ background: "rgba(255,255,255,.14)", color: "#fff" }} onClick={() => { setTestConvo({ msgs: [], takeover: false }); setAssistantConvo({ msgs: [], takeover: false }); }}>
                   <Icon name="refresh" size={12} /> Reset
                 </button>
               )}
@@ -233,7 +285,7 @@ export default function ChatAgentPage() {
             </div>
           )}
 
-          <div className="pbody">
+          <div className="pbody" ref={pbodyRef}>
             {body.length === 0 ? (
               <>
                 <span className="daysep">Today</span>
@@ -241,10 +293,15 @@ export default function ChatAgentPage() {
                   <span className="bub a" style={{ maxWidth: "85%" }}>
                     Habari {state.business.owner.split(" ")[0]}! I&apos;m your business assistant. Ask me anything about your shop — sales, stock, customers, handoffs.
                   </span>
+                ) : isAssistant ? (
+                  <>
+                    <span className="bub a" style={{ maxWidth: "85%" }}>Habari! I am your DeepSeek-powered AI assistant. Ask me about your products, services, policies or customers — I use your live business data.</span>
+                    <span className="sysline">Real AI: DeepSeek via server-side API · Business data drives responses. Missing key? Add DEEPSEEK_API_KEY.</span>
+                  </>
                 ) : (
                   <>
                     <span className="bub a" style={{ maxWidth: "85%" }}>{ai.greetSw}</span>
-                    <span className="sysline">This simulator uses your LIVE catalog, services, policies and AI settings.</span>
+                    <span className="sysline">This simulator uses your LIVE catalog, services, policies and AI settings via DeepSeek.</span>
                   </>
                 )}
               </>
@@ -261,6 +318,13 @@ export default function ChatAgentPage() {
           {tab === "test" && !testConvo.takeover && (
             <div className="hintchips">
               {HINTS.map((h) => (
+                <button key={h} onClick={() => setInput(h)}>{h}</button>
+              ))}
+            </div>
+          )}
+          {tab === "assistant" && (
+            <div className="hintchips">
+              {["What are my best sellers?", "Summarize my policies", "How much is iPhone 13?", "What is my delivery policy?", "Whats my warranty?"].map((h) => (
                 <button key={h} onClick={() => setInput(h)}>{h}</button>
               ))}
             </div>

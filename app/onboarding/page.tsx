@@ -152,6 +152,13 @@ export default function OnboardingPage() {
           }
           setAnswers(normalized);
         }
+        if (d?.dynLists && typeof d.dynLists === 'object') {
+          const nl: Record<string, Record<string, string>[]> = {};
+          for (const [k, arr] of Object.entries(d.dynLists as Record<string, any>)) {
+            if (Array.isArray(arr)) nl[k] = arr as Record<string, string>[];
+          }
+          if (Object.keys(nl).length) setDynLists(nl);
+        }
         setLoaded(true);
       });
   }, []);
@@ -210,7 +217,7 @@ export default function OnboardingPage() {
     } catch (e) {
       console.error('Save failed', e);
     }
-    router.push('/billing');
+    router.push('/plan-selection');
   };
 
   const renderField = (f: FieldDef, idx: number) => {
@@ -305,6 +312,62 @@ export default function OnboardingPage() {
         <p className="text-muted text-[14px] mt-[6px] mb-6">{st.d} Every answer is editable later in its own section.</p>
 
         {st.f.map((f, i) => renderField(f, i))}
+
+        {/* Dynamic product entry - Products step */}
+        {st.t === 'Products & stock' && (
+          <div className="mt-6 p-4 bg-white rounded-xl border border-[#D2DCD1]">
+            <h4 className="font-disp font-bold text-[15px] mb-1">Your products (optional — you can also add them later)</h4>
+            <p className="text-muted text-[13px] mb-3">Add each product separately. The AI will quote these prices and stock live.</p>
+            {(dynLists.prods ?? [{ n: '', pr: '', st: '' }]).map((row, idx) => (
+              <div key={idx} className="flex gap-2 mb-2 items-end flex-wrap">
+                <div className="flex-1 min-w-[140px]">
+                  <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Name</label>
+                  <input className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="e.g. iPhone 13 128GB" value={row.n ?? ''} onChange={(e) => updateRow('prods', idx, 'n', e.target.value)} />
+                </div>
+                <div className="w-[110px]">
+                  <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Price TZS</label>
+                  <input type="number" className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="1450000" value={row.pr ?? ''} onChange={(e) => updateRow('prods', idx, 'pr', e.target.value)} />
+                </div>
+                <div className="w-[90px]">
+                  <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Stock</label>
+                  <input type="number" className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="3" value={row.st ?? ''} onChange={(e) => updateRow('prods', idx, 'st', e.target.value)} />
+                </div>
+                <button type="button" onClick={() => removeRow('prods', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
+                  <XIcon size={14} />
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={() => addRow('prods', { n: '', pr: '', st: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-grn text-grn-d text-[13px] font-semibold hover:bg-grn-bg transition-colors">
+              <PlusIcon /> Add another product
+            </button>
+          </div>
+        )}
+
+        {/* Dynamic services entry - Services step */}
+        {st.t === 'Services' && (
+          <div className="mt-6 p-4 bg-white rounded-xl border border-[#D2DCD1]">
+            <h4 className="font-disp font-bold text-[15px] mb-1">Your services (optional)</h4>
+            <p className="text-muted text-[13px] mb-3">Add each service you offer.</p>
+            {(dynLists.svcs ?? [{ n: '', pr: '' }]).map((row, idx) => (
+              <div key={idx} className="flex gap-2 mb-2 items-end flex-wrap">
+                <div className="flex-1 min-w-[160px]">
+                  <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Service name</label>
+                  <input className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="Screen Replacement" value={row.n ?? ''} onChange={(e) => updateRow('svcs', idx, 'n', e.target.value)} />
+                </div>
+                <div className="w-[120px]">
+                  <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Price TZS</label>
+                  <input type="number" className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="120000" value={row.pr ?? ''} onChange={(e) => updateRow('svcs', idx, 'pr', e.target.value)} />
+                </div>
+                <button type="button" onClick={() => removeRow('svcs', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
+                  <XIcon size={14} />
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={() => addRow('svcs', { n: '', pr: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-grn text-grn-d text-[13px] font-semibold hover:bg-grn-bg transition-colors">
+              <PlusIcon /> Add another service
+            </button>
+          </div>
+        )}
 
         <div className="flex justify-between items-center mt-[26px] gap-3 flex-wrap">
           <button onClick={goBack} disabled={step === 0}
