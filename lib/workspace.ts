@@ -1,4 +1,4 @@
-import { createSeed, emptyPolicies, type Policy, type Product, type Service } from '@/lib/demo';
+import { emptyPolicies, type Policy, type Product, type Service } from '@/lib/demo';
 import { ensureUserRow } from '@/lib/ensureUser';
 import { db } from '@/lib/db';
 import { users as usersTable, products as productsTable, services as servicesTable, policies as policiesTable } from '@/lib/db/schema';
@@ -121,14 +121,15 @@ export async function getWorkspaceForClerkUser(clerkId: string): Promise<Workspa
   }
 
   if (user.isDemoOwner) {
-    const seed = createSeed();
-    return {
-      isDemoOwner: true,
-      products: seed.products,
-      services: seed.services,
-      policies: seed.policies,
-      lowStockThreshold: seed.lowStockThreshold,
-    };
+    // Persist demo seed as real DB rows on first access, then fall through to normal DB load
+    try {
+      const { ensureDemoSeeded } = await import("@/lib/seed-demo-persist");
+      await ensureDemoSeeded(user.id);
+    } catch (e) {
+      console.error("Demo seeding from workspace failed:", e);
+    }
+    // Don't return virtual seed - fall through to load real persisted data
+    // But keep isDemoOwner flag for UI; data will now come from DB
   }
 
   let productRows = await db
@@ -172,7 +173,7 @@ export async function getWorkspaceForClerkUser(clerkId: string): Promise<Workspa
   }
 
   return {
-    isDemoOwner: false,
+    isDemoOwner: !!user.isDemoOwner,
     products: productRows.map(rowToProduct),
     services: serviceRows.map(rowToService),
     policies: polRow ? policyRowToPolicy(polRow) : emptyPolicies(),

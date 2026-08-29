@@ -13,7 +13,7 @@ import {
   sales as salesTable,
 } from "@/lib/db/schema";
 import { eq, inArray, desc, gte } from "drizzle-orm";
-import { createSeed, agoStr, initials, TZS, type Product, type Service } from "@/lib/demo";
+import { agoStr, initials, TZS, type Product, type Service } from "@/lib/demo";
 import { ensureUserRow } from "@/lib/ensureUser";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -142,42 +142,15 @@ export default async function DashboardPage() {
   let saleEvents: { productName: string; qty: number; amount: number; t: Date }[] = [];
 
   try {
-    if (isDemoOwner && row) {
-      const seed = createSeed();
-      convos = seed.conversations.map((c) => ({
-        id: c.id,
-        name: c.name,
-        phone: c.phone,
-        status: c.status,
-        outcome: c.outcome,
-        createdAt: new Date(c.t),
-      }));
-      flatMsgs = seed.conversations.flatMap((c) =>
-        c.msgs.map((m) => ({
-          conversationId: c.id,
-          fromCustomer: m.from === "c",
-          aiSent: m.from === "ai",
-          content: m.text,
-          t: new Date(m.t),
-        }))
-      );
-      saleEvents = seed.salesToday.map((s) => ({
-        productName: s.p,
-        qty: 1,
-        amount: s.amt,
-        t: new Date(Date.now() - Math.floor(Math.random() * 6 + 1) * 36e5),
-      }));
-      catalogProducts = seed.products;
-      threshold = seed.lowStockThreshold;
-
-      if (row) {
-        const s = await db.select().from(settings).where(eq(settings.userId, row.id)).limit(1);
-        if (s.length) {
-          bizSettings = (s[0].business ?? null) as { name?: string; desc?: string; city?: string; phone?: string; owner?: string } | null;
-          businessLogo = s[0].logo ?? null;
+    if (row) {
+      if (isDemoOwner) {
+        try {
+          const { ensureDemoSeeded } = await import("@/lib/seed-demo-persist");
+          await ensureDemoSeeded(row.id);
+        } catch (e) {
+          console.error("Demo seeding from dashboard failed:", e);
         }
       }
-    } else if (row) {
       // Run all independent queries in parallel
       const [convRows, saleRows, productRows, polRes, waRes, s] = await Promise.all([
         db.select({

@@ -5,9 +5,8 @@ import { clerkClient } from '@clerk/nextjs/server';
 
 const DEMO_EMAILS = new Set([
   "chrrispinmatiko1974@gmail.com",
+  "chrispinmatiko1974@gmail.com",
   "chrispinchacha66@gmail.com",
-  // keep legacy if you used chrispin typo variant
-  "chrispinchacha66@gmail.com".toLowerCase(),
 ]);
 
 function isDemoEmail(email: string) {

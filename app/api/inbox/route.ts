@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
 import { conversations, messages } from '@/lib/db/schema';
 import { eq, inArray, desc } from 'drizzle-orm';
-import { createSeed, type Convo, type ConvoMsg } from '@/lib/demo';
+import { type Convo, type ConvoMsg } from '@/lib/demo';
 import { ensureUserRow } from '@/lib/ensureUser';
 
 export const runtime = 'nodejs';
@@ -26,6 +26,16 @@ export async function GET() {
     const user = await ensureUserRow(userId);
     if (!user) {
       return NextResponse.json({ conversations: [] });
+    }
+
+    // Ensure demo data is persisted as real rows for demo owners
+    if (user.isDemoOwner) {
+      try {
+        const { ensureDemoSeeded } = await import("@/lib/seed-demo-persist");
+        await ensureDemoSeeded(user.id);
+      } catch (e) {
+        console.error("Demo seeding from inbox failed:", e);
+      }
     }
 
     const rows = await db
@@ -71,23 +81,7 @@ export async function GET() {
       soldProduct: r.soldProduct ?? null,
     }));
 
-    const seed = createSeed().conversations;
-    const dbIds = new Set(dbConvos.map((c) => c.id));
-    const seedById = new Map(seed.map((s) => [s.id, s]));
-    const merged = dbConvos.map((c) => {
-      const s = seedById.get(c.id);
-      if (!s) return c;
-      return {
-        ...c,
-        msgs: c.msgs.length ? c.msgs : s.msgs,
-        name: c.name && c.name !== "Customer" ? c.name : s.name,
-        phone: c.phone || s.phone,
-        lang: c.lang,
-      };
-    });
-    const finalList = user.isDemoOwner
-      ? [...merged, ...seed.filter((s) => !dbIds.has(s.id))].sort((a, b) => b.t - a.t)
-      : merged.sort((a, b) => b.t - a.t);
+    const finalList = dbConvos.sort((a, b) => b.t - a.t);
 
     return NextResponse.json({ conversations: finalList });
   } catch (err) {

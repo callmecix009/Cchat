@@ -19,24 +19,54 @@ export async function GET() {
       return NextResponse.json({ answers: {}, dynLists: {}, onboarded: false });
     }
     const row = user[0];
+
+    // Ensure demo is seeded for demo owners so onboarding shows real data
+    if (row.isDemoOwner) {
+      try {
+        const { ensureDemoSeeded } = await import("@/lib/seed-demo-persist");
+        await ensureDemoSeeded(row.id);
+      } catch {}
+    }
+
     const onb = row.onboardingData as { answers?: Record<number, string | string[]>; dynLists?: Record<string, any> } | null;
-    // Fetch existing catalog for pre-population if dynLists empty
+    let answers = onb?.answers ?? null;
     let dynLists = onb?.dynLists ?? null;
+
+    // If answers empty but demo/business exists, synthesize answers from persisted business/settings
+    if ((!answers || Object.keys(answers).length === 0) && row.isDemoOwner) {
+      const s = await db.select().from(settings).where(eq(settings.userId, row.id)).limit(1);
+      const biz = s[0]?.business as any;
+      if (biz?.name) {
+        const fetchedUser = row;
+        answers = {
+          1: biz.name || "",
+          2: biz.desc || "",
+          3: biz.city || "",
+          8: biz.owner || fetchedUser.name || "",
+          12: biz.slogan || "",
+          13: "Mixed",
+          21: "Phones, Accessories, Audio",
+          43: biz.phone || "",
+        };
+      }
+    }
+
+    // Fetch existing catalog for pre-population if dynLists empty
     if (!dynLists || Object.keys(dynLists).length === 0) {
       const prods = await db.select().from(productsTable).where(eq(productsTable.userId, row.id));
       const svcs = await db.select().from(servicesTable).where(eq(servicesTable.userId, row.id));
       if (prods.length || svcs.length) {
-        dynLists = {};
-        if (prods.length) {
+        dynLists = dynLists || {};
+        if (prods.length && !dynLists.prods) {
           dynLists.prods = prods.map((p) => ({ n: p.name, pr: String(p.price), st: String(p.stock), cat: p.cat, emoji: p.emoji }));
         }
-        if (svcs.length) {
+        if (svcs.length && !dynLists.svcs) {
           dynLists.svcs = svcs.map((s) => ({ n: s.name, d: s.desc, pr: String(s.price) }));
         }
       }
     }
     return NextResponse.json({
-      answers: onb?.answers ?? {},
+      answers: answers ?? {},
       dynLists: dynLists ?? {},
       onboarded: row.onboarded ?? false,
     });
