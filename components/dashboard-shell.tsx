@@ -262,6 +262,32 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const trialEndsAt = settings?.trialEndsAt ? new Date(settings.trialEndsAt) : null;
   const trialDaysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86400000)) : 0;
   const isTrialing = settings?.planStatus === "trialing" && trialDaysLeft > 0;
+  const [inboxUnread, setInboxUnread] = useState(0);
+
+  // Poll inbox for unread badge (scoped to business)
+  useEffect(() => {
+    if (!accessChecked) return;
+    let stopped = false;
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch("/api/inbox").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        const convos: any[] = res?.conversations ?? [];
+        const total = convos.reduce((s, c) => s + (c.unreadCount || 0), 0);
+        if (!stopped) setInboxUnread(total);
+      } catch {}
+    };
+    fetchUnread();
+    const id = setInterval(fetchUnread, 15000);
+    // Also update when inbox read event fires
+    const onRead = () => fetchUnread();
+    window.addEventListener("inbox:read", onRead);
+    return () => {
+      stopped = true;
+      clearInterval(id);
+      window.removeEventListener("inbox:read", onRead);
+    };
+  }, [accessChecked]);
+
   const fallback = hasIdentity ? "AI live" : "Add your business name";
   const subline = !hasIdentity
     ? "Set up your business profile"
@@ -293,7 +319,12 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm font-semibold text-[#A9C2B0] hover:bg-white/5 hover:text-white transition-colors"
             >
               <span className="opacity-90">{ICONS[n.icon]}</span>
-              <span>{n.label}</span>
+              <span className="flex-1">{n.label}</span>
+              {n.id === "inbox" && inboxUnread > 0 && (
+                <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-red-500 text-white text-[11px] font-extrabold leading-none">
+                  {inboxUnread > 99 ? "99+" : inboxUnread}
+                </span>
+              )}
             </Link>
           ))}
         </nav>
@@ -356,9 +387,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </button>
           <Link href="/settings" className="flex items-center gap-2.5 min-w-0 group">
             {logo ? (
-              <span className="w-9 h-9 rounded-[10px] overflow-hidden flex-none ring-1 ring-cborder">
+              <span className="w-9 h-9 rounded-[10px] overflow-hidden flex-none ring-1 ring-cborder bg-white flex items-center justify-center p-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={logo} alt={businessName || "Business logo"} className="w-full h-full object-cover" />
+                <img src={logo} alt={businessName || "Business logo"} className="w-full h-full object-contain" />
               </span>
             ) : (
               <span className="w-9 h-9 rounded-[10px] bg-dark text-lime2 flex items-center justify-center font-extrabold font-disp flex-none">

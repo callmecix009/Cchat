@@ -33,6 +33,7 @@ export const conversations = pgTable('conversations', {
   status: text('status').default('active').notNull(),
   outcome: text('outcome'),
   soldProduct: text('sold_product'),
+  lastReadAt: timestamp('last_read_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (t) => [index('conversations_user_id_idx').on(t.userId)]);
 

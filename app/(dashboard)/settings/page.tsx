@@ -91,6 +91,7 @@ export default function SettingsPage() {
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [billing, setBilling] = useState<{ status: string; plan: string | null; trialEndsAt: string | null; subscriptionExpiresAt: string | null } | null>(null);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -116,6 +117,12 @@ export default function SettingsPage() {
       })
       .catch(() => {})
       .finally(() => setLoaded(true));
+    fetch("/api/billing")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && !data.error) setBilling(data);
+      })
+      .catch(() => {});
   }, [user]);
 
   const set = useCallback((k: keyof typeof biz, v: string) => {
@@ -136,23 +143,41 @@ export default function SettingsPage() {
     }
     const reader = new FileReader();
     reader.onload = () => {
+      const result = reader.result as string;
+      // Preserve original if it's already reasonably sized (<= 1024 and <= 2MB) to avoid quality loss
       const img = new Image();
       img.onload = () => {
-        const max = 512;
-        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const maxDimension = 1024;
+        const needsResize = Math.max(img.width, img.height) > maxDimension;
+        if (!needsResize) {
+          // Keep original data URL as-is — no canvas recompression, preserves sharpness and aspect ratio
+          setLogo(result);
+          return;
+        }
+        const scale = maxDimension / Math.max(img.width, img.height);
         const canvas = document.createElement("canvas");
         canvas.width = Math.max(1, Math.round(img.width * scale));
         canvas.height = Math.max(1, Math.round(img.height * scale));
         const ctx = canvas.getContext("2d");
         if (!ctx) {
-          setLogoError("Couldn't process that image. Try another file.");
+          setLogo(result);
           return;
         }
+        // Use high-quality smoothing
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        setLogo(canvas.toDataURL("image/png"));
+        // Preserve original format where possible, use high quality
+        const mime = file.type === "image/jpeg" ? "image/jpeg" : file.type === "image/webp" ? "image/webp" : "image/png";
+        const quality = mime === "image/png" ? undefined : 0.92;
+        try {
+          setLogo(canvas.toDataURL(mime as any, quality as any));
+        } catch {
+          setLogo(result);
+        }
       };
       img.onerror = () => setLogoError("Couldn't read that image. Try another file.");
-      img.src = reader.result as string;
+      img.src = result;
     };
     reader.onerror = () => setLogoError("Couldn't read that file. Try again.");
     reader.readAsDataURL(file);
@@ -270,9 +295,9 @@ export default function SettingsPage() {
             <Polsec icon={<StoreIcon />} title="Business Profile">
               <div className="flex gap-4 items-start mb-4 flex-wrap">
                 {logo ? (
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden ring-1 ring-cborder flex-none">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden ring-1 ring-cborder flex-none bg-white flex items-center justify-center p-1.5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={logo} alt={biz.name || "Business logo"} className="w-full h-full object-cover" />
+                    <img src={logo} alt={biz.name || "Business logo"} className="w-full h-full object-contain" />
                   </div>
                 ) : (
                   <div className="w-16 h-16 rounded-2xl bg-dark text-lime2 flex items-center justify-center font-extrabold font-disp text-[22px] flex-none">
@@ -396,21 +421,92 @@ export default function SettingsPage() {
             </Polsec>
 
             <Polsec icon={<ShieldIcon />} title="Subscription">
-              <div className="flex justify-between items-center gap-3 flex-wrap">
-                <div>
-                  <div className="font-disp text-[30px] font-extrabold text-dark">$5<span className="text-[14px] text-muted font-normal">/month</span></div>
-                  <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-grn-d bg-grn-bg border border-grn-br rounded-full px-2.5 py-1 mt-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-grn" /> Active
-                  </span>
-                </div>
-                <div className="text-right text-[12.5px] text-muted">
-                  Current period<br />
-                  <b className="font-mono text-dark">{today} – {in30}</b>
-                </div>
-              </div>
-              <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[13px] text-muted flex gap-2.5 items-start mt-3">
+              {(() => {
+                if (!billing) return <div className="text-sm text-muted py-4">Loading subscription…</div>;
+                const status = billing.status;
+                const trialEnds = billing.trialEndsAt ? new Date(billing.trialEndsAt) : null;
+                const trialDays = trialEnds ? Math.max(0, Math.ceil((trialEnds.getTime() - Date.now()) / 86400000)) : 0;
+                const exp = billing.subscriptionExpiresAt ? new Date(billing.subscriptionExpiresAt) : null;
+                if (status === "trialing" && trialEnds) {
+                  return (
+                    <>
+                      <div className="flex justify-between items-start gap-3 flex-wrap">
+                        <div>
+                          <div className="font-disp text-[22px] font-extrabold text-dark">FREE TRIAL</div>
+                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-1 mt-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> {trialDays} day{trialDays === 1 ? "" : "s"} remaining
+                          </span>
+                        </div>
+                        <div className="text-right text-[12.5px] text-muted">
+                          Ends on<br />
+                          <b className="font-mono text-dark">{trialEnds.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</b>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <a href="/billing" className="inline-flex items-center px-4 py-2 rounded-[10px] bg-dark text-white text-[13px] font-semibold hover:bg-black transition-colors">View plans</a>
+                        <a href="/plan-selection" className="inline-flex items-center px-4 py-2 rounded-[10px] border border-cborder text-[13px] font-semibold hover:border-grn transition-colors">Choose plan</a>
+                      </div>
+                    </>
+                  );
+                }
+                if (status === "active" && billing.plan) {
+                  const isYearly = billing.plan === "yearly" || billing.plan === "extra";
+                  return (
+                    <>
+                      <div className="flex justify-between items-start gap-3 flex-wrap">
+                        <div>
+                          <div className="font-disp text-[22px] font-extrabold text-dark">{isYearly ? "Yearly" : "Monthly"} <span className="text-[14px] text-muted font-normal">{isYearly ? "TZS 115,200 / year" : "TZS 12,000 / month"}</span></div>
+                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-grn-d bg-grn-bg border border-grn-br rounded-full px-2.5 py-1 mt-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-grn" /> Active
+                          </span>
+                        </div>
+                        {exp && (
+                          <div className="text-right text-[12.5px] text-muted">
+                            Renews<br />
+                            <b className="font-mono text-dark">{exp.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</b>
+                          </div>
+                        )}
+                      </div>
+                      <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[13px] text-muted flex gap-2.5 items-start mt-3">
+                        <span className="text-grn flex-none"><ShieldIcon size={14} /></span>
+                        <span>Your subscription is active. Manage billing at <a href="/billing" className="underline font-semibold">Billing</a>.</span>
+                      </div>
+                    </>
+                  );
+                }
+                if (status === "expired") {
+                  return (
+                    <>
+                      <div className="font-disp text-[22px] font-extrabold text-red-600">Trial ended</div>
+                      <p className="text-[13px] text-muted mt-1">Your free trial has ended{trialEnds ? ` on ${trialEnds.toLocaleDateString("en-GB")}` : ""}. Choose a plan to continue using C-chat.</p>
+                      <div className="mt-3 flex gap-2 flex-wrap">
+                        <a href="/plan-selection" className="inline-flex items-center px-4 py-2 rounded-[10px] bg-grn text-white text-[13px] font-semibold hover:bg-grn-d transition-colors">Choose a plan</a>
+                        <a href="/billing" className="inline-flex items-center px-4 py-2 rounded-[10px] border border-cborder text-[13px] font-semibold">View plans</a>
+                      </div>
+                    </>
+                  );
+                }
+                if (status === "canceled") {
+                  return (
+                    <>
+                      <div className="font-disp text-[22px] font-extrabold text-dark">Canceled</div>
+                      <p className="text-[13px] text-muted mt-1">Your subscription was canceled. You can reactivate at any time.</p>
+                      <a href="/plan-selection" className="mt-3 inline-flex items-center px-4 py-2 rounded-[10px] bg-dark text-white text-[13px] font-semibold">Reactivate</a>
+                    </>
+                  );
+                }
+                // inactive / default
+                return (
+                  <>
+                    <div className="font-disp text-[22px] font-extrabold text-dark">No active plan</div>
+                    <p className="text-[13px] text-muted mt-1">Start your 3-day free trial — full access, no card required.</p>
+                    <a href="/plan-selection" className="mt-3 inline-flex items-center px-4 py-2 rounded-[10px] bg-grn text-white text-[13px] font-semibold hover:bg-grn-d transition-colors">Start free trial</a>
+                  </>
+                );
+              })()}
+              <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[13px] text-muted flex gap-2.5 items-start mt-4">
                 <span className="text-amber-500 flex-none"><AlertIcon /></span>
-                <span>Payment of this subscription is <b>managed externally</b>. Cchat processes no transactions of any kind inside the app — your customers&apos; M-Pesa, Tigo Pesa, Airtel Money and cash stay 100% between you and them.</span>
+                <span>Payment of this subscription is <b>managed externally</b>. C-chat processes no transactions inside the app — your customers&apos; M-Pesa, Tigo Pesa, Airtel Money and cash stay 100% between you and them.</span>
               </div>
             </Polsec>
           </div>

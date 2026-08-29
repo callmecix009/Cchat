@@ -61,6 +61,21 @@ export default function InboxPage() {
   }, []);
 
   const open = conversations.find((c) => c.id === openId) ?? null;
+  const totalUnread = (conversations as any[]).reduce((s, c) => s + (c.unreadCount || 0), 0);
+
+  // Mark conversation as read when opened
+  useEffect(() => {
+    if (!openId) return;
+    const conv = conversations.find((c) => c.id === openId) as any;
+    if (!conv || !(conv.unreadCount > 0)) return;
+    // Optimistic local update
+    setConversations((list) => list.map((c) => (c.id === openId ? { ...c, unreadCount: 0 } as any : c)));
+    fetch("/api/inbox/read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId: openId }),
+    }).catch(() => {});
+  }, [openId]);
 
   useEffect(() => {
     if (transcriptRef.current) {
@@ -252,7 +267,15 @@ export default function InboxPage() {
     <div className="viewwrap max-w-[1240px] mx-auto">
       <div className="section-h">
         <div>
-          <h2>Inbox</h2>
+          <h2 className="flex items-center gap-2">
+            Inbox
+            {totalUnread > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-red-500 text-white text-[11px] font-extrabold leading-none">
+                {totalUnread > 99 ? "99+" : totalUnread}
+              </span>
+            )}
+            {totalUnread > 0 && <span className="text-[12px] font-semibold text-red-500">{totalUnread} unread</span>}
+          </h2>
           <p>Every conversation, stored forever. Jump into any chat — the AI pauses instantly.</p>
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -334,14 +357,25 @@ export default function InboxPage() {
                 <span className="av" style={{ background: avColor(c.name) }}>{initials(c.name)}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="nm">
-                    {c.name}
-                    <time>{fmtDay(c.t)}</time>
+                    <span className="flex items-center gap-1.5 min-w-0">
+                      <span className="truncate">{c.name}</span>
+                      {(c as any).unreadCount > 0 && (
+                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-extrabold leading-none shrink-0">
+                          {(c as any).unreadCount > 9 ? "9+" : (c as any).unreadCount}
+                        </span>
+                      )}
+                    </span>
+                    <time className="shrink-0">{fmtDay(c.t)}</time>
                   </div>
-                  <div className="pv">{prevText(c)}</div>
+                  <div className="pv flex items-center gap-1.5">
+                    <span className="truncate flex-1">{prevText(c)}</span>
+                    {(c as any).unreadCount > 0 && <span className="text-[11px] font-bold text-red-500 whitespace-nowrap">{(c as any).unreadCount} new</span>}
+                  </div>
                   <div className="meta">
                     {statusBadge(c)}
                     <span className={`badge ${c.lang === "sw" ? "b-grn" : "b-blu"}`}>{c.lang.toUpperCase()}</span>
                     {c.takeover && <span className="badge b-ink">You</span>}
+                    {(c as any).unreadCount > 0 && <span className="badge b-red">{(c as any).unreadCount} unread</span>}
                   </div>
                 </div>
               </li>
