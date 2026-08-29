@@ -250,15 +250,15 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       {/* main */}
       <div className="flex-1 flex flex-col min-w-0 bg-surface">
         {isTrialing && trialEndsAt && (
-          <div className="flex-none bg-[#FEF9E7] border-b border-amber-200 px-5 py-2 flex items-center justify-between gap-3 text-sm">
-            <span className="flex items-center gap-2 font-medium text-amber-800">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              Free trial: {trialDaysLeft} day{trialDaysLeft === 1 ? "" : "s"} remaining — ends {trialEndsAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+          <div className="flex-none bg-[#FEF9E7] border-b border-amber-200 px-3 sm:px-5 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 text-[13px] sm:text-sm leading-[1.4]">
+            <span className="flex items-center gap-2 font-medium text-amber-800 min-w-0">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+              <span className="truncate sm:whitespace-normal">Free trial: <b>{trialDaysLeft}d</b> left — ends {trialEndsAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
             </span>
-            <Link href="/billing" className="text-xs font-bold px-3 py-1 rounded-full bg-amber-500 text-white hover:bg-amber-600 transition-colors">View plans</Link>
+            <Link href="/billing" className="self-start sm:self-auto inline-flex items-center justify-center text-xs font-bold px-3.5 py-1.5 rounded-full bg-amber-500 text-white hover:bg-amber-600 transition-colors whitespace-nowrap shrink-0">View plans</Link>
           </div>
         )}
-        <header className="h-[62px] flex-none bg-white border-b border-cborder flex items-center gap-3.5 px-5">
+        <header className="h-[62px] flex-none bg-white border-b border-cborder flex items-center gap-2 sm:gap-3.5 px-3 sm:px-5">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="md:hidden flex-none text-dark p-1 -ml-1"
@@ -286,27 +286,37 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               <span className="text-[11.5px] text-muted font-mono truncate block">{subline}</span>
             </span>
           </Link>
-          <div className="ml-auto flex items-center gap-3 min-w-0">
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-3 min-w-0 shrink-0">
             {waConnected && !waPaused ? (
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-grn-bg text-grn-d border border-grn-br whitespace-nowrap">
-                <span className="w-1.5 h-1.5 rounded-full bg-grn animate-pulse" />
-                WhatsApp Connected
-              </span>
+              <>
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-grn-bg text-grn-d border border-grn-br whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-grn animate-pulse" />
+                  WhatsApp Connected
+                </span>
+                <span className="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-full bg-grn-bg text-grn-d border border-grn-br">
+                  <span className="w-2 h-2 rounded-full bg-grn animate-pulse" />
+                </span>
+              </>
             ) : waConnected && waPaused ? (
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-amb-bg text-amber-600 border border-amb-br whitespace-nowrap">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                WhatsApp Paused
-              </span>
+              <>
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-amb-bg text-amber-600 border border-amb-br whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  WhatsApp Paused
+                </span>
+                <span className="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-full bg-amb-bg text-amber-600 border border-amb-br">
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                </span>
+              </>
             ) : (
               <Link
                 href="/settings"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#EEF2ED] text-[#5D7064] border border-[#DFE7DF] hover:border-grn hover:text-grn-d transition-colors whitespace-nowrap"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#EEF2ED] text-[#5D7064] border border-[#DFE7DF] hover:border-grn hover:text-grn-d transition-colors whitespace-nowrap"
               >
                 Connect WhatsApp
               </Link>
             )}
             {settings?.avatar ? (
-              <Link href="/settings" title="Edit profile" className="flex-none">
+              <Link href="/settings" title="Edit profile" className="flex-none hidden sm:block">
                 <span className="w-9 h-9 rounded-[10px] overflow-hidden ring-1 ring-cborder inline-block hover:ring-grn transition-all">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={settings.avatar} alt={user?.firstName || "Profile"} className="w-full h-full object-cover" />
@@ -317,12 +327,14 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               appearance={{
                 elements: {
                   avatarBox: "w-9 h-9 rounded-[10px]",
+                  userButtonPopoverCard: "mx-2 sm:mx-0 w-[calc(100vw-16px)] sm:w-[360px] max-w-[360px]",
+                  userButtonPopoverActionButton: "py-2.5",
                 },
               }}
             />
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-3 sm:p-6">{children}</main>
       </div>
     </div>
   );

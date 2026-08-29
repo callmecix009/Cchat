@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, UserProfile } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
 
 function StoreIcon({ size = 17 }: { size?: number }) {
@@ -416,6 +416,33 @@ export default function SettingsPage() {
           </div>
 
           <div>
+            <Polsec icon={<GearIcon />} title="Account & Security">
+              <p className="text-[13px] text-muted mb-3 leading-[1.5]">
+                Change your email, password and security settings. This is managed securely by Clerk — your Cchat business data stays separate.
+              </p>
+              <div className="rounded-[12px] border border-cborder overflow-hidden bg-white">
+                <div className="max-h-[720px] overflow-auto overscroll-contain">
+                  <UserProfile
+                    appearance={{
+                      variables: { colorPrimary: "#149A5B", borderRadius: "0.75rem", fontFamily: "'Instrument Sans', sans-serif" },
+                      elements: {
+                        rootBox: "w-full",
+                        card: "shadow-none border-0 w-full max-w-none m-0 p-0",
+                        navbar: "flex gap-1 overflow-x-auto p-2 sm:p-3 border-b border-cborder",
+                        navbarButton: "text-[13px] sm:text-[14px] whitespace-nowrap",
+                        pageScrollBox: "p-3 sm:p-5",
+                        headerTitle: "text-[16px] sm:text-[18px]",
+                        headerSubtitle: "text-[13px]",
+                        formButtonPrimary: "bg-[#149A5B] hover:bg-[#0E7A47] text-white",
+                        formFieldInput: "text-[14px]",
+                      },
+                    }}
+                  />
+                </div>
+              </div>
+              <p className="text-[11.5px] text-muted mt-2.5">Tip: On mobile, scroll inside this card to see all security options. Your business profile (name, logo, WhatsApp) above is separate from this account.</p>
+            </Polsec>
+
             <Polsec icon={<GearIcon />} title="More settings">
               <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[12.5px] text-muted flex gap-2.5 items-start">
                 <span className="text-grn flex-none"><GearIcon size={14} /></span>
