@@ -260,27 +260,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     };
   }, [accessChecked, pushToast]);
 
-  // While checking, still show shell but with subtle loading - don't block entire app with spinner
-  // Only block if we haven't checked yet and no settings loaded
-  if (!accessChecked && !settings) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-surface">
-        <div className="text-center">
-          <div className="w-8 h-8 border-3 border-lime border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-muted text-sm">Loading C-chat...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const businessName = settings?.business?.name?.trim() || "";
-  const logo = settings?.logo || null;
-  const hasIdentity = !!businessName;
-  const waConnected = settings?.whatsappConnected ?? false;
-  const waPaused = settings?.whatsappPaused ?? false;
-  const trialEndsAt = settings?.trialEndsAt ? new Date(settings.trialEndsAt) : null;
-  const trialDaysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86400000)) : 0;
-  const isTrialing = settings?.planStatus === "trialing" && trialDaysLeft > 0;
   const [inboxUnread, setInboxUnread] = useState(0);
 
   // Poll inbox for unread badge (scoped to business)
@@ -306,6 +285,28 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       window.removeEventListener("inbox:read", onRead);
     };
   }, [accessChecked]);
+
+  // While checking, still show shell but with subtle loading - don't block entire app with spinner
+  // Only block if we haven't checked yet and no settings loaded
+  if (!accessChecked && !settings) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-surface">
+        <div className="text-center">
+          <div className="w-8 h-8 border-3 border-lime border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-muted text-sm">Loading C-chat...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const businessName = settings?.business?.name?.trim() || "";
+  const logo = settings?.logo || null;
+  const hasIdentity = !!businessName;
+  const waConnected = settings?.whatsappConnected ?? false;
+  const waPaused = settings?.whatsappPaused ?? false;
+  const trialEndsAt = settings?.trialEndsAt ? new Date(settings.trialEndsAt) : null;
+  const trialDaysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86400000)) : 0;
+  const isTrialing = settings?.planStatus === "trialing" && trialDaysLeft > 0;
 
   const fallback = hasIdentity ? "AI live" : "Add your business name";
   const subline = !hasIdentity
