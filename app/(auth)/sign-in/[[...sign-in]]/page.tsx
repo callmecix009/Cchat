@@ -14,7 +14,7 @@ function SignInCard() {
       }}
       path="/sign-in"
       signUpUrl="/sign-up"
-      afterSignInUrl="/dashboard"
+      fallbackRedirectUrl="/dashboard"
     />
   );
 }

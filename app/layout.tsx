@@ -47,7 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${instrumentSans.variable} ${splineMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-body bg-surface text-dark">
-        <ClerkProvider>{children}</ClerkProvider>
+        <ClerkProvider signInFallbackRedirectUrl="/dashboard" signUpFallbackRedirectUrl="/onboarding">{children}</ClerkProvider>
       </body>
     </html>
   );

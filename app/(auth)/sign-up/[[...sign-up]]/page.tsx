@@ -15,7 +15,7 @@ function SignUpCard() {
       }}
       path="/sign-up"
       signInUrl="/sign-in"
-      afterSignUpUrl="/onboarding"
+      fallbackRedirectUrl="/onboarding"
     />
   );
 }
