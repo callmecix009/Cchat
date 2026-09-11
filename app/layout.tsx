@@ -21,10 +21,33 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pk = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
+  // Missing publishable key is the #1 cause of "This page couldn't load" on
+  // /sign-in and /sign-up — Clerk's <SignIn/> requires ClerkProvider.
+  // We render a clear config error instead of a cryptic 500.
+  if (!pk) {
+    return (
+      <html lang="en" className={`${instrumentSans.variable} ${splineMono.variable} h-full antialiased`}>
+        <body className="min-h-full flex flex-col font-body bg-surface text-dark">
+          <div className="flex min-h-screen items-center justify-center bg-[#081811] px-6 py-12">
+            <div className="max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
+              <h1 className="font-disp text-xl font-extrabold text-dark">Configuration error</h1>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <code className="rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-dark">NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> is not set.
+                <br />
+                Add it in Vercel → Settings → Environment Variables (Production & Preview) and redeploy.
+              </p>
+              <p className="mt-3 text-xs text-muted">Auth pages cannot load without Clerk. Check <code className="font-mono">.env.local</code> locally.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    );
+  }
+
   return (
     <html lang="en" className={`${instrumentSans.variable} ${splineMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-body bg-surface text-dark">
-        {pk ? <ClerkProvider>{children}</ClerkProvider> : children}
+        <ClerkProvider>{children}</ClerkProvider>
       </body>
     </html>
   );

@@ -2,12 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_WEBHOOK } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 async function verifyWebhook(req: NextRequest, rawBody: string): Promise<boolean> {
   const secret = process.env.CLERK_WEBHOOK_SECRET;
-  if (!secret) return true; // if no secret configured, allow (dev mode)
+  if (!secret) {
+    // In production we fail closed — otherwise anyone can spoof user.created
+    // and create rows. In development we allow bypass for local testing.
+    if (process.env.NODE_ENV === "production") {
+      console.error("CLERK_WEBHOOK_SECRET is not set — rejecting webhook in production");
+      return false;
+    }
+    return true;
+  }
 
   const svixId = req.headers.get('svix-id');
   const svixTimestamp = req.headers.get('svix-timestamp');
@@ -48,6 +57,10 @@ async function verifyWebhook(req: NextRequest, rawBody: string): Promise<boolean
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = checkRateLimit({ key: `clerk:webhook:ip:${ip}`, limit: RL_WEBHOOK.limit, windowMs: RL_WEBHOOK.windowMs });
+  if (!rl.success) return rateLimitedResponse(rl);
+
   const rawBody = await req.text();
 
   if (!(await verifyWebhook(req, rawBody))) {

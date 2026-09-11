@@ -4,14 +4,22 @@ import { db } from '@/lib/db';
 import { users, settings } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_AI_CONFIG, RL_INBOX } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rlIp = checkRateLimit({ key: `ai-config:get:ip:${ip}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlIp.success) return rateLimitedResponse(rlIp);
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const rlUser = checkRateLimit({ key: `ai-config:get:user:${userId}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlUser.success) return rateLimitedResponse(rlUser);
 
   try {
     const userRow = await ensureUserRow(userId);
@@ -35,9 +43,20 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit({ key: `ai-config:post:ip:${ip}`, limit: 20, windowMs: 60_000 });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  {
+    const rl = checkRateLimit({ key: `ai-config:post:user:${userId}`, limit: RL_AI_CONFIG.limit, windowMs: RL_AI_CONFIG.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
   }
 
   let body: any;

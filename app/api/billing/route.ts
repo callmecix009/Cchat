@@ -3,14 +3,22 @@ import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_BILLING_GET, RL_BILLING_POST } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rlIp = checkRateLimit({ key: `billing:get:ip:${ip}`, limit: RL_BILLING_GET.limit, windowMs: RL_BILLING_GET.windowMs });
+  if (!rlIp.success) return rateLimitedResponse(rlIp);
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const rlUser = checkRateLimit({ key: `billing:get:user:${userId}`, limit: RL_BILLING_GET.limit, windowMs: RL_BILLING_GET.windowMs });
+  if (!rlUser.success) return rateLimitedResponse(rlUser);
 
   try {
     const row = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1);
@@ -59,9 +67,20 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit({ key: `billing:post:ip:${ip}`, limit: 20, windowMs: 60_000 });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  {
+    const rl = checkRateLimit({ key: `billing:post:user:${userId}`, limit: RL_BILLING_POST.limit, windowMs: RL_BILLING_POST.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
   }
 
   let body: { plan?: string; action?: string };

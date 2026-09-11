@@ -4,14 +4,22 @@ import { db } from '@/lib/db';
 import { users, settings, products as productsTable, services as servicesTable, policies as policiesTable } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { emptyAi } from '@/lib/demo';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_ONBOARDING, RL_INBOX } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rlIp = checkRateLimit({ key: `onboarding:get:ip:${ip}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlIp.success) return rateLimitedResponse(rlIp);
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const rlUser = checkRateLimit({ key: `onboarding:get:user:${userId}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlUser.success) return rateLimitedResponse(rlUser);
 
   try {
     const user = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1);
@@ -77,9 +85,21 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  // Pre-auth IP limit for heavy write (delete+insert bulk)
+  {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit({ key: `onboarding:post:ip:${ip}`, limit: 20, windowMs: 60_000 });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  {
+    const rl = checkRateLimit({ key: `onboarding:post:user:${userId}`, limit: RL_ONBOARDING.limit, windowMs: RL_ONBOARDING.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
   }
 
   let body: any;
@@ -91,6 +111,14 @@ export async function POST(req: NextRequest) {
 
   const answers = body?.answers ?? {};
   const dynLists = body?.dynLists ?? {};
+
+  // Guard against bulk-insert abuse (replace-all deletes)
+  if (Array.isArray(dynLists?.prods) && dynLists.prods.length > 100) {
+    return NextResponse.json({ error: 'Too many products (max 100)' }, { status: 400 });
+  }
+  if (Array.isArray(dynLists?.svcs) && dynLists.svcs.length > 100) {
+    return NextResponse.json({ error: 'Too many services (max 100)' }, { status: 400 });
+  }
 
   try {
     const client = await clerkClient();

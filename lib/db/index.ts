@@ -8,7 +8,14 @@ let _db: ReturnType<typeof drizzle<typeof schema>> | null = null;
 function getClient() {
   if (!_client) {
     const url = process.env.DATABASE_URL;
-    if (!url) throw new Error("DATABASE_URL is not set");
+    if (!url) {
+      // Actionable error for Vercel logs — this is the #2 cause of "This page couldn't load"
+      // after sign-in (dashboard/layout and /api/* all need DB). Supabase pooler URL must be
+      // set in Vercel Env (Production) with %23 for # in password, port 6543 for DATABASE_URL.
+      throw new Error(
+        "DATABASE_URL is not set. Add Supabase Transaction Pooler (port 6543, ?pgbouncer=true) as DATABASE_URL in Vercel Environment Variables and redeploy."
+      );
+    }
     _client = postgres(url, { prepare: false });
   }
   return _client;

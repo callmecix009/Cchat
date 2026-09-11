@@ -41,3 +41,10 @@ dev*.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# windows
+desktop.ini
+Thumbs.db
+
+# local env override (explicit)
+.env.local

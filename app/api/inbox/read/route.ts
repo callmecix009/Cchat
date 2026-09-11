@@ -4,12 +4,24 @@ import { db } from '@/lib/db';
 import { conversations } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_INBOX_MUTATE } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
+  {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit({ key: `inbox:read:ip:${ip}`, limit: RL_INBOX_MUTATE.limit, windowMs: RL_INBOX_MUTATE.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
+
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  {
+    const rl = checkRateLimit({ key: `inbox:read:user:${userId}`, limit: RL_INBOX_MUTATE.limit, windowMs: RL_INBOX_MUTATE.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
 
   let body: { conversationId?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }); }

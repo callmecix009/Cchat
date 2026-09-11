@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getWorkspaceForClerkUser } from '@/lib/workspace';
 import { db } from '@/lib/db';
 import { products as productsTable, services as servicesTable, policies as policiesTable } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_WORKSPACE, RL_INBOX } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -38,11 +39,19 @@ const num = (v: unknown, fallback = 0) => {
   return Number.isFinite(n) ? n : fallback;
 };
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rlIp = checkRateLimit({ key: `workspace:get:ip:${ip}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlIp.success) return rateLimitedResponse(rlIp);
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const rlUser = checkRateLimit({ key: `workspace:get:user:${userId}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlUser.success) return rateLimitedResponse(rlUser);
+
   try {
     const workspace = await getWorkspaceForClerkUser(userId);
     return NextResponse.json(workspace);
@@ -52,10 +61,21 @@ export async function GET() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit({ key: `workspace:post:ip:${ip}`, limit: 30, windowMs: 60_000 });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  {
+    const rl = checkRateLimit({ key: `workspace:post:user:${userId}`, limit: RL_WORKSPACE.limit, windowMs: RL_WORKSPACE.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
   }
   let body: {
     products?: IncomingProduct[];
@@ -70,6 +90,13 @@ export async function POST(req: Request) {
   }
   if (!body || typeof body !== 'object') {
     return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
+  }
+
+  if (Array.isArray(body.products) && body.products.length > 100) {
+    return NextResponse.json({ error: 'Too many products (max 100)' }, { status: 400 });
+  }
+  if (Array.isArray(body.services) && body.services.length > 100) {
+    return NextResponse.json({ error: 'Too many services (max 100)' }, { status: 400 });
   }
   try {
     const userRow = await ensureUserRow(userId);

@@ -4,13 +4,25 @@ import { db } from '@/lib/db';
 import { conversations, products as productsTable, sales as salesTable } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_INBOX_MUTATE } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
+  {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit({ key: `inbox:outcome:ip:${ip}`, limit: RL_INBOX_MUTATE.limit, windowMs: RL_INBOX_MUTATE.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  {
+    const rl = checkRateLimit({ key: `inbox:outcome:user:${userId}`, limit: RL_INBOX_MUTATE.limit, windowMs: RL_INBOX_MUTATE.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
   }
 
   let body: {
