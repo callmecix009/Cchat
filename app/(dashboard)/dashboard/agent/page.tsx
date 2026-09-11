@@ -147,7 +147,7 @@ export default function ChatAgentPage() {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: [...history, { role: "user", content: t }] }),
+          body: JSON.stringify({ messages: [...history, { role: "user", content: t }], mode: "general" }),
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.reply) {
@@ -224,7 +224,7 @@ export default function ChatAgentPage() {
   const placeholder = isOwner
     ? "Ask about your business… e.g. “Summarize yesterday’s chats”"
     : isAssistant
-      ? "Ask your AI assistant… e.g. “Whats my best selling product?”"
+      ? "Ask anything… e.g. “Explain black holes” or “Andika shairi la Kiswahili”"
       : testConvo.takeover
         ? "Reply as the owner…"
         : "Andika kama mteja… e.g. “Kuna iPhone 13?”";
@@ -255,7 +255,7 @@ export default function ChatAgentPage() {
           <Icon name="user" size={16} /> Owner mode <span className="td">· your business assistant</span>
         </button>
         <button className={`atab ${tab === "assistant" ? "on" : ""}`} onClick={() => setTab("assistant")}>
-          <Icon name="zap" size={16} /> AI Assistant <span className="td">· real DeepSeek brain</span>
+          <Icon name="zap" size={16} /> AI Assistant <span className="td">· ask anything</span>
         </button>
       </div>
 
@@ -264,8 +264,8 @@ export default function ChatAgentPage() {
           <div className="ph">
             <span className="avatar">{isOwner ? "Y" : isAssistant ? "AI" : "C"}</span>
             <div>
-              <div className="nm">{isOwner ? "You ↔ your AI assistant" : isAssistant ? "AI Assistant · DeepSeek" : "Test customer"}</div>
-              <div className="st">{isOwner ? "Answers with your real business data" : isAssistant ? "Real DeepSeek brain · uses your live business data" : "Simulated — using live products, services & policies"}</div>
+              <div className="nm">{isOwner ? "You ↔ your AI assistant" : isAssistant ? "AI Assistant · General" : "Test customer"}</div>
+              <div className="st">{isOwner ? "Answers with your real business data" : isAssistant ? "General AI — ask anything, any topic" : "Simulated — using live products, services & policies"}</div>
             </div>
             <span style={{ marginLeft: "auto" }}>
               {(tab !== "owner") && (
@@ -295,8 +295,8 @@ export default function ChatAgentPage() {
                   </span>
                 ) : isAssistant ? (
                   <>
-                    <span className="bub a" style={{ maxWidth: "85%" }}>Habari! I am your DeepSeek-powered AI assistant. Ask me about your products, services, policies or customers — I use your live business data.</span>
-                    <span className="sysline">Real AI: DeepSeek via server-side API · Business data drives responses. Missing key? Add DEEPSEEK_API_KEY.</span>
+                    <span className="bub a" style={{ maxWidth: "85%" }}>Habari! I&apos;m your general AI assistant — ask me anything! Writing, coding, Swahili, English, ideas, homework, business, anything at all.</span>
+                    <span className="sysline">General AI: DeepSeek via server-side API · Not limited to business data. Ask any topic.</span>
                   </>
                 ) : (
                   <>
@@ -324,7 +324,7 @@ export default function ChatAgentPage() {
           )}
           {tab === "assistant" && (
             <div className="hintchips">
-              {["What are my best sellers?", "Summarize my policies", "How much is iPhone 13?", "What is my delivery policy?", "Whats my warranty?"].map((h) => (
+              {["Explain black holes", "Andika shairi la Kiswahili", "Write a Python function", "Help me plan a trip to Zanzibar", "Summarize my business data"].map((h) => (
                 <button key={h} onClick={() => setInput(h)}>{h}</button>
               ))}
             </div>

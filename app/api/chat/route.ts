@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     if (!rl.success) return rateLimitedResponse(rl);
   }
 
-  let body: { messages?: ChatMessage[] };
+  let body: { messages?: ChatMessage[]; mode?: string };
   try {
     body = await req.json();
   } catch {
@@ -36,12 +36,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "messages array required" }, { status: 400 });
   }
 
+  const mode = body?.mode === "general" ? ("general" as const) : ("business" as const);
+
   const trimmed = msgs.slice(-20).map((m) => ({
     role: m.role === "user" ? ("user" as const) : m.role === "assistant" ? ("assistant" as const) : ("user" as const),
     content: String(m.content || "").slice(0, 2000),
   }));
 
-  const result = await chatWithAI(userId, trimmed);
+  const result = await chatWithAI(userId, trimmed, { mode });
 
   if (result.error === "DEEPSEEK_NOT_CONFIGURED") {
     return NextResponse.json(

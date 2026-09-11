@@ -162,12 +162,24 @@ function buildSystemPrompt(ctx: BusinessContext): string {
 
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
+function buildGeneralSystemPrompt(): string {
+  return [
+    "You are a helpful, friendly, and knowledgeable AI assistant.",
+    "You can help with anything — writing, coding, analysis, brainstorming, translation, math, study, business advice, Swahili and English, and general conversation.",
+    "Be concise when the user wants quick answers and detailed when they want depth. Ask follow-ups when helpful.",
+    "You are NOT limited to any specific business or app. Answer any topic the user asks about.",
+    "Be safe, accurate, and supportive. If you don't know something, say so honestly.",
+    "You can respond in Swahili if the user writes in Swahili, or English if they write in English, unless they ask otherwise.",
+  ].join("\n");
+}
+
 export async function chatWithAI(
   userId: string,
   messages: ChatMessage[],
+  opts?: { mode?: "business" | "general" },
 ): Promise<{ reply: string; error?: string }> {
-  const ctx = await loadBusinessContext(userId);
-  const systemPrompt = buildSystemPrompt(ctx);
+  const mode = opts?.mode === "general" ? "general" : "business";
+  const systemPrompt = mode === "general" ? buildGeneralSystemPrompt() : buildSystemPrompt(await loadBusinessContext(userId));
 
   const openai = getClient();
   if (!openai) {
