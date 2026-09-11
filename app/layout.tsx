@@ -1,16 +1,24 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import { Instrument_Sans, Spline_Sans_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Instrument_Sans, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
+
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-disp",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-body",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const splineMono = Spline_Sans_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // We render a clear config error instead of a cryptic 500.
   if (!pk) {
     return (
-      <html lang="en" className={`${instrumentSans.variable} ${splineMono.variable} h-full antialiased`}>
+      <html lang="en" className={`${bricolage.variable} ${instrumentSans.variable} ${splineMono.variable} h-full antialiased`}>
         <body className="min-h-full flex flex-col font-body bg-surface text-dark">
           <div className="flex min-h-screen items-center justify-center bg-[#081811] px-6 py-12">
             <div className="max-w-md rounded-2xl bg-white p-8 text-center shadow-xl">
@@ -45,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <html lang="en" className={`${instrumentSans.variable} ${splineMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${bricolage.variable} ${instrumentSans.variable} ${splineMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-body bg-surface text-dark">
         <ClerkProvider signInFallbackRedirectUrl="/dashboard" signUpFallbackRedirectUrl="/onboarding">{children}</ClerkProvider>
       </body>

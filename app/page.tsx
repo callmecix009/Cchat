@@ -189,47 +189,49 @@ export default function LandingPage() {
         </div>
       )}
 
-      {/* HERO */}
-      <header className="relative min-h-[680px] overflow-hidden bg-[#081811] text-[#EAF4EE]">
-        {/* BACKGROUND LAYER — the actual robot image fills the hero */}
+      {/* HERO — 8dp rhythm, responsive focal, single overlay */}
+      <header className="relative min-h-[560px] md:min-h-[640px] lg:min-h-[680px] overflow-hidden bg-[#081811] text-[#EAF4EE]">
+        {/* BACKGROUND LAYER — robot image, responsive focal */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/hero-robot.jpg"
-          alt=""
+          alt="Friendly robot assistant for WhatsApp business"
+          width={1400}
+          height={781}
           fetchPriority="high"
           decoding="async"
-          className="hero-img absolute inset-0 h-full w-full object-cover object-[72%_center]"
+          sizes="100vw"
+          className="hero-img absolute inset-0 h-full w-full object-cover object-[55%_28%] md:object-[62%_center] lg:object-[72%_center]"
         />
-        {/* readability gradient — left side dark for text, robot stays visible */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#081811] via-[#081811]/80 to-[#081811]/5" />
-        <div className="absolute inset-0 bg-[#081811]/70 lg:hidden" />
+        {/* readability — single layer: subtle on mobile, gradient on md+ */}
+        <div className="absolute inset-0 bg-[#081811]/60 md:bg-gradient-to-r md:from-[#081811] md:via-[#081811]/70 md:to-transparent lg:via-[#081811]/80 lg:to-[#081811]/10" />
 
         {/* CONTENT LAYER — everything on the left */}
-        <div className="relative z-10 mx-auto flex min-h-[680px] max-w-[1200px] items-center px-[5vw] pt-[130px] pb-[80px]">
+        <div className="relative z-10 mx-auto flex min-h-[560px] md:min-h-[640px] lg:min-h-[680px] max-w-[1200px] items-center px-[5vw] pt-[96px] pb-12 md:pt-[110px] md:pb-14 lg:pt-[130px] lg:pb-20">
           <div className="max-w-[620px] text-center mx-auto lg:mx-0 lg:text-left">
             <span className="inline-flex items-center gap-2 text-[12.5px] font-bold tracking-[.14em] uppercase text-lime border border-[rgba(143,240,180,.3)] px-[14px] py-[6px] rounded-full bg-[rgba(143,240,180,.08)]">
               <ZapIcon size={13} /> AI — your super agent for small business
             </span>
-            <h1 className="font-disp font-[800] tracking-[-.025em] mt-5 mb-[18px] leading-[1.04] text-[clamp(36px,4.4vw,58px)]">
-              Turn every conversation <em className="not-italic text-lime2 relative">
+            <h1 className="font-disp font-[800] tracking-[-.025em] mt-5 mb-[18px] leading-[1.08] md:leading-[1.04] text-[clamp(34px,5vw,56px)]">
+              Turn every conversation <em className="not-italic text-lime2 relative inline-block">
                 into a customer.
-                <span className="absolute left-0 right-0 bottom-1 h-[10px] bg-[rgba(83,232,155,.18)] -z-10 rounded-[3px]" />
+                <span className="absolute left-0 right-0 bottom-[0.15em] h-2 bg-[rgba(83,232,155,.18)] -z-10 rounded-[2px]" />
               </em>
             </h1>
-            <p className="text-[#C6D8CB] text-[16.5px] max-w-[540px] mx-auto lg:mx-0 leading-[1.6]">
+            <p className="text-[#C6D8CB] text-base max-w-[540px] mx-auto lg:mx-0 leading-[1.6]">
               C-chat answers your customers on WhatsApp — day and night, in Swahili or English.
               When a chat needs you, it comes straight to you.
             </p>
-            <div className="flex gap-3 mt-[26px] mb-5 flex-wrap justify-center lg:justify-start">
+            <div className="flex gap-3 mt-6 mb-5 flex-wrap justify-center lg:justify-start">
               <Link
                 href="/sign-up"
-                className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[10px] bg-lime2 text-[#06170D] font-semibold text-[15px] hover:bg-[#6ff0a8] transition-all hover:-translate-y-[1px]"
+                className="inline-flex items-center gap-2 px-[22px] py-3 md:py-[13px] rounded-[10px] bg-lime2 text-[#06170D] font-semibold text-[15px] hover:bg-[#6ff0a8] transition-all hover:-translate-y-[1px] focus-visible:ring-2 focus-visible:ring-lime/30 min-h-[44px]"
               >
                 Start Now <ArrowIcon size={16} />
               </Link>
               <a
                 href="#how"
-                className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[10px] font-semibold text-[15px] border border-[rgba(143,240,180,.35)] text-[#EAF4EE] bg-transparent hover:border-lime hover:text-lime transition-all hover:-translate-y-[1px]"
+                className="inline-flex items-center gap-2 px-[22px] py-3 md:py-[13px] rounded-[10px] font-semibold text-[15px] border border-[rgba(143,240,180,.35)] text-[#EAF4EE] bg-transparent hover:border-lime hover:text-lime transition-all hover:-translate-y-[1px] focus-visible:ring-2 focus-visible:ring-lime/30 min-h-[44px]"
               >
                 Learn More
               </a>
