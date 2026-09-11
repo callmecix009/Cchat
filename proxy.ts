@@ -18,20 +18,21 @@ const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
 const isApiRoute = createRouteMatcher(['/api(.*)']);
 
 export default clerkMiddleware(async (auth, request) => {
-  // Rate-limit sign-in / sign-up pages by IP (credential stuffing defense)
-  // 10/min/IP — returns 429 with Retry-After so CodeRabbit & browsers handle gracefully.
+  // Rate-limit sign-in / sign-up pages by trusted IP only.
+  // If no trusted IP (e.g. local dev without proxy), skip IP limiting — user-based limits still apply elsewhere.
   if (isAuthRoute(request)) {
     const ip = getClientIp(request);
-    const rl = checkRateLimit({ key: `auth:${ip}`, limit: RL_AUTH_IP.limit, windowMs: RL_AUTH_IP.windowMs });
-    if (!rl.success) {
-      const headers = rateLimitHeaders(rl);
-      // For page requests return a simple 429 HTML; for API-like fetch return JSON
-      const isJson = request.headers.get('accept')?.includes('application/json');
-      if (isJson) return NextResponse.json({ error: 'Too Many Requests' }, { status: 429, headers });
-      return new NextResponse('<h1>429 Too Many Requests</h1><p>Please wait a moment and retry.</p>', {
-        status: 429,
-        headers: { 'Content-Type': 'text/html; charset=utf-8', ...headers },
-      });
+    if (ip) {
+      const rl = checkRateLimit({ key: `auth:${ip}`, limit: RL_AUTH_IP.limit, windowMs: RL_AUTH_IP.windowMs });
+      if (!rl.success) {
+        const headers = rateLimitHeaders(rl);
+        const isJson = request.headers.get('accept')?.includes('application/json');
+        if (isJson) return NextResponse.json({ error: 'Too Many Requests' }, { status: 429, headers });
+        return new NextResponse('<h1>429 Too Many Requests</h1><p>Please wait a moment and retry.</p>', {
+          status: 429,
+          headers: { 'Content-Type': 'text/html; charset=utf-8', ...headers },
+        });
+      }
     }
   }
 

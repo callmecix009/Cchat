@@ -18,17 +18,13 @@ function getStore(): Map<string, StoreEntry> {
   return g[GLOBAL_KEY]!;
 }
 
-export function getClientIp(req: NextRequest | Request): string {
-  // Vercel / proxy headers
-  const h = (req as NextRequest).headers ?? (req as Request).headers;
-  const xff = h.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0]?.trim() || "0.0.0.0";
-  const realIp = h.get("x-real-ip");
-  if (realIp) return realIp.trim();
-  // NextRequest.ip (edge) fallback
-  const ip = (req as unknown as { ip?: string }).ip;
-  if (ip) return ip;
-  return "0.0.0.0";
+export function getClientIp(req: NextRequest | Request): string | null {
+  // Use only deployment-trusted source. Vercel overwrites req.ip; client-controlled
+  // X-Forwarded-For / X-Real-IP must not be trusted (spoofable).
+  const trustedIp = (req as unknown as { ip?: string }).ip;
+  if (trustedIp && typeof trustedIp === "string" && trustedIp.trim()) return trustedIp.trim();
+  // No trusted IP available — disable IP-based limiting rather than sharing "0.0.0.0"
+  return null;
 }
 
 export type RateLimitResult = {
@@ -45,18 +41,33 @@ export function checkRateLimit(opts: {
 }): RateLimitResult {
   const { key, limit, windowMs } = opts;
   const now = Date.now();
+
+  // Disable IP-based limiting when no trusted IP (prevents shared "0.0.0.0"/"null" bucket
+  // and spoof bypass via X-Forwarded-For). User-based limits still apply.
+  if (key.includes(":ip:null") || key.includes(":ip:undefined") || key.endsWith(":0.0.0.0")) {
+    return { success: true, remaining: limit, reset: now + windowMs, limit };
+  }
+
   const store = getStore();
   let entry = store.get(key);
 
   if (!entry || now > entry.reset) {
     entry = { count: 1, reset: now + windowMs };
     store.set(key, entry);
-    // opportunistic GC (remove 10% oldest when > 5k keys)
+    // Hard maximum: enforce bounded size even with unexpired flood.
+    // First, opportunistic expiration cleanup (up to 500 expired keys)
     if (store.size > 5000) {
       let i = 0;
       for (const [k, v] of store) {
         if (now > v.reset) store.delete(k);
         if (++i > 500) break;
+      }
+      // If still over capacity (unexpired flood), evict oldest entries (insertion order)
+      // until back at 5000. Prevents unbounded growth from distinct keys.
+      while (store.size > 5000) {
+        const oldest = store.keys().next().value as string | undefined;
+        if (!oldest) break;
+        store.delete(oldest);
       }
     }
     return { success: true, remaining: limit - 1, reset: entry.reset, limit };

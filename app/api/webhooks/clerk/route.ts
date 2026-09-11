@@ -31,13 +31,24 @@ async function verifyWebhook(req: NextRequest, rawBody: string): Promise<boolean
   if (Math.abs(now - ts) > 300) return false;
 
   const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
+  // Clerk/Svix secrets are stored as `whsec_<base64>` — the part after the prefix
+  // is the base64-encoded 32-byte signing key. Using the raw UTF-8 string
+  // would never match; decode first and fall back to UTF-8 for plain secrets.
+  const rawSecret = secret.startsWith("whsec_") ? secret.slice(6) : secret;
+  let keyBytes: Uint8Array;
+  try {
+    const decoded = Buffer.from(rawSecret, "base64");
+    const reEncoded = decoded.toString("base64").replace(/=+$/, "");
+    const normalized = rawSecret.replace(/=+$/, "");
+    if (decoded.length >= 16 && reEncoded === normalized) {
+      keyBytes = new Uint8Array(decoded);
+    } else {
+      keyBytes = encoder.encode(secret);
+    }
+  } catch {
+    keyBytes = encoder.encode(secret);
+  }
+  const key = await crypto.subtle.importKey("raw", keyBytes as BufferSource, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
 
   const signedContent = `${svixId}.${svixTimestamp}.${rawBody}`;
   const signature = await crypto.subtle.sign(
