@@ -24,7 +24,7 @@
   --red: #C74343;
   --red-bg: #FBE8E8;
   --red-br: #F0C4C4;
-  --blu: #22688A;
+  --blu: #0369A1;
   --blu-bg: #E2F0F7;
   --wa: #EFEAE2;
   --wa-out: #005C4B;
@@ -40,6 +40,19 @@
   --mono: 'Spline Sans Mono', monospace;
   --background: #F4F9F5;
   --foreground: #17291E;
+  /* 8dp spacing scale (UI/UX Pro Max) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+  --focus-ring: 0 0 0 3px rgba(20,154,91,.14);
 }
 
 @theme inline {
@@ -78,6 +91,37 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--disp);
+  text-wrap: balance;
+}
+
+/* Resilient text — headings wrap naturally, essential text reflows */
+p, span, a, li, dd, dt {
+  overflow-wrap: anywhere;
+}
+
+/* Focus & interaction — professional, accessible */
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-color: var(--grn) !important;
+}
+
+button, a, [role="button"], .chip, .btn {
+  cursor: pointer;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Chip/badge reflow — compact labels stay whole, wrap with +n */
+.chipset, .ifilters, .hintchips {
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 /* ============ 777 VIEW COMPONENTS ============ */

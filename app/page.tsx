@@ -244,8 +244,8 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* HOW IT WORKS */}
-      <section className="bg-surface text-dark py-[86px] px-[5vw]" id="how">
+      {/* HOW IT WORKS — 8dp rhythm, Feature-Rich Showcase */}
+      <section className="bg-surface text-dark py-20 px-[5vw]" id="how">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-16 items-center">
           <div>
             <div className="max-w-[640px] mb-[44px]">
@@ -327,8 +327,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="bg-[#EDF2EC] text-dark py-[86px] px-[5vw]" id="features">
+      {/* FEATURES — Bento Grid, Minimalism + AI-Native */}
+      <section className="bg-[#EDF2EC] text-dark py-20 px-[5vw]" id="features">
         <div className="max-w-[1200px] mx-auto">
           <div className="max-w-[640px] mb-[44px]">
             <div className="text-[12px] font-[800] tracking-[.16em] uppercase text-grn-d mb-[10px]">Features</div>
@@ -416,8 +416,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* LANGUAGES */}
-      <section className="bg-[#081811] text-[#EAF4EE] py-[86px] px-[5vw]" id="languages">
+      {/* LANGUAGES — Swahili-first AI demo */}
+      <section className="bg-[#081811] text-[#EAF4EE] py-20 px-[5vw]" id="languages">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div>
             <div className="max-w-[640px] mb-[26px]">
@@ -469,8 +469,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* PRICING */}
-      <section className="bg-surface text-dark py-[86px] px-[5vw]" id="pricing">
+      {/* PRICING — Trust & Transparency */}
+      <section className="bg-surface text-dark py-20 px-[5vw]" id="pricing">
         <div className="max-w-[1100px] mx-auto">
           <Reveal>
             <div className="border border-cborder rounded-[20px] overflow-hidden bg-[#E4EDE5] grid grid-cols-1 gap-px md:grid-cols-2 lg:grid-cols-4">
@@ -545,8 +545,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="bg-[#EDF2EC] text-dark py-[86px] px-[5vw]" id="faq">
+      {/* FAQ — Resilient text, accessible disclosure */}
+      <section className="bg-[#EDF2EC] text-dark py-20 px-[5vw]" id="faq">
         <div className="max-w-[1200px] mx-auto">
           <div className="mx-auto mb-10 max-w-[640px] text-center">
             <div className="text-[12px] font-[800] tracking-[.16em] uppercase text-grn-d mb-[10px]">FAQ</div>
