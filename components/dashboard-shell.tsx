@@ -326,7 +326,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       {/* sidebar */}
       <aside className={`w-[236px] flex-none flex flex-col bg-[#0C2417] text-[#C9DCCE] fixed inset-y-0 left-0 z-[999] transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         <Link href="/" className="flex items-center gap-2.5 px-5 pt-5 pb-3.5 text-white font-disp font-extrabold text-lg">
-          <CchatLogo size={32} decorative className="shrink-0" />
+          <CchatLogo size={40} decorative className="shrink-0" />
           C-chat
         </Link>
         <nav className="flex-1 overflow-auto px-2.5 py-1.5 space-y-0.5">

@@ -185,7 +185,7 @@ export default function PlanSelectionPage() {
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(160deg,#071510 0%,#0C2417 60%,#0F2E1D 100%)' }}>
       <header className="flex items-center gap-3 px-[5vw] py-5">
         <Link href="/" className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
-          <CchatLogo size={32} decorative className="shrink-0" />
+          <CchatLogo size={40} decorative className="shrink-0" />
           C-chat
         </Link>
       </header>

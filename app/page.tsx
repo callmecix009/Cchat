@@ -137,7 +137,7 @@ export default function LandingPage() {
       {/* NAVBAR */}
       <nav className="fixed top-0 left-0 right-0 z-[900] flex items-center gap-6 px-[5vw] py-4 bg-[#081811]/95 backdrop-blur-sm border-b border-[rgba(143,240,180,.08)] transition-all">
         <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
-          <CchatLogo size={32} decorative className="shrink-0" />
+          <CchatLogo size={40} decorative className="shrink-0" />
           C-chat
         </div>
         <div className="hidden md:flex items-center gap-6 ml-auto text-[14px] font-medium text-[#B9CDBF]">
@@ -583,7 +583,7 @@ export default function LandingPage() {
         <div className="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-9 pb-9 border-b border-[rgba(143,240,180,.1)]">
           <div>
             <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight mb-[14px]">
-              <CchatLogo size={32} decorative className="shrink-0" />
+              <CchatLogo size={40} decorative className="shrink-0" />
               C-chat
             </div>
             <p className="text-[13.5px] max-w-[280px] leading-[1.6]">

@@ -8,15 +8,36 @@ const isPublicRoute = createRouteMatcher([
   '/privacy(.*)',
   '/terms(.*)',
   '/acceptable-use(.*)',
+  '/api/webhooks(.*)',
   '/api/webhook(.*)',
   '/api/whatsapp/webhook(.*)',
 ]);
 
 const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
+const isApiRoute = createRouteMatcher(['/api(.*)']);
 
 export default clerkMiddleware(async (auth, request) => {
+  // CORS preflight: let API OPTIONS pass through immediately so browsers
+  // don't see a 404/redirect. Same-origin fetches don't need this, but it
+  // prevents "CORS preflight failed" when preview deployments or external
+  // tools call /api/* from another origin.
+  if (request.method === 'OPTIONS' && request.nextUrl.pathname.startsWith('/api/')) {
+    return new NextResponse(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': request.headers.get('origin') ?? '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400',
+      },
+    });
+  }
+
   if (!process.env.CLERK_SECRET_KEY) {
     if (!isPublicRoute(request)) {
+      if (isApiRoute(request)) {
+        return NextResponse.json({ error: 'Service not configured' }, { status: 503 });
+      }
       return NextResponse.redirect(new URL('/', request.url));
     }
     return;
@@ -36,7 +57,15 @@ export default clerkMiddleware(async (auth, request) => {
     }
 
     if (!isPublicRoute(request)) {
-      await auth.protect();
+      if (!userId) {
+        // For API routes return JSON 401 so client fetch gets parsable
+        // JSON instead of an HTML redirect (which causes "Unexpected token <"
+        // and surfaces as "page could not load").
+        if (isApiRoute(request)) {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        await auth.protect();
+      }
     }
   } catch (err: any) {
     // Stale session cookie (rotated keys, expired JWT, etc.) — clear it and
@@ -45,6 +74,13 @@ export default clerkMiddleware(async (auth, request) => {
       err?.reason === 'jwk-kid-mismatch' ||
       err?.message?.includes('signing key') ||
       err?.message?.includes('Handshake');
+
+    // API routes must always return JSON, never an HTML redirect, so the
+    // client can handle 401 gracefully.
+    if (isApiRoute(request)) {
+      const status = err?.status === 401 || err?.message?.includes('Unauth') ? 401 : 500;
+      return NextResponse.json({ error: isKeyError ? 'Session expired' : 'Unauthorized' }, { status: isKeyError ? 401 : status });
+    }
 
     if (isKeyError || isPublicRoute(request)) {
       const res = NextResponse.redirect(new URL('/sign-in', request.url));

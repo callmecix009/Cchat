@@ -305,7 +305,7 @@ export default function OnboardingPage() {
       {/* Header */}
       <div className="max-w-[780px] mx-auto mb-7 flex justify-between items-center gap-[14px] flex-wrap">
         <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
-          <CchatLogo size={32} decorative className="shrink-0" />
+          <CchatLogo size={40} decorative className="shrink-0" />
           C-chat
           <span className="text-[#8FAA99] font-medium text-[14px] ml-1">· Setup Guide</span>
         </div>
