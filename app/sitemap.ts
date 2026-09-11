@@ -10,7 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/acceptable-use",
     "/sign-in",
     "/sign-up",
-    "/onboarding",
     "/plan-selection",
   ];
 

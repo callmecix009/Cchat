@@ -9,6 +9,11 @@ const isPublicRoute = createRouteMatcher([
   '/privacy(.*)',
   '/terms(.*)',
   '/acceptable-use(.*)',
+  '/sitemap(.*)',
+  '/robots(.*)',
+  '/icon(.*)',
+  '/apple-icon(.*)',
+  '/favicon.ico',
   '/api/webhooks(.*)',
   '/api/webhook(.*)',
   '/api/whatsapp/webhook(.*)',
@@ -114,7 +119,7 @@ export default clerkMiddleware(async (auth, request) => {
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|xml|txt)).*)',
     '/(api|trpc)(.*)',
     '/__clerk/:path*',
   ],
