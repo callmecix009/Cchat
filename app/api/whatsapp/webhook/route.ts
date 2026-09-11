@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { conversations, messages, whatsappConnections } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { normalizeWhatsAppNumber, verifyMetaSignature, webhookVerifyToken } from '@/lib/whatsapp';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_WEBHOOK } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -11,6 +12,10 @@ function now() {
 }
 
 export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = checkRateLimit({ key: `wa:webhook:get:ip:${ip}`, limit: RL_WEBHOOK.limit, windowMs: RL_WEBHOOK.windowMs });
+  if (!rl.success) return rateLimitedResponse(rl);
+
   const mode = req.nextUrl.searchParams.get('hub.mode');
   const token = req.nextUrl.searchParams.get('hub.verify_token');
   const challenge = req.nextUrl.searchParams.get('hub.challenge');
@@ -22,6 +27,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = checkRateLimit({ key: `wa:webhook:post:ip:${ip}`, limit: RL_WEBHOOK.limit, windowMs: RL_WEBHOOK.windowMs });
+  if (!rl.success) return rateLimitedResponse(rl);
+
   const raw = await req.text().catch(() => '');
   if (!verifyMetaSignature(raw, req.headers.get('x-hub-signature-256'))) {
     return new NextResponse('Invalid signature', { status: 403 });

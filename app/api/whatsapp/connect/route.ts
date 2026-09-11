@@ -5,13 +5,25 @@ import { users, whatsappConnections } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { exchangeAuthCode, isEmbeddedSignupConfigured } from '@/lib/whatsapp';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { checkRateLimit, getClientIp, rateLimitedResponse } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
+  {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit({ key: `wa:connect:ip:${ip}`, limit: 10, windowMs: 60_000 });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  {
+    const rl = checkRateLimit({ key: `wa:connect:user:${userId}`, limit: 5, windowMs: 60_000 });
+    if (!rl.success) return rateLimitedResponse(rl);
   }
 
   let body: { authorizationCode?: string };

@@ -4,14 +4,22 @@ import { db } from '@/lib/db';
 import { users, settings, whatsappConnections } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_SETTINGS, RL_INBOX } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rlIp = checkRateLimit({ key: `settings:get:ip:${ip}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlIp.success) return rateLimitedResponse(rlIp);
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const rlUser = checkRateLimit({ key: `settings:get:user:${userId}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlUser.success) return rateLimitedResponse(rlUser);
 
   try {
     const userRow = await ensureUserRow(userId);
@@ -61,9 +69,20 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit({ key: `settings:post:ip:${ip}`, limit: 20, windowMs: 60_000 });
+    if (!rl.success) return rateLimitedResponse(rl);
+  }
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  {
+    const rl = checkRateLimit({ key: `settings:post:user:${userId}`, limit: RL_SETTINGS.limit, windowMs: RL_SETTINGS.windowMs });
+    if (!rl.success) return rateLimitedResponse(rl);
   }
 
   let body: any;

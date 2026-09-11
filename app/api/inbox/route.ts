@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
 import { conversations, messages } from '@/lib/db/schema';
 import { eq, inArray, desc } from 'drizzle-orm';
 import { type Convo, type ConvoMsg } from '@/lib/demo';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_INBOX } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,11 +17,18 @@ const ROLE_TO_FROM: Record<string, ConvoMsg['from']> = {
   sys: 'sys',
 };
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rlIp = checkRateLimit({ key: `inbox:get:ip:${ip}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlIp.success) return rateLimitedResponse(rlIp);
+
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const rlUser = checkRateLimit({ key: `inbox:get:user:${userId}`, limit: RL_INBOX.limit, windowMs: RL_INBOX.windowMs });
+  if (!rlUser.success) return rateLimitedResponse(rlUser);
 
   try {
     const user = await ensureUserRow(userId);

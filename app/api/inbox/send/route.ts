@@ -5,6 +5,7 @@ import { users, conversations, messages, settings, whatsappConnections } from '@
 import { eq } from 'drizzle-orm';
 import { sendWhatsAppText } from '@/lib/whatsapp';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { checkRateLimit, getClientIp, rateLimitedResponse, RL_INBOX_SEND, RL_INBOX_SEND_USER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -12,6 +13,15 @@ export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Rate limit: 20/h per conversation is enforced after parsing body; here we do per-IP + per-user pre-check
+  {
+    const ip = getClientIp(req);
+    const rlIp = checkRateLimit({ key: `inbox:send:ip:${ip}`, limit: 60, windowMs: 60_000 });
+    if (!rlIp.success) return rateLimitedResponse(rlIp);
+    const rlUser = checkRateLimit({ key: `inbox:send:user:${userId}`, limit: RL_INBOX_SEND_USER.limit, windowMs: RL_INBOX_SEND_USER.windowMs });
+    if (!rlUser.success) return rateLimitedResponse(rlUser);
   }
 
   let body: { conversationId?: string; text?: string; contactName?: string; contactPhone?: string };
@@ -29,6 +39,12 @@ export async function POST(req: NextRequest) {
   }
   if (text.length > 4096) {
     return NextResponse.json({ error: 'Message too long' }, { status: 400 });
+  }
+
+  // Per-conversation limit (prevents spamming one thread)
+  {
+    const rlConv = checkRateLimit({ key: `inbox:send:conv:${userId}:${conversationId}`, limit: RL_INBOX_SEND.limit, windowMs: RL_INBOX_SEND.windowMs });
+    if (!rlConv.success) return rateLimitedResponse(rlConv);
   }
 
   try {

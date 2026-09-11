@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { checkRateLimit, getClientIp, rateLimitHeaders, RL_AUTH_IP } from '@/lib/rate-limit';
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -17,6 +18,24 @@ const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
 const isApiRoute = createRouteMatcher(['/api(.*)']);
 
 export default clerkMiddleware(async (auth, request) => {
+  // Rate-limit sign-in / sign-up pages by trusted IP only.
+  // If no trusted IP (e.g. local dev without proxy), skip IP limiting — user-based limits still apply elsewhere.
+  if (isAuthRoute(request)) {
+    const ip = getClientIp(request);
+    if (ip) {
+      const rl = checkRateLimit({ key: `auth:${ip}`, limit: RL_AUTH_IP.limit, windowMs: RL_AUTH_IP.windowMs });
+      if (!rl.success) {
+        const headers = rateLimitHeaders(rl);
+        const isJson = request.headers.get('accept')?.includes('application/json');
+        if (isJson) return NextResponse.json({ error: 'Too Many Requests' }, { status: 429, headers });
+        return new NextResponse('<h1>429 Too Many Requests</h1><p>Please wait a moment and retry.</p>', {
+          status: 429,
+          headers: { 'Content-Type': 'text/html; charset=utf-8', ...headers },
+        });
+      }
+    }
+  }
+
   // CORS preflight: let API OPTIONS pass through immediately so browsers
   // don't see a 404/redirect. Same-origin fetches don't need this, but it
   // prevents "CORS preflight failed" when preview deployments or external
