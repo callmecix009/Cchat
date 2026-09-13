@@ -48,3 +48,6 @@ Thumbs.db
 
 # local env override (explicit)
 .env.local
+
+# opencode skills (reinstall via `uipro init --ai opencode`, do not commit)
+.opencode/
