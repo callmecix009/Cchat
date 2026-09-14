@@ -93,12 +93,12 @@ export function VolumeChart({ data }: { data: VolumePoint[] }) {
           <AreaChart data={rows} margin={{ left: 4, right: 8, top: 8, bottom: 0 }}>
             <defs>
               <linearGradient id="cchatVolGrad" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#149A5B" stopOpacity={0.4} />
-                <stop offset="55%" stopColor="#149A5B" stopOpacity={0.12} />
-                <stop offset="100%" stopColor="#149A5B" stopOpacity={0} />
+                <stop offset="0%" stopColor="#111" stopOpacity={0.12} />
+                <stop offset="55%" stopColor="#111" stopOpacity={0.05} />
+                <stop offset="100%" stopColor="#111" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="#EDF3EE" vertical={false} />
+            <CartesianGrid stroke="#F1F1EF" vertical={false} />
             <XAxis
               axisLine={false}
               tickLine={false}
@@ -116,14 +116,14 @@ export function VolumeChart({ data }: { data: VolumePoint[] }) {
               tick={{ fill: "#8B9B8F", fontSize: 11 }}
             />
             <Tooltip
-              cursor={{ stroke: "#BCE5CB", strokeDasharray: "4 4" }}
+              cursor={{ stroke: "#E9E9E7", strokeDasharray: "4 4" }}
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
                 const p = payload[0].payload as VolumePoint;
                 return (
                   <ChartTip
                     title={fmtFull(p.date)}
-                    rows={[{ label: "Messages", value: String(p.count), color: "#149A5B" }]}
+                    rows={[{ label: "Messages", value: String(p.count), color: "#111" }]}
                   />
                 );
               }}
@@ -132,11 +132,11 @@ export function VolumeChart({ data }: { data: VolumePoint[] }) {
               type="natural"
               dataKey="count"
               name="Messages"
-              stroke="#149A5B"
-              strokeWidth={2}
+              stroke="#111"
+              strokeWidth={1.7}
               fill="url(#cchatVolGrad)"
               dot={false}
-              activeDot={{ r: 5, fill: "#149A5B", stroke: "#fff", strokeWidth: 2 }}
+              activeDot={{ r: 4, fill: "#111", stroke: "#fff", strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -224,7 +224,7 @@ export function HandlingBars({ data }: { data: HandlingBar[] }) {
       <CardContent>
         <ResponsiveContainer width="100%" height={190}>
           <BarChart data={data} margin={{ left: 0, right: 0, top: 8, bottom: 0 }} barCategoryGap="35%">
-            <CartesianGrid stroke="#EDF3EE" vertical={false} />
+            <CartesianGrid stroke="#F1F1EF" vertical={false} />
             <XAxis
               axisLine={false}
               tickLine={false}
@@ -234,27 +234,27 @@ export function HandlingBars({ data }: { data: HandlingBar[] }) {
               tick={{ fill: "#8B9B8F", fontSize: 11 }}
             />
             <Tooltip
-              cursor={{ fill: "#F3F8F4", radius: 8 }}
+              cursor={{ fill: "#F7F7F5", radius: 8 }}
               content={({ active, payload, label }) => {
                 if (!active || !payload?.length) return null;
                 return (
                   <ChartTip
                     title={String(label)}
                     rows={[
-                      { label: "AI sent", value: String(payload[0]?.payload.ai ?? 0), color: "#149A5B" },
-                      { label: "You sent", value: String(payload[0]?.payload.owner ?? 0), color: "#E8A222" },
+                      { label: "AI sent", value: String(payload[0]?.payload.ai ?? 0), color: "#111" },
+                      { label: "You sent", value: String(payload[0]?.payload.owner ?? 0), color: "#9B9B9B" },
                     ]}
                   />
                 );
               }}
             />
-            <Bar dataKey="owner" stackId="r" fill="#E8A222" radius={[0, 0, 4, 4]} barSize={10} />
-            <Bar dataKey="ai" stackId="r" fill="#149A5B" radius={[4, 4, 0, 0]} barSize={10} />
+            <Bar dataKey="owner" stackId="r" fill="#9B9B9B" radius={[0, 0, 4, 4]} barSize={10} />
+            <Bar dataKey="ai" stackId="r" fill="#111" radius={[4, 4, 0, 0]} barSize={10} />
           </BarChart>
         </ResponsiveContainer>
         <div className="mt-2 flex items-center gap-4 text-[12px] text-muted">
-          <span className="flex items-center gap-1.5"><i className="size-2 rounded-full bg-grn" /> AI</span>
-          <span className="flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#E8A222]" /> You</span>
+          <span className="flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#111]" /> AI</span>
+          <span className="flex items-center gap-1.5"><i className="size-2 rounded-full bg-[#9B9B9B]" /> You</span>
         </div>
       </CardContent>
     </Card>
@@ -275,7 +275,7 @@ export function ReplyLine({ data }: { data: ReplyPoint[] }) {
           <CardTitle>Avg first reply</CardTitle>
           <Delta value={0} variant="badge" suffix="m" className={cn(avg > 0 && "hidden")} />
           {avg > 0 && (
-            <span className="inline-flex items-center rounded-full bg-grn-bg px-2 py-0.5 text-[11px] font-bold tabular-nums text-[#111]">
+            <span className="inline-flex items-center rounded-full bg-[#F7F7F5] border border-[#E9E9E7] px-2 py-0.5 text-[11px] font-bold tabular-nums text-[#111]">
               {avg.toFixed(1)}m avg
             </span>
           )}
@@ -285,7 +285,7 @@ export function ReplyLine({ data }: { data: ReplyPoint[] }) {
       <CardContent>
         <ResponsiveContainer width="100%" height={190}>
           <LineChart data={filled} margin={{ top: 20, left: 0, right: 12, bottom: 0 }}>
-            <CartesianGrid stroke="#EDF3EE" vertical={false} />
+            <CartesianGrid stroke="#F1F1EF" vertical={false} />
             <XAxis
               axisLine={false}
               tickLine={false}
@@ -302,7 +302,7 @@ export function ReplyLine({ data }: { data: ReplyPoint[] }) {
                 return (
                   <ChartTip
                     title={p.day}
-                    rows={[{ label: "First reply", value: p.minutes > 0 ? p.minutes.toFixed(1) + " min" : "—", color: "#149A5B" }]}
+                    rows={[{ label: "First reply", value: p.minutes > 0 ? p.minutes.toFixed(1) + " min" : "—", color: "#111" }]}
                   />
                 );
               }}
@@ -310,10 +310,10 @@ export function ReplyLine({ data }: { data: ReplyPoint[] }) {
             <Line
               type="natural"
               dataKey="minutes"
-              stroke="#149A5B"
-              strokeWidth={2}
-              dot={{ r: 3.5, fill: "#149A5B", stroke: "#fff", strokeWidth: 1.5 }}
-              activeDot={{ r: 6 }}
+              stroke="#111"
+              strokeWidth={1.7}
+              dot={{ r: 3.5, fill: "#111", stroke: "#fff", strokeWidth: 1.5 }}
+              activeDot={{ r: 5, fill: "#111", stroke: "#fff", strokeWidth: 1.5 }}
             />
           </LineChart>
         </ResponsiveContainer>

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
+import { Icon } from "@/components/icons";
 
 function StoreIcon({ size = 17 }: { size?: number }) {
   return (
@@ -377,7 +378,7 @@ export default function SettingsPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setConnected((v) => !v)}
-                      className={`px-3.5 py-2 rounded-[10px] text-[12.5px] font-semibold transition-colors ${connected ? "bg-red-50 text-red-500 hover:bg-red-500 hover:text-white" : "bg-grn text-white hover:bg-grn-d"}`}
+                      className={`px-3.5 py-2 rounded-[10px] text-[12.5px] font-semibold transition-colors ${connected ? "bg-red-50 text-red-500 hover:bg-red-500 hover:text-white" : "bg-[#111] text-white hover:bg-black"}`}
                     >
                       {connected ? "Pause" : "Resume"}
                     </button>
@@ -392,7 +393,7 @@ export default function SettingsPage() {
                   <button
                     onClick={startWhatsAppConnect}
                     disabled={waConnecting}
-                    className="px-4 py-2 rounded-[10px] text-[12.5px] font-semibold transition-colors bg-grn text-white hover:bg-grn-d disabled:opacity-60"
+                    className="px-4 py-2 rounded-[10px] text-[12.5px] font-semibold transition-colors bg-[#111] text-white hover:bg-black disabled:opacity-60"
                   >
                     {waConnecting ? "Connecting…" : "Connect WhatsApp"}
                   </button>
@@ -415,7 +416,7 @@ export default function SettingsPage() {
                 </div>
               )}
               <button onClick={saveAccount} disabled={saving}
-                className="w-full mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[10px] bg-grn text-white font-semibold text-sm hover:bg-grn-d transition-colors shadow-[0_6px_16px_-6px_rgba(20,154,91,.5)] disabled:opacity-60">
+                className="w-full mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[10px] bg-[#111] text-white font-semibold text-sm hover:bg-black transition-colors  disabled:opacity-60">
                 <CheckIcon /> {saved ? "Saved!" : saving ? "Saving..." : "Save business profile"}
               </button>
             </Polsec>
@@ -432,9 +433,9 @@ export default function SettingsPage() {
                     <>
                       <div className="flex justify-between items-start gap-3 flex-wrap">
                         <div>
-                          <div className="font-disp text-[22px] font-extrabold text-dark">FREE TRIAL</div>
-                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-1 mt-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> {trialDays} day{trialDays === 1 ? "" : "s"} remaining
+                          <div className="font-disp text-[22px] font-semibold tracking-tight text-[#111]">FREE TRIAL</div>
+                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-[#111] bg-white border border-[#E9E9E7] rounded-full px-2.5 py-1 mt-1">
+                            <Icon name="clock" size={12} /> {trialDays} day{trialDays === 1 ? "" : "s"} remaining
                           </span>
                         </div>
                         <div className="text-right text-[12.5px] text-muted">
@@ -456,8 +457,8 @@ export default function SettingsPage() {
                       <div className="flex justify-between items-start gap-3 flex-wrap">
                         <div>
                           <div className="font-disp text-[22px] font-extrabold text-dark">{isYearly ? "Yearly" : "Monthly"} <span className="text-[14px] text-muted font-normal">{isYearly ? "TZS 115,200 / year" : "TZS 12,000 / month"}</span></div>
-                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-[#111] bg-grn-bg border border-[#111]-br rounded-full px-2.5 py-1 mt-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-grn" /> Active
+                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-[#111] bg-white border border-[#E9E9E7] rounded-full px-2.5 py-1 mt-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> Active
                           </span>
                         </div>
                         {exp && (
@@ -480,7 +481,7 @@ export default function SettingsPage() {
                       <div className="font-disp text-[22px] font-extrabold text-red-600">Trial ended</div>
                       <p className="text-[13px] text-muted mt-1">Your free trial has ended{trialEnds ? ` on ${trialEnds.toLocaleDateString("en-GB")}` : ""}. Choose a plan to continue using C-chat.</p>
                       <div className="mt-3 flex gap-2 flex-wrap">
-                        <a href="/plan-selection" className="inline-flex items-center px-4 py-2 rounded-[10px] bg-grn text-white text-[13px] font-semibold hover:bg-grn-d transition-colors">Choose a plan</a>
+                        <a href="/plan-selection" className="inline-flex items-center px-4 py-2 rounded-[10px] bg-[#111] text-white text-[13px] font-semibold hover:bg-black transition-colors">Choose a plan</a>
                         <a href="/billing" className="inline-flex items-center px-4 py-2 rounded-[10px] border border-cborder text-[13px] font-semibold">View plans</a>
                       </div>
                     </>
@@ -500,7 +501,7 @@ export default function SettingsPage() {
                   <>
                     <div className="font-disp text-[22px] font-extrabold text-dark">No active plan</div>
                     <p className="text-[13px] text-muted mt-1">Start your 3-day free trial — full access, no card required.</p>
-                    <a href="/plan-selection" className="mt-3 inline-flex items-center px-4 py-2 rounded-[10px] bg-grn text-white text-[13px] font-semibold hover:bg-grn-d transition-colors">Start free trial</a>
+                    <a href="/plan-selection" className="mt-3 inline-flex items-center px-4 py-2 rounded-[10px] bg-[#111] text-white text-[13px] font-semibold hover:bg-black transition-colors">Start free trial</a>
                   </>
                 );
               })()}

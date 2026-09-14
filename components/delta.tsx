@@ -46,12 +46,12 @@ export function Delta({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums",
+          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums border",
           flat
-            ? "bg-[#EEF2ED] text-muted"
+            ? "bg-[#F7F7F5] text-[#6B6B6B] border-[#E9E9E7]"
             : good
-              ? "bg-grn-bg text-grn-d"
-              : "bg-red-bg text-red",
+              ? "bg-white text-[#111] border-[#E9E9E7]"
+              : "bg-red-bg text-red border-red-br",
           className
         )}
       >
@@ -66,7 +66,7 @@ export function Delta({
     <span
       className={cn(
         "inline-flex items-center gap-1 text-[11.5px] font-semibold tabular-nums",
-        flat ? "text-muted" : good ? "text-grn-d" : "text-red",
+        flat ? "text-muted" : good ? "text-[#111]" : "text-red",
         className
       )}
     >

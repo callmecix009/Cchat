@@ -301,32 +301,32 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen text-white px-[5vw] py-[34px]" style={{ background: 'linear-gradient(160deg,#071510 0%,#0C2417 60%,#0F2E1D 100%)' }}>
-      {/* Header */}
+    <div className="min-h-screen bg-[#FCFCF9] text-[#111] px-[5vw] py-8">
+      {/* Header — Notion light */}
       <div className="max-w-[780px] mx-auto mb-7 flex justify-between items-center gap-[14px] flex-wrap">
-        <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
+        <div className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-[#111]">
           <CchatLogo size={40} decorative className="shrink-0" />
           C-chat
-          <span className="text-[#8FAA99] font-medium text-[14px] ml-1">· Setup Guide</span>
+          <span className="text-[#6B6B6B] font-medium text-[14px] ml-1">· Setup Guide</span>
         </div>
-        <Link href="/dashboard" className="inline-flex items-center gap-2 px-3 py-[6px] rounded-lg border border-[rgba(143,240,180,.3)] text-[#B9CDBF] text-[13px] font-semibold hover:border-lime hover:text-lime transition-colors bg-transparent">
+        <Link href="/dashboard" className="inline-flex items-center gap-2 px-3 py-[6px] rounded-[8px] border border-[#E9E9E7] bg-white text-[#6B6B6B] text-[13px] font-medium hover:border-[#111] hover:text-[#111] transition-colors">
           Skip — I&apos;ll do this later
         </Link>
       </div>
 
-      {/* Progress */}
+      {/* Progress — Notion minimal */}
       <div className="max-w-[780px] mx-auto mb-2">
-        <div className="h-2 bg-[rgba(255,255,255,.12)] rounded-full overflow-hidden">
-          <div className="h-full rounded-full transition-[width] duration-[.45s]" style={{ width: `${Math.max(4, pct)}%`, background: 'linear-gradient(90deg,#149A5B,#53E89B)' }} />
+        <div className="h-2 bg-[#E9E9E7] rounded-full overflow-hidden">
+          <div className="h-full bg-[#111] rounded-full transition-[width] duration-[.45s]" style={{ width: `${Math.max(4, pct)}%` }} />
         </div>
-        <div className="flex justify-between text-[12px] text-[#9DB6A7] mt-[7px] font-mono">
+        <div className="flex justify-between text-[12px] text-[#9B9B9B] mt-[7px] font-mono">
           <span>Step {step + 1} of {ONB_STEPS.length} — {st.t}</span>
           <span>{st.f.length} questions</span>
         </div>
       </div>
 
-      {/* Card */}
-      <div className="max-w-[780px] mx-auto mt-[18px] bg-[#F4F7F3] text-dark rounded-[20px] p-[34px] shadow-[0_40px_90px_-30px_rgba(0,0,0,.6)]">
+      {/* Card — Notion white */}
+      <div className="max-w-[780px] mx-auto mt-[18px] bg-white border border-[#E9E9E7] rounded-[16px] p-8">
         <h2 className="font-disp text-[26px] tracking-[-.01em]">{st.t}</h2>
         <p className="text-muted text-[14px] mt-[6px] mb-6">{st.d} Every answer is editable later in its own section.</p>
 
@@ -356,7 +356,7 @@ export default function OnboardingPage() {
                 </button>
               </div>
             ))}
-            <button type="button" onClick={() => addRow('prods', { n: '', pr: '', st: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#111] text-[#111] text-[13px] font-semibold hover:bg-grn-bg transition-colors">
+            <button type="button" onClick={() => addRow('prods', { n: '', pr: '', st: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E9E9E7] bg-white text-[#111] text-[13px] font-medium hover:border-[#111] hover:bg-[#F7F7F5] transition-colors">
               <PlusIcon /> Add another product
             </button>
           </div>
@@ -382,7 +382,7 @@ export default function OnboardingPage() {
                 </button>
               </div>
             ))}
-            <button type="button" onClick={() => addRow('svcs', { n: '', pr: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#111] text-[#111] text-[13px] font-semibold hover:bg-grn-bg transition-colors">
+            <button type="button" onClick={() => addRow('svcs', { n: '', pr: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E9E9E7] bg-white text-[#111] text-[13px] font-medium hover:border-[#111] hover:bg-[#F7F7F5] transition-colors">
               <PlusIcon /> Add another service
             </button>
           </div>
@@ -396,12 +396,12 @@ export default function OnboardingPage() {
           <div className="flex gap-[10px]">
             {step === ONB_STEPS.length - 1 ? (
               <button onClick={launch}
-                className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[10px] bg-grn text-white font-semibold text-[14px] hover:bg-grn-d transition-all shadow-[0_6px_16px_-6px_rgba(20,154,91,.5)]">
+                className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[8px] bg-[#111] text-white font-medium text-[14px] hover:bg-black transition-colors">
                 <ZapIcon /> Launch my AI agent
               </button>
             ) : (
               <button onClick={goNext}
-                className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[10px] bg-grn text-white font-semibold text-[14px] hover:bg-grn-d transition-all shadow-[0_6px_16px_-6px_rgba(20,154,91,.5)]">
+                className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[8px] bg-[#111] text-white font-medium text-[14px] hover:bg-black transition-colors">
                 Continue <ArrowRight />
               </button>
             )}
@@ -409,7 +409,7 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      <p className="text-center text-[#8FAA99] text-[12px] mt-5">81 quick answers build your AI&apos;s knowledge base · about 10 minutes · your data stays yours</p>
+      <p className="text-center text-[#9B9B9B] text-[12px] mt-5">81 quick answers build your AI&apos;s knowledge base · about 10 minutes · your data stays yours</p>
     </div>
   );
 }
