@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { users, settings, products as productsTable, services as servicesTable, policies as policiesTable, conversations, messages, sales as salesTable } from "@/lib/db/schema";
+import { users, settings, products as productsTable, services as servicesTable, policies as policiesTable, conversations, messages, sales as salesTable, whatsappConnections } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { createSeed } from "@/lib/demo";
 
@@ -9,12 +9,49 @@ import { createSeed } from "@/lib/demo";
  * Demo data then behaves exactly like real business data across all features.
  */
 export async function ensureDemoSeeded(userId: string): Promise<void> {
-  const existingProducts = await db.select({ id: productsTable.id }).from(productsTable).where(eq(productsTable.userId, userId)).limit(1);
-  if (existingProducts.length) {
+  const existingProducts = await db.select({ id: productsTable.id }).from(productsTable).where(eq(productsTable.userId, userId));
+  const isMassiveNeeded = existingProducts.length > 0 && existingProducts.length < 30;
+  // If massive data needed (old small seed), wipe and re-seed with massive catalog
+  const shouldWipe = isMassiveNeeded;
+  let seedBusinessName = "";
+  async function ensureWhatsAppFake(uid: string, businessName?: string) {
+    try {
+      const existing = await db.select().from(whatsappConnections).where(eq(whatsappConnections.userId, uid)).limit(1);
+      if (existing.length) return;
+      await db.insert(whatsappConnections).values({
+        id: crypto.randomUUID(),
+        userId: uid,
+        accessToken: "demo_fake_token_" + uid.slice(0, 8),
+        wabaId: "demo_waba_" + uid.slice(0, 8),
+        phoneNumberId: "demo_phone_" + uid.slice(0, 8),
+        displayPhoneNumber: "+255 757 123 456",
+        businessName: businessName || seedBusinessName || "Kariakoo Phone Centre",
+        status: "connected",
+      }).onConflictDoNothing();
+      console.log(`Fake WhatsApp connected for ${uid.slice(0,8)}`);
+    } catch (e) { console.error("WA fake fail", e); }
+  }
+  if (existingProducts.length && !shouldWipe) {
     // Already seeded - ensure other tables are also seeded minimally (conversations)
     const existingConvos = await db.select({ id: conversations.id }).from(conversations).where(eq(conversations.userId, userId)).limit(1);
-    if (existingConvos.length) return; // fully seeded
+    if (existingConvos.length) {
+      // Even if fully seeded, ensure WhatsApp fake connection for demo
+      await ensureWhatsAppFake(userId);
+      return; // fully seeded + massive
+    }
     // If products exist but convos don't, continue to seed convos/messages
+  }
+  if (shouldWipe) {
+    console.log(`Upgrading demo seed to massive for ${userId.slice(0,8)} (${existingProducts.length} -> 38 products)`);
+    try {
+      const ids = (await db.select({ id: conversations.id }).from(conversations).where(eq(conversations.userId, userId))).map(r => r.id);
+      for (const cid of ids) await db.delete(messages).where(eq(messages.conversationId, cid));
+      await db.delete(conversations).where(eq(conversations.userId, userId));
+      await db.delete(productsTable).where(eq(productsTable.userId, userId));
+      await db.delete(servicesTable).where(eq(servicesTable.userId, userId));
+      await db.delete(salesTable).where(eq(salesTable.userId, userId));
+      await db.delete(policiesTable).where(eq(policiesTable.userId, userId));
+    } catch {}
   }
 
   const seed = createSeed();
@@ -63,9 +100,13 @@ export async function ensureDemoSeeded(userId: string): Promise<void> {
       }
     }
 
+    seedBusinessName = seed.business.name;
+    // ensure WhatsApp fake after seed known
+    await ensureWhatsAppFake(userId, seed.business.name);
+
     // 2. Policies
     const polExisting = await db.select().from(policiesTable).where(eq(policiesTable.userId, userId)).limit(1);
-    if (!polExisting.length) {
+    if (!polExisting.length || shouldWipe) {
       await db.insert(policiesTable).values({
         userId,
         deliveryMode: seed.policies.deliveryMode,
@@ -87,7 +128,7 @@ export async function ensureDemoSeeded(userId: string): Promise<void> {
     }
 
     // 3. Products - delete any existing demo-prefixed then insert seed
-    if (!existingProducts.length) {
+    if (!existingProducts.length || shouldWipe) {
       await db.insert(productsTable).values(
         seed.products.map((p, i) => ({
           id: prodId(p.id),
@@ -108,7 +149,7 @@ export async function ensureDemoSeeded(userId: string): Promise<void> {
 
     // 4. Services
     const existingSvcs = await db.select({ id: servicesTable.id }).from(servicesTable).where(eq(servicesTable.userId, userId)).limit(1);
-    if (!existingSvcs.length) {
+    if (!existingSvcs.length || shouldWipe) {
       await db.insert(servicesTable).values(
         seed.services.map((s) => ({
           id: svcId(s.id),
@@ -126,7 +167,7 @@ export async function ensureDemoSeeded(userId: string): Promise<void> {
 
     // 5. Conversations + Messages
     const existingConvos = await db.select({ id: conversations.id }).from(conversations).where(eq(conversations.userId, userId)).limit(1);
-    if (!existingConvos.length) {
+    if (!existingConvos.length || shouldWipe) {
       for (const c of seed.conversations) {
         const cid = convId(c.id);
         await db.insert(conversations).values({
@@ -156,7 +197,7 @@ export async function ensureDemoSeeded(userId: string): Promise<void> {
 
     // 6. Sales (from salesToday)
     const existingSales = await db.select({ id: salesTable.id }).from(salesTable).where(eq(salesTable.userId, userId)).limit(1);
-    if (!existingSales.length) {
+    if (!existingSales.length || shouldWipe) {
       for (const s of seed.salesToday) {
         // Find product id for this sale's product name
         const prod = seed.products.find((p) => p.name === s.p);

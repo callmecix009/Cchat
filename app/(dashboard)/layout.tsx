@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import DashboardShell from "@/components/dashboard-shell";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth();
@@ -36,5 +37,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     // On DB error, don't block - allow access to avoid lockout
   }
 
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <ThemeProvider>
+      <DashboardShell>{children}</DashboardShell>
+    </ThemeProvider>
+  );
 }

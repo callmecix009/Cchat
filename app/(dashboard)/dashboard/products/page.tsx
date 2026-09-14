@@ -142,7 +142,7 @@ export default function ProductsPage() {
             Every change here reaches the AI <b>instantly</b> — the agent always quotes live stock and prices.
           </p>
         </div>
-        <button className="btn pri" onClick={() => openEdit(null)}>
+        <button className="btn grn" onClick={() => openEdit(null)}>
           <Icon name="plus" size={15} /> Add product
         </button>
       </div>
@@ -271,7 +271,7 @@ export default function ProductsPage() {
                 : "Your catalog is empty. Add your first product and the AI will instantly know its price and stock."}
             </p>
             <button
-              className="btn pri"
+              className="btn grn"
               onClick={() => (query || cat !== "all" ? (setQuery(""), setCat("all")) : openEdit(null))}
             >
               <Icon name="plus" size={14} /> {query || cat !== "all" ? "Clear filters" : "Add your first product"}
@@ -322,7 +322,7 @@ export default function ProductsPage() {
             </div>
             <div className="mfoot">
               <button className="btn ghost" onClick={() => setModal(emptyModal)}>Cancel</button>
-              <button className="btn pri" onClick={save}>
+              <button className="btn grn" onClick={save}>
                 <Icon name="check" size={14} /> Save &amp; sync to AI
               </button>
             </div>

@@ -420,7 +420,7 @@ export default function InboxPage() {
                       <Icon name="bot" size={13} /> End takeover — resume AI
                     </button>
                   ) : open.status !== "closed" ? (
-                    <button className="btn dark sm" onClick={() => takeOver(open.id)}>
+                    <button className="btn grn sm" onClick={() => takeOver(open.id)}>
                       <Icon name="user" size={13} /> Take over
                     </button>
                   ) : null}

@@ -96,7 +96,7 @@ export default function ServicesPage() {
           <h2 className="font-disp text-[20px] font-semibold tracking-tight text-[#111]">Services</h2>
           <p className="text-[13px] text-[#6B6B6B] mt-1">Offerings that aren&apos;t products — the AI can explain, quote and book these on WhatsApp.</p>
         </div>
-        <button className="btn pri shrink-0" onClick={() => openEdit(null)}>
+        <button className="btn grn shrink-0" onClick={() => openEdit(null)}>
           <Icon name="plus" size={14} /> Add service
         </button>
       </div>
@@ -213,7 +213,7 @@ export default function ServicesPage() {
             </div>
             <div className="mfoot">
               <button className="btn ghost" onClick={() => setModal(emptyModal)}>Cancel</button>
-              <button className="btn pri" onClick={save}>
+              <button className="btn grn" onClick={save}>
                 <Icon name="check" size={14} /> Save &amp; sync to AI
               </button>
             </div>
