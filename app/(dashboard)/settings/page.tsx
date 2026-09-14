@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
+import { Icon } from "@/components/icons";
 
 function StoreIcon({ size = 17 }: { size?: number }) {
   return (
@@ -432,9 +433,9 @@ export default function SettingsPage() {
                     <>
                       <div className="flex justify-between items-start gap-3 flex-wrap">
                         <div>
-                          <div className="font-disp text-[22px] font-extrabold text-dark">FREE TRIAL</div>
-                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-1 mt-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> {trialDays} day{trialDays === 1 ? "" : "s"} remaining
+                          <div className="font-disp text-[22px] font-semibold tracking-tight text-[#111]">FREE TRIAL</div>
+                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-[#111] bg-white border border-[#E9E9E7] rounded-full px-2.5 py-1 mt-1">
+                            <Icon name="clock" size={12} /> {trialDays} day{trialDays === 1 ? "" : "s"} remaining
                           </span>
                         </div>
                         <div className="text-right text-[12.5px] text-muted">
@@ -456,7 +457,7 @@ export default function SettingsPage() {
                       <div className="flex justify-between items-start gap-3 flex-wrap">
                         <div>
                           <div className="font-disp text-[22px] font-extrabold text-dark">{isYearly ? "Yearly" : "Monthly"} <span className="text-[14px] text-muted font-normal">{isYearly ? "TZS 115,200 / year" : "TZS 12,000 / month"}</span></div>
-                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-[#111] bg-white border border-[#111]-br rounded-full px-2.5 py-1 mt-1">
+                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-[#111] bg-white border border-[#E9E9E7] rounded-full px-2.5 py-1 mt-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> Active
                           </span>
                         </div>

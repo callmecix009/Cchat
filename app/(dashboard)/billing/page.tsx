@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CrownIcon, GoldCrown, planBadgeInfo } from "@/components/premium";
 import { PremiumBadge, ExtraPremiumBadge, MiniPlanBadge } from "@/components/plan-badges";
+import { Icon } from "@/components/icons";
 
 const FEATURES = [
   "12,000 AI messages every month",
@@ -99,13 +100,13 @@ export default function BillingPage() {
       <MiniPlanBadge kind="extra" size={52} />
     ) : info.tone === "premium" ? (
       <MiniPlanBadge kind="premium" size={52} />
+    ) : info.tone === "trial" ? (
+      <span className="w-[52px] h-[52px] rounded-[13px] bg-white border border-[#E9E9E7] grid place-items-center flex-none text-[#111]">
+        <Icon name="clock" size={24} />
+      </span>
     ) : (
-      <span
-        className={`w-[52px] h-[52px] rounded-[13px] flex items-center justify-center flex-none ${
-          info.tone === "trial" ? "bg-[#FDF6E3]" : "bg-[#F7F7F5] text-muted"
-        }`}
-      >
-        <GoldCrown size={26} />
+      <span className="w-[52px] h-[52px] rounded-[13px] bg-[#F7F7F5] border border-[#E9E9E7] grid place-items-center flex-none text-[#9B9B9B]">
+        <Icon name="clock" size={22} />
       </span>
     );
 

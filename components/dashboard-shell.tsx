@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
 import CchatLogo from "@/components/branding/CchatLogo";
+import { Icon } from "@/components/icons";
 import { GoldCrown, planBadgeInfo, type PlanState } from "@/components/premium";
 
 
@@ -362,10 +363,11 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 : info.tone === "trial"
                   ? "bg-white text-[#111] border border-[#E9E9E7]"
                   : "bg-white text-[#6B6B6B] border border-[#E9E9E7]";
+            const isTrial = info.tone === "trial";
             return (
               <Link href="/billing" className="block group">
                 <div className={`flex items-center gap-2 px-3 py-2 rounded-[8px] font-semibold transition-colors ${tone}`}>
-                  {info.crown && <GoldCrown size={14} />}
+                  {isTrial ? <Icon name="clock" size={14} /> : info.crown ? <GoldCrown size={14} /> : null}
                   <span className="text-[13px]">{info.label}</span>
                   <span className="ml-auto opacity-40 text-[#9B9B9B]">›</span>
                 </div>

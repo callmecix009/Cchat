@@ -12,7 +12,7 @@ const PLANS = [
     price: "Free",
     period: "for 3 days",
     badge: "START HERE",
-    badgeColor: "bg-lime text-[#06170D]",
+    badgeColor: "bg-[#111] text-white",
     features: [
       "Full access to all features",
       "AI WhatsApp agent",
@@ -68,10 +68,10 @@ function PlanCard({ plan, onSelect, loading }: { plan: typeof PLANS[0]; onSelect
   const isDisabled = !plan.available || loading;
   return (
     <div
-      className={`relative flex flex-col h-full bg-white rounded-2xl border-2 transition-all ${
+      className={`relative flex flex-col h-full bg-white rounded-[16px] border transition-all ${
         plan.isPrimary
-          ? "border-lime shadow-[0_0_0_2px_#8FF0B4]"
-          : "border-[#F7F7F5] hover:border-[#E9E9E7]"
+          ? "border-[#111] shadow-[inset_0_0_0_1.5px_#111]"
+          : "border-[#E9E9E7] hover:border-[#111]"
       } ${isDisabled && !plan.isPrimary ? "opacity-60" : ""}`}
     >
       <span className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider ${plan.badgeColor}`}>
@@ -90,7 +90,7 @@ function PlanCard({ plan, onSelect, loading }: { plan: typeof PLANS[0]; onSelect
         <ul className="space-y-3 mb-8 flex-1">
           {plan.features.map((f, i) => (
             <li key={i} className="flex items-start gap-3 text-sm text-dark/80">
-              <svg className="shrink-0 w-5 h-5 mt-0.5 text-lime" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="shrink-0 w-5 h-5 mt-0.5 text-[#111]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
               <span>{f}</span>
@@ -101,10 +101,10 @@ function PlanCard({ plan, onSelect, loading }: { plan: typeof PLANS[0]; onSelect
         <button
           onClick={() => onSelect(plan.id)}
           disabled={isDisabled}
-          className={`w-full py-3.5 px-6 rounded-xl font-extrabold text-base transition-all ${
+          className={`w-full py-3.5 px-6 rounded-[12px] font-semibold text-[14px] transition-colors ${
             plan.isPrimary
-              ? "bg-lime text-[#06170D] hover:bg-[#53E89B] shadow-[0_6px_16px_-6px_rgba(143,240,180,.5)] disabled:opacity-50 disabled:cursor-not-allowed"
-              : "bg-white border border-[#E9E9E7] text-dark hover:border-[#111] hover:text-[#111] disabled:border-[#E9E9E7] disabled:text-[#B9CDBF] disabled:cursor-not-allowed"
+              ? "bg-[#111] text-white hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+              : "bg-white border border-[#E9E9E7] text-[#111] hover:border-[#111] hover:bg-[#F7F7F5] disabled:border-[#E9E9E7] disabled:text-[#9B9B9B] disabled:cursor-not-allowed"
           }`}
         >
           {loading ? "Starting..." : plan.cta}
@@ -182,9 +182,9 @@ export default function PlanSelectionPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(160deg,#071510 0%,#0C2417 60%,#0F2E1D 100%)' }}>
-      <header className="flex items-center gap-3 px-[5vw] py-5">
-        <Link href="/" className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-white">
+    <div className="min-h-screen flex flex-col bg-[#FCFCF9] text-[#111]">
+      <header className="flex items-center gap-3 px-[5vw] py-5 border-b border-[#E9E9E7] bg-white/80 backdrop-blur-[10px] sticky top-0">
+        <Link href="/" className="flex items-center gap-[9px] font-disp font-[800] text-[21px] tracking-tight text-[#111]">
           <CchatLogo size={40} decorative className="shrink-0" />
           C-chat
         </Link>
@@ -193,24 +193,24 @@ export default function PlanSelectionPage() {
       <main className="flex-1 flex items-center justify-center px-[5vw] py-10">
         <div className="w-full max-w-[1000px] mx-auto">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime/10 text-lime text-sm font-semibold mb-4">
-              <span className="w-2 h-2 rounded-full bg-lime animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#E9E9E7] text-[#111] text-sm font-medium mb-4">
+              <span className="w-2 h-2 rounded-full bg-[#111] animate-pulse" />
               {billingStatus === "expired" ? "Trial ended" : "Choose your plan"}
             </div>
-            <h1 className="font-disp font-[800] text-[clamp(28px,4vw,48px)] tracking-tight text-white mb-3">
+            <h1 className="font-disp font-[800] text-[clamp(28px,4vw,48px)] tracking-tight text-[#111] mb-3">
               {billingStatus === "expired" ? "Your free trial has ended" : "Start using your AI agent"}
             </h1>
-            <p className="text-[#B9CDBF] text-[16px] max-w-[600px] mx-auto">
+            <p className="text-[#6B6B6B] text-[16px] max-w-[600px] mx-auto">
               {billingStatus === "expired" ? (
                 <>
                   Choose a plan to continue using C-chat. Monthly and Yearly payments will be enabled soon via Pesapal.
                   {trialEndsAt && (
-                    <span className="block mt-2 text-sm text-[#8FAA99]">Trial ended on {new Date(trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
+                    <span className="block mt-2 text-sm text-[#9B9B9B]">Trial ended on {new Date(trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
                   )}
                 </>
               ) : (
                 <>
-                  You&apos;ve completed onboarding. Now pick a plan to enter C-chat. The <span className="font-semibold text-lime">3-Day Free Trial</span> gives you full access immediately — no card needed.
+                  You&apos;ve completed onboarding. Now pick a plan to enter C-chat. The <span className="font-semibold text-[#111]">3-Day Free Trial</span> gives you full access immediately — no card needed.
                 </>
               )}
             </p>
@@ -222,21 +222,21 @@ export default function PlanSelectionPage() {
             ))}
           </div>
 
-          <p className="text-center text-[#8FAA99] text-sm mt-8 max-w-[600px] mx-auto">
+          <p className="text-center text-[#6B6B6B] text-sm mt-8 max-w-[600px] mx-auto">
             Monthly and Yearly plans will be enabled once Pesapal payment integration is configured.
-            For now, start your <b className="text-lime">3-Day Free Trial</b> to use C-chat immediately.
+            For now, start your <b className="text-[#111]">3-Day Free Trial</b> to use C-chat immediately.
           </p>
 
           <div className="mt-10 text-center">
-            <Link href="/privacy" className="text-sm text-[#8FAA99] hover:text-lime transition-colors mr-4">Privacy Policy</Link>
-            <Link href="/terms" className="text-sm text-[#8FAA99] hover:text-lime transition-colors mr-4">Terms of Service</Link>
-            <Link href="/acceptable-use" className="text-sm text-[#8FAA99] hover:text-lime transition-colors">Acceptable Use</Link>
+            <Link href="/privacy" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors mr-4">Privacy Policy</Link>
+            <Link href="/terms" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors mr-4">Terms of Service</Link>
+            <Link href="/acceptable-use" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors">Acceptable Use</Link>
           </div>
         </div>
       </main>
 
-      <footer className="px-[5vw] py-6 border-t border-[rgba(143,240,180,.08)]">
-        <p className="text-center text-[12px] text-[#8FAA99]">© 2026 C-chat. Built in Dar es Salaam.</p>
+      <footer className="px-[5vw] py-6 border-t border-[#E9E9E7] bg-white">
+        <p className="text-center text-[12px] text-[#9B9B9B]">© 2026 C-chat. Built in Dar es Salaam.</p>
       </footer>
     </div>
   );
