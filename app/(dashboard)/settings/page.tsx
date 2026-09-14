@@ -51,7 +51,7 @@ function Polsec({ icon, title, children }: { icon: React.ReactNode; title: strin
   return (
     <div className="bg-white border border-cborder rounded-[16px] p-5 mb-3.5">
       <h3 className="font-disp text-base flex items-center gap-2.5 mb-4 text-dark">
-        <span className="text-grn">{icon}</span> {title}
+        <span className="text-[#111]">{icon}</span> {title}
       </h3>
       {children}
     </div>
@@ -67,7 +67,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const inpCls = "w-full px-3 py-2.5 border border-[#D2DCD1] rounded-lg bg-white text-[14px] focus:outline-none focus:border-grn focus:ring-2 focus:ring-grn/14 transition-all";
+const inpCls = "w-full px-3 py-2.5 border border-[#E9E9E7] rounded-lg bg-white text-[14px] focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 transition-all";
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -308,7 +308,7 @@ export default function SettingsPage() {
                   <div className="flex gap-2 flex-wrap">
                     <button
                       onClick={() => logoInputRef.current?.click()}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[10px] border border-[#D2DCD1] bg-white text-[13px] font-semibold text-dark cursor-pointer hover:border-grn transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[10px] border border-[#E9E9E7] bg-white text-[13px] font-semibold text-dark cursor-pointer hover:border-[#111] transition-colors"
                     >
                       <EditIcon /> Upload logo
                     </button>
@@ -353,7 +353,7 @@ export default function SettingsPage() {
                 <input className={inpCls} value={biz.phone} onChange={(e) => set("phone", e.target.value)} />
               </Field>
               <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[12.5px] text-muted flex gap-2.5 items-start mb-4">
-                <span className="text-grn flex-none"><StoreIcon size={14} /></span>
+                <span className="text-[#111] flex-none"><StoreIcon size={14} /></span>
                 <span>
                   <b className="text-dark">Personal account: {(user?.firstName || "") + (user?.lastName ? " " + user.lastName : "")}</b>
                   <span className="block font-mono text-[11.5px]">{user?.primaryEmailAddress?.emailAddress || ""}</span>
@@ -444,7 +444,7 @@ export default function SettingsPage() {
                       </div>
                       <div className="mt-3 flex gap-2">
                         <a href="/billing" className="inline-flex items-center px-4 py-2 rounded-[10px] bg-dark text-white text-[13px] font-semibold hover:bg-black transition-colors">View plans</a>
-                        <a href="/plan-selection" className="inline-flex items-center px-4 py-2 rounded-[10px] border border-cborder text-[13px] font-semibold hover:border-grn transition-colors">Choose plan</a>
+                        <a href="/plan-selection" className="inline-flex items-center px-4 py-2 rounded-[10px] border border-cborder text-[13px] font-semibold hover:border-[#111] transition-colors">Choose plan</a>
                       </div>
                     </>
                   );
@@ -456,7 +456,7 @@ export default function SettingsPage() {
                       <div className="flex justify-between items-start gap-3 flex-wrap">
                         <div>
                           <div className="font-disp text-[22px] font-extrabold text-dark">{isYearly ? "Yearly" : "Monthly"} <span className="text-[14px] text-muted font-normal">{isYearly ? "TZS 115,200 / year" : "TZS 12,000 / month"}</span></div>
-                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-grn-d bg-grn-bg border border-grn-br rounded-full px-2.5 py-1 mt-1">
+                          <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-[#111] bg-grn-bg border border-[#111]-br rounded-full px-2.5 py-1 mt-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-grn" /> Active
                           </span>
                         </div>
@@ -468,7 +468,7 @@ export default function SettingsPage() {
                         )}
                       </div>
                       <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[13px] text-muted flex gap-2.5 items-start mt-3">
-                        <span className="text-grn flex-none"><ShieldIcon size={14} /></span>
+                        <span className="text-[#111] flex-none"><ShieldIcon size={14} /></span>
                         <span>Your subscription is active. Manage billing at <a href="/billing" className="underline font-semibold">Billing</a>.</span>
                       </div>
                     </>
@@ -514,7 +514,7 @@ export default function SettingsPage() {
           <div>
             <Polsec icon={<GearIcon />} title="More settings">
               <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[12.5px] text-muted flex gap-2.5 items-start">
-                <span className="text-grn flex-none"><GearIcon size={14} /></span>
+                <span className="text-[#111] flex-none"><GearIcon size={14} /></span>
                 <span>More workspace settings will live here soon.</span>
               </div>
             </Polsec>

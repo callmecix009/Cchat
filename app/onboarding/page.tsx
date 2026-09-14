@@ -242,7 +242,7 @@ export default function OnboardingPage() {
   const renderField = (f: FieldDef, idx: number) => {
     const [q, type, label, phOrOpts, extraOpts] = f;
     const val = answers[q];
-    const qtag = <span className="inline-block font-mono text-[10px] font-semibold text-grn-d bg-grn-bg rounded-[5px] px-[6px] py-[1px] mr-2 align-[2px]">Q{q}</span>;
+    const qtag = <span className="inline-block font-mono text-[10px] font-semibold text-[#111] bg-grn-bg rounded-[5px] px-[6px] py-[1px] mr-2 align-[2px]">Q{q}</span>;
     const wrapper = (inner: React.ReactNode) => (
       <div key={`q-${q}-${idx}`} className="mb-4">
         <label className="block text-[12.5px] font-bold text-muted mb-[6px] tracking-[.03em] uppercase">{qtag}{label}</label>
@@ -253,19 +253,19 @@ export default function OnboardingPage() {
     switch (type) {
       case 'text':
         return wrapper(
-          <input className="w-full px-3 py-[10px] border border-[#D2DCD1] rounded-[8px] bg-white transition-all focus:outline-none focus:border-grn focus:ring-2 focus:ring-grn/14 text-[14px]" value={(val as string) || ''} onChange={e => update(q, e.target.value)} placeholder={typeof phOrOpts === 'string' ? phOrOpts : ''} />
+          <input className="w-full px-3 py-[10px] border border-[#E9E9E7] rounded-[8px] bg-white transition-all focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 text-[14px]" value={(val as string) || ''} onChange={e => update(q, e.target.value)} placeholder={typeof phOrOpts === 'string' ? phOrOpts : ''} />
         );
       case 'num':
         return wrapper(
-          <input className="w-full px-3 py-[10px] border border-[#D2DCD1] rounded-[8px] bg-white transition-all focus:outline-none focus:border-grn focus:ring-2 focus:ring-grn/14 text-[14px] max-w-[220px]" type="number" value={(val as string) || ''} onChange={e => update(q, e.target.value)} placeholder={typeof phOrOpts === 'string' ? phOrOpts : ''} />
+          <input className="w-full px-3 py-[10px] border border-[#E9E9E7] rounded-[8px] bg-white transition-all focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 text-[14px] max-w-[220px]" type="number" value={(val as string) || ''} onChange={e => update(q, e.target.value)} placeholder={typeof phOrOpts === 'string' ? phOrOpts : ''} />
         );
       case 'area':
         return wrapper(
-          <textarea className="w-full px-3 py-[10px] border border-[#D2DCD1] rounded-[8px] bg-white transition-all focus:outline-none focus:border-grn focus:ring-2 focus:ring-grn/14 text-[14px] min-h-[74px] resize-y" value={(val as string) || ''} onChange={e => update(q, e.target.value)} placeholder={typeof phOrOpts === 'string' ? phOrOpts : ''} />
+          <textarea className="w-full px-3 py-[10px] border border-[#E9E9E7] rounded-[8px] bg-white transition-all focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 text-[14px] min-h-[74px] resize-y" value={(val as string) || ''} onChange={e => update(q, e.target.value)} placeholder={typeof phOrOpts === 'string' ? phOrOpts : ''} />
         );
       case 'select':
         return wrapper(
-          <select className="w-full px-3 py-[10px] border border-[#D2DCD1] rounded-[8px] bg-white transition-all focus:outline-none focus:border-grn focus:ring-2 focus:ring-grn/14 text-[14px] max-w-[280px]" value={(val as string) || ''} onChange={e => update(q, e.target.value)}>
+          <select className="w-full px-3 py-[10px] border border-[#E9E9E7] rounded-[8px] bg-white transition-all focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 text-[14px] max-w-[280px]" value={(val as string) || ''} onChange={e => update(q, e.target.value)}>
             <option value="">Select...</option>
             {(extraOpts || []).map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -275,7 +275,7 @@ export default function OnboardingPage() {
           <div className="flex flex-wrap gap-2">
             {(extraOpts || []).map(o => (
               <button key={o} type="button" onClick={() => update(q, o)}
-                  className={`px-[14px] py-2 rounded-full border-[1.5px] font-semibold text-[13.5px] transition-all ${val === o ? 'bg-dark text-white border-dark' : 'bg-white border-[#D2DCD1] text-dark hover:border-grn'}`}>
+                  className={`px-[14px] py-2 rounded-full border-[1.5px] font-semibold text-[13.5px] transition-all ${val === o ? 'bg-dark text-white border-dark' : 'bg-white border-[#E9E9E7] text-dark hover:border-[#111]'}`}>
                   {o}
                 </button>
             ))}
@@ -288,7 +288,7 @@ export default function OnboardingPage() {
               const selected = ((val as string[]) || []).includes(o);
               return (
                 <button key={o} type="button" onClick={() => toggleChipMulti(q, o)}
-                  className={`px-[14px] py-2 rounded-full border-[1.5px] font-semibold text-[13.5px] transition-all ${selected ? 'bg-dark text-white border-dark' : 'bg-white border-[#D2DCD1] text-dark hover:border-grn'}`}>
+                  className={`px-[14px] py-2 rounded-full border-[1.5px] font-semibold text-[13.5px] transition-all ${selected ? 'bg-dark text-white border-dark' : 'bg-white border-[#E9E9E7] text-dark hover:border-[#111]'}`}>
                   {o}
                 </button>
               );
@@ -334,29 +334,29 @@ export default function OnboardingPage() {
 
         {/* Dynamic product entry - Products step */}
         {st.t === 'Products & stock' && (
-          <div className="mt-6 p-4 bg-white rounded-xl border border-[#D2DCD1]">
+          <div className="mt-6 p-4 bg-white rounded-xl border border-[#E9E9E7]">
             <h4 className="font-disp font-bold text-[15px] mb-1">Your products (optional — you can also add them later)</h4>
             <p className="text-muted text-[13px] mb-3">Add each product separately. The AI will quote these prices and stock live.</p>
             {(dynLists.prods ?? [{ n: '', pr: '', st: '' }]).map((row, idx) => (
               <div key={idx} className="flex gap-2 mb-2 items-end flex-wrap">
                 <div className="flex-1 min-w-[140px]">
                   <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Name</label>
-                  <input className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="e.g. iPhone 13 128GB" value={row.n ?? ''} onChange={(e) => updateRow('prods', idx, 'n', e.target.value)} />
+                  <input className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="e.g. iPhone 13 128GB" value={row.n ?? ''} onChange={(e) => updateRow('prods', idx, 'n', e.target.value)} />
                 </div>
                 <div className="w-[110px]">
                   <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Price TZS</label>
-                  <input type="number" className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="1450000" value={row.pr ?? ''} onChange={(e) => updateRow('prods', idx, 'pr', e.target.value)} />
+                  <input type="number" className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="1450000" value={row.pr ?? ''} onChange={(e) => updateRow('prods', idx, 'pr', e.target.value)} />
                 </div>
                 <div className="w-[90px]">
                   <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Stock</label>
-                  <input type="number" className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="3" value={row.st ?? ''} onChange={(e) => updateRow('prods', idx, 'st', e.target.value)} />
+                  <input type="number" className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="3" value={row.st ?? ''} onChange={(e) => updateRow('prods', idx, 'st', e.target.value)} />
                 </div>
                 <button type="button" onClick={() => removeRow('prods', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
                   <XIcon size={14} />
                 </button>
               </div>
             ))}
-            <button type="button" onClick={() => addRow('prods', { n: '', pr: '', st: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-grn text-grn-d text-[13px] font-semibold hover:bg-grn-bg transition-colors">
+            <button type="button" onClick={() => addRow('prods', { n: '', pr: '', st: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#111] text-[#111] text-[13px] font-semibold hover:bg-grn-bg transition-colors">
               <PlusIcon /> Add another product
             </button>
           </div>
@@ -364,25 +364,25 @@ export default function OnboardingPage() {
 
         {/* Dynamic services entry - Services step */}
         {st.t === 'Services' && (
-          <div className="mt-6 p-4 bg-white rounded-xl border border-[#D2DCD1]">
+          <div className="mt-6 p-4 bg-white rounded-xl border border-[#E9E9E7]">
             <h4 className="font-disp font-bold text-[15px] mb-1">Your services (optional)</h4>
             <p className="text-muted text-[13px] mb-3">Add each service you offer.</p>
             {(dynLists.svcs ?? [{ n: '', pr: '' }]).map((row, idx) => (
               <div key={idx} className="flex gap-2 mb-2 items-end flex-wrap">
                 <div className="flex-1 min-w-[160px]">
                   <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Service name</label>
-                  <input className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="Screen Replacement" value={row.n ?? ''} onChange={(e) => updateRow('svcs', idx, 'n', e.target.value)} />
+                  <input className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="Screen Replacement" value={row.n ?? ''} onChange={(e) => updateRow('svcs', idx, 'n', e.target.value)} />
                 </div>
                 <div className="w-[120px]">
                   <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Price TZS</label>
-                  <input type="number" className="w-full px-3 py-[9px] border border-[#D2DCD1] rounded-[8px] bg-white text-[13.5px]" placeholder="120000" value={row.pr ?? ''} onChange={(e) => updateRow('svcs', idx, 'pr', e.target.value)} />
+                  <input type="number" className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="120000" value={row.pr ?? ''} onChange={(e) => updateRow('svcs', idx, 'pr', e.target.value)} />
                 </div>
                 <button type="button" onClick={() => removeRow('svcs', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
                   <XIcon size={14} />
                 </button>
               </div>
             ))}
-            <button type="button" onClick={() => addRow('svcs', { n: '', pr: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-grn text-grn-d text-[13px] font-semibold hover:bg-grn-bg transition-colors">
+            <button type="button" onClick={() => addRow('svcs', { n: '', pr: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#111] text-[#111] text-[13px] font-semibold hover:bg-grn-bg transition-colors">
               <PlusIcon /> Add another service
             </button>
           </div>
@@ -390,7 +390,7 @@ export default function OnboardingPage() {
 
         <div className="flex justify-between items-center mt-[26px] gap-3 flex-wrap">
           <button onClick={goBack} disabled={step === 0}
-            className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[10px] border border-[#D2DCD1] text-dark font-semibold text-[14px] bg-white hover:border-grn transition-all disabled:opacity-40 disabled:pointer-events-none">
+            className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[10px] border border-[#E9E9E7] text-dark font-semibold text-[14px] bg-white hover:border-[#111] transition-all disabled:opacity-40 disabled:pointer-events-none">
             <ArrowLeft /> Back
           </button>
           <div className="flex gap-[10px]">

@@ -50,7 +50,7 @@ const PLANS = [
     price: "115,200",
     period: "TSh / year",
     badge: "Save 20% · Coming Soon",
-    badgeColor: "bg-grn-bg text-grn-d",
+    badgeColor: "bg-grn-bg text-[#111]",
     features: [
       "Everything in Monthly",
       "Best value — save 20%",
@@ -71,7 +71,7 @@ function PlanCard({ plan, onSelect, loading }: { plan: typeof PLANS[0]; onSelect
       className={`relative flex flex-col h-full bg-white rounded-2xl border-2 transition-all ${
         plan.isPrimary
           ? "border-lime shadow-[0_0_0_2px_#8FF0B4]"
-          : "border-[#EEF2ED] hover:border-[#D2DCD1]"
+          : "border-[#F7F7F5] hover:border-[#E9E9E7]"
       } ${isDisabled && !plan.isPrimary ? "opacity-60" : ""}`}
     >
       <span className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider ${plan.badgeColor}`}>
@@ -104,7 +104,7 @@ function PlanCard({ plan, onSelect, loading }: { plan: typeof PLANS[0]; onSelect
           className={`w-full py-3.5 px-6 rounded-xl font-extrabold text-base transition-all ${
             plan.isPrimary
               ? "bg-lime text-[#06170D] hover:bg-[#53E89B] shadow-[0_6px_16px_-6px_rgba(143,240,180,.5)] disabled:opacity-50 disabled:cursor-not-allowed"
-              : "bg-white border border-[#D2DCD1] text-dark hover:border-grn hover:text-grn-d disabled:border-[#E4EDE5] disabled:text-[#B9CDBF] disabled:cursor-not-allowed"
+              : "bg-white border border-[#E9E9E7] text-dark hover:border-[#111] hover:text-[#111] disabled:border-[#E9E9E7] disabled:text-[#B9CDBF] disabled:cursor-not-allowed"
           }`}
         >
           {loading ? "Starting..." : plan.cta}

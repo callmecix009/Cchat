@@ -91,7 +91,7 @@ function Chip({ on, children, onClick }: { on: boolean; children: React.ReactNod
     <button
       type="button"
       onClick={onClick}
-      className={`px-3.5 py-2 rounded-full border-[1.5px] font-semibold text-[13.5px] transition-all ${on ? "bg-dark text-white border-dark" : "bg-white border-[#D2DCD1] text-dark hover:border-grn"}`}
+      className={`px-3.5 py-2 rounded-full border-[1.5px] font-semibold text-[13.5px] transition-all ${on ? "bg-dark text-white border-dark" : "bg-white border-[#E9E9E7] text-dark hover:border-[#111]"}`}
     >
       {children}
     </button>
@@ -112,7 +112,7 @@ function Polsec({ icon, title, sub, children }: { icon: React.ReactNode; title: 
   return (
     <div className="bg-white border border-cborder rounded-[16px] p-5 mb-3.5">
       <h3 className="font-disp text-base flex items-center gap-2.5 mb-1 text-dark">
-        <span className="text-grn">{icon}</span> {title}
+        <span className="text-[#111]">{icon}</span> {title}
       </h3>
       {sub && <p className="text-[12.5px] text-[#5D7064] mb-3.5">{sub}</p>}
       {children}
@@ -130,7 +130,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   );
 }
 
-const inpCls = "w-full px-3 py-2.5 border border-[#D2DCD1] rounded-lg bg-white text-[14px] focus:outline-none focus:border-grn focus:ring-2 focus:ring-grn/14 transition-all";
+const inpCls = "w-full px-3 py-2.5 border border-[#E9E9E7] rounded-lg bg-white text-[14px] focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 transition-all";
 
 export default function AIConfigPage() {
   const [ai, setAi] = useState({ ...DEFAULT_AI });
@@ -178,7 +178,7 @@ export default function AIConfigPage() {
           <p className="text-sm text-muted">Shape how your agent thinks, talks and hands over.</p>
         </div>
         <div className="flex gap-2.5">
-          <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border border-[#D2DCD1] text-dark font-semibold text-sm bg-white hover:border-grn transition-colors">
+          <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border border-[#E9E9E7] text-dark font-semibold text-sm bg-white hover:border-[#111] transition-colors">
             <ChatIcon /> Test in Chat Agent
           </Link>
           <button onClick={save} disabled={saving}

@@ -31,7 +31,7 @@ type TipRow = { label: string; value: string; color: string };
 
 function ChartTip({ title, rows }: { title: string; rows: TipRow[] }) {
   return (
-    <div className="rounded-[10px] border border-[#E4EDE5] bg-white shadow-[0_8px_24px_-10px_rgba(14,32,22,.25)] px-3 py-2 text-[12px]">
+    <div className="rounded-[10px] border border-[#E9E9E7] bg-white shadow-[0_8px_24px_-10px_rgba(14,32,22,.25)] px-3 py-2 text-[12px]">
       <div className="font-bold text-dark mb-1">{title}</div>
       {rows.map((r) => (
         <div key={r.label} className="flex items-center gap-2 text-muted">
@@ -81,7 +81,7 @@ export function VolumeChart({ data }: { data: VolumePoint[] }) {
           aria-label="Message volume time range"
           value={String(days)}
           onChange={(e) => setDays(Number(e.target.value) as 7 | 30 | 60)}
-          className="shrink-0 rounded-[9px] border border-[#D2DCD1] bg-white px-3 py-[7px] text-[13px] font-semibold text-dark outline-none focus:border-grn cursor-pointer"
+          className="shrink-0 rounded-[9px] border border-[#E9E9E7] bg-white px-3 py-[7px] text-[13px] font-semibold text-dark outline-none focus:border-[#111] cursor-pointer"
         >
           <option value="7">Last 7 days</option>
           <option value="30">Last 30 days</option>
@@ -275,7 +275,7 @@ export function ReplyLine({ data }: { data: ReplyPoint[] }) {
           <CardTitle>Avg first reply</CardTitle>
           <Delta value={0} variant="badge" suffix="m" className={cn(avg > 0 && "hidden")} />
           {avg > 0 && (
-            <span className="inline-flex items-center rounded-full bg-grn-bg px-2 py-0.5 text-[11px] font-bold tabular-nums text-grn-d">
+            <span className="inline-flex items-center rounded-full bg-grn-bg px-2 py-0.5 text-[11px] font-bold tabular-nums text-[#111]">
               {avg.toFixed(1)}m avg
             </span>
           )}
