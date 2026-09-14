@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
 import { Icon } from "@/components/icons";
+import { useTheme } from "@/components/theme-provider";
 
 function StoreIcon({ size = 17 }: { size?: number }) {
   return (
@@ -69,6 +70,57 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const inpCls = "w-full px-3 py-2.5 border border-[#E9E9E7] rounded-lg bg-white text-[14px] focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 transition-all";
+
+function SunIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+    </svg>
+  );
+}
+function MoonIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
+function MonitorIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
+    </svg>
+  );
+}
+
+function AppearanceCard() {
+  const { theme, setTheme } = useTheme();
+  const opts: Array<{ v: "light" | "dark" | "system"; label: string; desc: string; icon: React.ReactNode }> = [
+    { v: "light", label: "Light", desc: "Bright, clean Notion-style", icon: <SunIcon /> },
+    { v: "dark", label: "Dark", desc: "Easy on the eyes at night", icon: <MoonIcon /> },
+    { v: "system", label: "System", desc: "Follows your device", icon: <MonitorIcon /> },
+  ];
+  return (
+    <Polsec icon={<SunIcon />} title="Appearance">
+      <p className="text-[13px] text-muted mb-3">Choose how C-chat looks on this device. System follows your OS preference.</p>
+      <div className="grid grid-cols-3 gap-2">
+        {opts.map((o) => (
+          <button
+            key={o.v}
+            onClick={() => setTheme(o.v)}
+            className={`relative flex flex-col items-center gap-1.5 p-3.5 rounded-[12px] border text-center transition-all ${theme === o.v ? "bg-[#111] text-white border-[#111] shadow-sm dark:bg-[#EDEDED] dark:text-[#0F0F0F] dark:border-[#EDEDED]" : "bg-white border-[#E9E9E7] text-[#111] hover:border-[#111] hover:bg-[#F7F7F5] dark:bg-[#1E1E1E] dark:border-[#2A2A2A] dark:text-[#EDEDED] dark:hover:border-[#EDEDED]"}`}
+          >
+            <span className={`w-8 h-8 rounded-full grid place-items-center ${theme === o.v ? "bg-white/15 dark:bg-black/10" : "bg-[#F7F7F5] dark:bg-[#1A1A1A]"}`}>{o.icon}</span>
+            <span className="text-[13px] font-semibold">{o.label}</span>
+            <span className={`text-[11px] leading-tight ${theme === o.v ? "text-white/70 dark:text-black/60" : "text-muted"}`}>{o.desc}</span>
+            {theme === o.v && <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#149A5B] dark:bg-[#16A56A]" />}
+          </button>
+        ))}
+      </div>
+      <p className="text-[11.5px] text-muted mt-3">Landing page stays light — this only affects your dashboard.</p>
+    </Polsec>
+  );
+}
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -416,7 +468,7 @@ export default function SettingsPage() {
                 </div>
               )}
               <button onClick={saveAccount} disabled={saving}
-                className="w-full mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[10px] bg-[#111] text-white font-semibold text-sm hover:bg-black transition-colors  disabled:opacity-60">
+                className="w-full mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[10px] bg-[#149A5B] text-white font-semibold text-sm hover:bg-[#0E7A47] transition-colors shadow-[0_2px_8px_rgba(20,154,91,.2)] disabled:opacity-60">
                 <CheckIcon /> {saved ? "Saved!" : saving ? "Saving..." : "Save business profile"}
               </button>
             </Polsec>
@@ -513,6 +565,7 @@ export default function SettingsPage() {
           </div>
 
           <div>
+            <AppearanceCard />
             <Polsec icon={<GearIcon />} title="More settings">
               <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[12.5px] text-muted flex gap-2.5 items-start">
                 <span className="text-[#111] flex-none"><GearIcon size={14} /></span>

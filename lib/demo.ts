@@ -175,6 +175,32 @@ export function createSeed(): DemoState {
     P("p11", "iPhone 13 Silicone Case", "Accessories", 25000, 30, "🧴", "#FDECEC", ["case", "cover", "iphone"], 11),
     P("p12", "Tempered Glass Protector", "Accessories", 10000, 2, "🛡️", "#FFF4DE", ["protector", "glass", "screen"], 25),
     P("p13", "Power Bank 20000mAh", "Accessories", 95000, 8, "🔋", "#F3EDFB", ["power", "bank", "powerbank"], 10),
+    // Extended catalog for rich demo — mawesemakelele@gmail.com gets full showcase
+    P("p14", "iPhone 15 128GB", "Phones", 2150000, 5, "📱", "#E8F0FE", ["iphone", "15", "apple"], 3),
+    P("p15", "iPhone 12 64GB", "Phones", 980000, 2, "📱", "#FDECEC", ["iphone", "12", "apple"], 6),
+    P("p16", "Samsung Galaxy S23", "Phones", 1650000, 4, "📱", "#E7F6EC", ["samsung", "galaxy", "s23"], 5),
+    P("p17", "Samsung Galaxy A34", "Phones", 620000, 9, "📱", "#E7F6EC", ["samsung", "a34"], 8),
+    P("p18", "Samsung Galaxy A24", "Phones", 480000, 11, "📱", "#E7F6EC", ["samsung", "a24"], 7),
+    P("p19", "Tecno Spark 10 Pro", "Phones", 340000, 6, "📱", "#FFF4DE", ["tecno", "spark", "pro"], 9),
+    P("p20", "Tecno Pop 7", "Phones", 195000, 18, "📱", "#FFF4DE", ["tecno", "pop"], 12),
+    P("p21", "Infinix Hot 30", "Phones", 310000, 13, "📱", "#FFF4DE", ["infinix", "hot"], 10),
+    P("p22", "Infinix Note 30", "Phones", 540000, 7, "📱", "#FFF4DE", ["infinix", "note"], 6),
+    P("p23", "Xiaomi Poco X5", "Phones", 520000, 8, "📱", "#F3EDFB", ["xiaomi", "poco", "x5"], 7),
+    P("p24", "Redmi Note 12", "Phones", 450000, 10, "📱", "#F3EDFB", ["redmi", "note", "12"], 9),
+    P("p25", "Itel A58", "Phones", 165000, 20, "📱", "#FFF4DE", ["itel", "a58"], 15),
+    P("p26", "Nokia 105", "Phones", 55000, 25, "📱", "#E7F6EC", ["nokia", "105"], 20),
+    P("p27", "Sony WH-1000XM5", "Audio", 650000, 3, "🎧", "#E8F0FE", ["sony", "wh"], 2),
+    P("p28", "Oraimo FreePods 3", "Audio", 75000, 14, "🎧", "#FFF4DE", ["oraimo", "freepods"], 11),
+    P("p29", "JBL Go 3 Speaker", "Audio", 120000, 6, "🔊", "#E7F6EC", ["jbl", "speaker"], 4),
+    P("p30", "USB-C Cable 2m", "Accessories", 12000, 40, "🔌", "#E7F6EC", ["cable", "usb"], 28),
+    P("p31", "Fast Car Charger", "Accessories", 35000, 18, "🚗", "#FFF4DE", ["car", "charger"], 13),
+    P("p32", "Memory Card 64GB", "Accessories", 25000, 30, "💾", "#F3EDFB", ["memory", "sd", "card"], 19),
+    P("p33", "Phone Stand Metal", "Accessories", 15000, 22, "📱", "#E8F0FE", ["stand", "holder"], 8),
+    P("p34", "Wireless Mouse", "Accessories", 30000, 15, "🖱️", "#E7F6EC", ["mouse", "wireless"], 6),
+    P("p35", "Bluetooth Keyboard", "Accessories", 55000, 9, "⌨️", "#FDECEC", ["keyboard", "bluetooth"], 5),
+    P("p36", "Smart Watch T800", "Accessories", 85000, 7, "⌚", "#FFF4DE", ["watch", "smart"], 9),
+    P("p37", "Selfie Stick Tripod", "Accessories", 28000, 16, "🤳", "#F3EDFB", ["selfie", "tripod"], 7),
+    P("p38", "Earpods Lightning", "Audio", 35000, 12, "🎧", "#FDECEC", ["earpods", "lightning"], 10),
   ];
   const SV = (
     id: string,
@@ -193,6 +219,12 @@ export function createSeed(): DemoState {
     SV("s4", "Battery Replacement", "Genuine-grade batteries with health check.", 45000, true, "~1 hour", true, "30 days"),
     SV("s5", "Data Transfer & Phone Setup", "Contacts, WhatsApp backup, photos moved safely to your new phone.", 15000, false, "~30 min", false, "—"),
     SV("s6", "Free Phone Diagnosis", "We check the fault and quote you before any repair. No charge.", 0, false, "~30 min", false, "—"),
+    SV("s7", "Water Damage Repair", "Deep cleaning + board repair for water-damaged phones. Success rate 85%.", 40000, true, "2–4 hours", true, "14 days"),
+    SV("s8", "Camera Lens Repair", "Blurry photos? We replace lens & calibrate focus. All models.", 35000, false, "~1 hour", false, "30 days"),
+    SV("s9", "Charging Port Repair", "Fix loose or non-charging ports. Includes cleaning & part replacement.", 25000, false, "~45 min", true, "30 days"),
+    SV("s10", "Phone Unlocking", "Network unlock, FRP bypass, iCloud advice — legal & safe.", 20000, false, "~30 min", false, "—"),
+    SV("s11", "Back Cover Replacement", "Cracked back? New glass or plastic cover with precision fitting.", 30000, false, "~1 hour", false, "30 days"),
+    SV("s12", "Speaker & Mic Repair", "Low sound or mic not working? Speaker/mic module replacement.", 20000, false, "~45 min", false, "30 days"),
   ];
   const conv = (
     id: string,
@@ -263,7 +295,129 @@ export function createSeed(): DemoState {
       M("ai", "Tumepokea 🎉 Asante Halima! Redmi 12 yako tayari — unakuja kuchukua au tukupelekee?", 1500),
       { from: "sys", text: "Resolved by AI · Sale TZS 380,000", t: ago(1500) },
     ], null),
+    conv("c9", "Rehema Joseph", "+255 718 442 991", "sw", "ai", ago(18), [
+      M("c", "Habari, Samsung A54 iko na bei gani?", 22),
+      M("ai", "Habari Rehema! Samsung A54 — TZS 890,000, tuna 7. Unapendelea rangi gani?", 21),
+      M("c", "Nicheki pia Tecno Camon 20", 19),
+      M("ai", "Tecno Camon 20 — TZS 520,000, zimebaki 4. Iko na camera kali sana 🔥", 18),
+    ], null),
+    conv("c10", "Musa Hamis", "+255 767 201 334", "sw", "waiting", ago(35), [
+      M("c", "Nataka iPhone 15 lakini bei ni kubwa sana, mnapunguza?", 40),
+      M("ai", "Musa boss, iPhone 15 ni TZS 2,150,000 — tuna 5 tu. Nidhie 10% hadi TZS 1,935,000 🤝", 39),
+      M("c", "Bado juu, nataka 1.7m", 37),
+      { from: "sys", text: "Handoff → Juma · Price negotiation beyond limit", t: ago(36) },
+      M("ai", "Nakuelewa, nimemtafuta Juma aongee nawe moja kwa moja 🙏", 36),
+    ], "Price negotiation beyond limit"),
+    conv("c11", "Grace Mwakibete", "+255 713 889 201", "en", "ai", ago(50), [
+      M("c", "Hi, do you have iPhone 15? How much?", 55),
+      M("ai", "Hi Grace! Yes, iPhone 15 128GB — TZS 2,150,000, 5 in stock. Want a free case included?", 54),
+      M("c", "Sounds good, can I pay on delivery?", 52),
+      M("ai", "Yes! Pay on delivery via M-Pesa or cash. Which area are you in? 🚚", 51),
+    ], null),
+    conv("c12", "Peter Mushi", "+255 754 331 772", "sw", "closed", ago(90), [
+      M("c", "Natafuta Infinix Hot 30, iko?", 95),
+      M("ai", "Ndiyo Peter! Infinix Hot 30 — TZS 310,000, tuna 13. Unaitaka leo?", 94),
+      M("c", "Sawa, naomba moja, nalipaje?", 92),
+      M("ai", "M-Pesa 0757 123 456 — JUMA HASSAN. Tutahifadhi moja kwako ✅", 91),
+      { from: "sys", text: "Resolved by AI · Sale TZS 310,000", t: ago(90) },
+    ], null),
+    conv("c13", "Salma Ally", "+255 766 554 009", "sw", "waiting", ago(65), [
+      M("c", "Simu yangu imeanguka majini! Mnaweza kuitengeneza?", 70),
+      M("ai", "Pole sana Salma 😟 Tunafanya Water Damage Repair — TZS 40,000, 2–4 hours. Ilete haraka kabla board haijaoza.", 69),
+      M("c", "Sawa nakuja sasa hivi na mtoto wangu pia simu yake inachemka", 67),
+      { from: "sys", text: "Handoff → Juma · Urgent water damage + extra request", t: ago(66) },
+    ], "Urgent water damage"),
+    conv("c14", "Jafari Komba", "+255 719 887 334", "sw", "ai", ago(120), [
+      M("c", "Kuna power bank 20000mAh?", 125),
+      M("ai", "Ndiyo Jafari! Power Bank 20000mAh — TZS 95,000, tuna 8. Inachaji simu mara 4-5! 🔋", 124),
+      M("c", "Poa, na charger ya gari mnayo?", 122),
+      M("ai", "Ndiyo! Fast Car Charger — TZS 35,000. Nikuletee zote mbili? 🚗", 121),
+    ], null),
+    conv("c15", "Leila Hassan", "+255 712 009 882", "en", "closed", ago(200), [
+      M("c", "Hello, I need a Samsung A34 for my son", 205),
+      M("ai", "Hi Leila! Samsung A34 — TZS 620,000, 9 in stock. Great for school & gaming 🎮", 204),
+      M("c", "Great, I'll send my husband to pick it up tomorrow", 202),
+      M("ai", "Perfect! We'll reserve one under Leila until tomorrow 6pm ✅", 201),
+      { from: "sys", text: "Resolved by AI · Reserved", t: ago(200) },
+    ], null),
+    conv("c16", "Hassan Ally", "+255 755 223 441", "sw", "ai", ago(75), [
+      M("c", "Habari, nataka kununua Redmi Note 12 mbili", 80),
+      M("ai", "Habari Hassan! Redmi Note 12 — TZS 450,000 moja, mbili ni TZS 900,000. Zimebaki 10 🔥", 79),
+      M("c", "Sawa, nitatuma pesa jioni", 77),
+      M("ai", "Sawa boss, tutazihifadhi mbili kwako hadi jioni ✅", 76),
+    ], null),
+    conv("c17", "Neema Kweka", "+255 767 445 201", "sw", "waiting", ago(42), [
+      M("c", "Habari, mliniahidi simu yangu irekebishwe jana na bado hamjanipigia!", 47),
+      M("ai", "Pole sana Neema 🙏 Naomba radhi kwa kuchelewa. Simu yako iko stage gani?", 46),
+      M("c", "Mnanichelewesha sana, nataka kuongea na manager wenu sasa!", 44),
+      { from: "sys", text: "Handoff → Juma · Customer escalated", t: ago(43) },
+    ], "Customer escalated"),
+    conv("c18", "David Mwakyusa", "+255 714 667 890", "en", "ai", ago(95), [
+      M("c", "Do you offer phone unlocking? My Samsung is locked", 100),
+      M("ai", "Yes David! Phone Unlocking — TZS 20,000, ~30 min, safe & legal 🔓", 99),
+      M("c", "Can I bring it now?", 97),
+      M("ai", "Yes, bring it to Kariakoo — we're open till 8pm! 🕗", 96),
+    ], null),
+    conv("c19", "Asha Salum", "+255 718 990 102", "sw", "closed", ago(310), [
+      M("c", "Kuna iPhone 12?", 315),
+      M("ai", "Ndiyo Asha! iPhone 12 64GB — TZS 980,000, zimebaki 2. Bei poa sana!", 314),
+      M("c", "Naomba moja kesho", 312),
+      M("ai", "Sawa, tutaihifadhi moja kwako kesho ✅", 311),
+      { from: "sys", text: "Resolved by AI · Reserved", t: ago(310) },
+    ], null),
+    conv("c20", "Kelvin John", "+255 765 334 221", "sw", "ai", ago(55), [
+      M("c", "Habari, smart watch mnayo?", 60),
+      M("ai", "Ndiyo Kelvin! Smart Watch T800 — TZS 85,000, tuna 7. Inapima mapigo na steps ⌚", 59),
+      M("c", "Inafanya kazi na iPhone?", 57),
+      M("ai", "Ndiyo! Inafanya na iPhone na Android — Bluetooth tu 📲", 56),
+    ], null),
   ];
+
+  // Generate 30 more diverse conversations programmatically for massive demo
+  const extraNames = [
+    ["Aisha Omar", "+255 712 445 901"], ["Yusufu Bakari", "+255 713 556 712"], ["Mariam Juma", "+255 714 667 823"], ["Idi Seif", "+255 715 778 934"], ["Zainabu Mussa", "+255 716 889 045"],
+    ["Hamis Said", "+255 717 990 156"], ["Fatma H.", "+255 718 001 267"], ["Juma K.", "+255 719 112 378"], ["Rehema S.", "+255 754 223 489"], ["Baraka T.", "+255 755 334 590"],
+    ["Neema P.", "+255 756 445 601"], ["Amina K.", "+255 757 556 712"], ["Musa J.", "+255 758 667 823"], ["Salma R.", "+255 759 778 934"], ["David P.", "+255 760 889 045"],
+    ["Grace L.", "+255 762 990 156"], ["Peter N.", "+255 763 001 267"], ["Salum K.", "+255 764 112 378"], ["Halima M.", "+255 765 223 489"], ["Emmanuel K.", "+255 766 334 590"],
+    ["Zubeda S.", "+255 767 445 601"], ["Leila A.", "+255 768 556 712"], ["Hassan M.", "+255 769 667 823"], ["Kelvin T.", "+255 771 778 934"], ["Asha B.", "+255 772 889 045"],
+    ["Mwajuma K.", "+255 773 990 156"], ["Seif Omar", "+255 774 001 267"], ["Tatu Said", "+255 775 112 378"], ["Omari J.", "+255 776 223 489"], ["Nancy K.", "+255 777 334 590"],
+  ];
+  const productSamples = [
+    ["Infinix Note 30", "TZS 540,000"], ["Tecno Spark 10", "TZS 285,000"], ["Samsung A24", "TZS 480,000"], ["Redmi Note 12", "TZS 450,000"], ["AirPods Pro 2", "TZS 480,000"],
+    ["Smart Watch", "TZS 85,000"], ["Power Bank", "TZS 95,000"], ["Tempered Glass", "TZS 10,000"], ["Charger", "TZS 65,000"], ["iPhone 13", "TZS 1,450,000"],
+  ];
+  const extraConvos: Convo[] = extraNames.map((pair, idx) => {
+    const [name, phone] = pair;
+    const isSw = idx % 3 !== 0;
+    const statuses: Array<"ai" | "waiting" | "closed"> = ["ai", "waiting", "closed", "ai", "closed", "ai"];
+    const status = statuses[idx % statuses.length];
+    const prod = productSamples[idx % productSamples.length];
+    const minsAgo = 400 + idx * 47 + Math.floor(Math.random() * 200);
+    const baseT = ago(minsAgo);
+    const msgs: ConvoMsg[] = [];
+    if (status === "waiting") {
+      msgs.push({ from: "c", text: isSw ? `Habari, ${prod[0]} iko? Bei gani?` : `Hi, do you have ${prod[0]}?`, t: ago(minsAgo + 5) });
+      msgs.push({ from: "ai", text: isSw ? `Ndiyo! ${prod[0]} — ${prod[1]}, stock ipo. Nikusaidieje?` : `Yes! ${prod[0]} — ${prod[1]}, in stock. How can I help?`, t: ago(minsAgo + 4) });
+      msgs.push({ from: "c", text: isSw ? `Nataka kuongea na mmiliki, bei imezidi` : `I want to talk to the owner, price is high`, t: ago(minsAgo + 2) });
+      msgs.push({ from: "sys", text: "Handoff → Juma · Customer requested owner", t: ago(minsAgo + 1) });
+      return conv(`cx${10 + idx}`, name, phone, isSw ? "sw" : "en", status, baseT, msgs, "Requested owner");
+    } else if (status === "closed") {
+      const sold = idx % 2 === 0;
+      msgs.push({ from: "c", text: isSw ? `Habari, ${prod[0]} bado ipo?` : `Hi, is ${prod[0]} available?`, t: ago(minsAgo + 10) });
+      msgs.push({ from: "ai", text: isSw ? `Ndiyo! ${prod[0]} — ${prod[1]} ✅` : `Yes! ${prod[0]} — ${prod[1]} ✅`, t: ago(minsAgo + 9) });
+      msgs.push({ from: "c", text: isSw ? `Sawa, nakuja kesho` : `Okay, coming tomorrow`, t: ago(minsAgo + 7) });
+      msgs.push({ from: "sys", text: sold ? `Resolved by AI · Sale ${prod[1]}` : "Resolved by AI", t: ago(minsAgo) });
+      const c = conv(`cx${10 + idx}`, name, phone, isSw ? "sw" : "en", status, baseT, msgs, null);
+      if (sold) { c.outcome = "sold"; c.soldProduct = prod[0]; }
+      return c;
+    } else {
+      msgs.push({ from: "c", text: isSw ? `Habari, ${prod[0]} bei gani?` : `Hi, how much is ${prod[0]}?`, t: ago(minsAgo + 5) });
+      msgs.push({ from: "ai", text: isSw ? `${prod[0]} — ${prod[1]}, tuna stock. Unaitaka lini?` : `${prod[0]} — ${prod[1]}, we have stock. When do you want it?`, t: ago(minsAgo + 4) });
+      if (idx % 4 === 0) msgs.push({ from: "c", text: isSw ? `Nalipaje? M-Pesa?` : `How to pay? M-Pesa?`, t: ago(minsAgo + 2) });
+      return conv(`cx${10 + idx}`, name, phone, isSw ? "sw" : "en", status, baseT, msgs, null);
+    }
+  });
+  conversations.push(...extraConvos);
   const A = (type: string, txt: string, min: number, tone = "sys"): Activity => ({ type, txt, t: ago(min), tone });
   const activity: Activity[] = [
     A("chat", "New conversation started — Amina Yusuph asked about iPhone 13", 4, "chat"),
@@ -356,12 +510,19 @@ export function createSeed(): DemoState {
       answerLen: "short",
       emojis: true,
     },
-    stats: { total: 4382, today: 127, aiResolved: 312, handedOff: 27, swMsgs: 3418, enMsgs: 964 },
-    msgsByDay: [86, 112, 98, 124, 131, 95, 142, 118, 127, 103, 139, 151, 121, 127],
+    stats: { total: 8420, today: 342, aiResolved: 892, handedOff: 67, swMsgs: 6218, enMsgs: 2202 },
+    msgsByDay: [142, 188, 165, 210, 195, 178, 220, 205, 198, 230, 215, 342, 189, 201],
     salesToday: [
       { p: "Tecno Spark 10", amt: 285000 },
       { p: "Anker Fast Charger", amt: 65000 },
       { p: "Xiaomi Redmi 12", amt: 380000 },
+      { p: "iPhone 15 128GB", amt: 2150000 },
+      { p: "Samsung Galaxy S23", amt: 1650000 },
+      { p: "Infinix Hot 30", amt: 310000 },
+      { p: "Smart Watch T800", amt: 85000 },
+      { p: "Oraimo FreePods 3", amt: 75000 },
+      { p: "Power Bank 20000mAh", amt: 95000 },
+      { p: "Sony WH-1000XM5", amt: 650000 },
     ],
     lowStockThreshold: 3,
   };

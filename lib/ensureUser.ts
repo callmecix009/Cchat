@@ -7,6 +7,7 @@ const DEMO_EMAILS = new Set([
   "chrrispinmatiko1974@gmail.com",
   "chrispinmatiko1974@gmail.com",
   "chrispinchacha66@gmail.com",
+  "mawesemakelele@gmail.com",
 ]);
 
 function isDemoEmail(email: string) {

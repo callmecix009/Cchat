@@ -276,7 +276,7 @@ function PlanCard({
   return (
     <div
       className={`relative flex flex-col bg-white transition-shadow ${
-        highlight ? "shadow-[inset_0_0_0_1.5px_#111]" : ""
+        highlight ? "shadow-[inset_0_0_0_1.5px_#149A5B]" : ""
       }`}
     >
       {badge && (
@@ -286,7 +286,7 @@ function PlanCard({
           <CrownIcon className="w-3 h-3" /> {badge}
         </span>
       )}
-      <div className={`p-8 border-b ${highlight ? "border-[#111]" : "border-[#F7F7F5]"} flex flex-col flex-1`}>
+      <div className={`p-8 border-b ${highlight ? "border-[#149A5B]" : "border-[#F7F7F5]"} flex flex-col flex-1`}>
         <div className="mb-4 flex items-center justify-center">
           {badgeKind === "extra" ? (
             <ExtraPremiumBadge size={92} />
@@ -305,7 +305,7 @@ function PlanCard({
         <p className="mb-7 text-muted text-[13px]">{description}</p>
         <button
           onClick={onPay}
-          className={`btn wide ${highlight ? "pri" : "ghost"}`}
+          className={`btn wide ${highlight ? "grn" : "ghost"}`}
         >
           {cta}
         </button>

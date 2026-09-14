@@ -465,7 +465,7 @@ export default async function DashboardPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-[#111] text-white font-medium text-[13px] hover:bg-black transition-colors">
+              <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-[#149A5B] text-white font-medium text-[13px] hover:bg-[#0E7A47] transition-colors shadow-[0_2px_8px_rgba(20,154,91,.25)]">
                 Open Chat Agent
               </Link>
               <Link href="/dashboard/products" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-white border border-[#E9E9E7] text-[#111] font-medium text-[13px] hover:bg-[#F7F7F5] transition-colors">
