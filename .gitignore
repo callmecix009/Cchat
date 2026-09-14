@@ -51,3 +51,5 @@ Thumbs.db
 
 # opencode skills (reinstall via `uipro init --ai opencode`, do not commit)
 .opencode/
+# landing source images (raw jfif kept locally, webp in public/images/landing is committed)
+images2.0/
