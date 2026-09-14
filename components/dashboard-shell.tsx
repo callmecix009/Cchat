@@ -23,47 +23,47 @@ const NAV = [
 
 const ICONS: Record<string, React.ReactNode> = {
   grid: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" />
     </svg>
   ),
   bot: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <rect x="4" y="8" width="16" height="12" rx="3" /><path d="M12 4v4" /><circle cx="9" cy="13" r="1.2" /><circle cx="15" cy="13" r="1.2" />
     </svg>
   ),
   chat: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
   ),
   box: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 8l-9-5-9 5v8l9 5 9-5V8z" /><path d="M3 8l9 5 9-5" /><path d="M12 13v8" />
     </svg>
   ),
   wrench: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-3 3-2.4-2.4 3-3z" />
     </svg>
   ),
   shield: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   ),
   sliders: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" /><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
     </svg>
   ),
   gear: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
   ),
   card: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" />
     </svg>
   ),
@@ -290,10 +290,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   // Only block if we haven't checked yet and no settings loaded
   if (!accessChecked && !settings) {
     return (
-      <div className="flex h-screen items-center justify-center bg-surface">
+      <div className="flex h-screen items-center justify-center bg-[#FCFCF9]">
         <div className="text-center">
-          <div className="w-8 h-8 border-3 border-lime border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-muted text-sm">Loading C-chat...</p>
+          <div className="w-8 h-8 border-2 border-[#111] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-[#6B6B6B] text-sm">Loading C-chat...</p>
         </div>
       </div>
     );
@@ -318,37 +318,37 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         : "Connect WhatsApp · AI live";
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-[#FCFCF9]">
       {/* mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-[998] md:hidden bg-black/40" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 z-[998] md:hidden bg-[#111]/20 backdrop-blur-[1px]" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* sidebar */}
-      <aside className={`w-[236px] flex-none flex flex-col bg-[#0C2417] text-[#C9DCCE] fixed inset-y-0 left-0 z-[999] transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
-        <Link href="/" className="flex items-center gap-2.5 px-5 pt-5 pb-3.5 text-white font-disp font-extrabold text-lg">
-          <CchatLogo size={40} decorative className="shrink-0" />
+      {/* sidebar — Notion light */}
+      <aside className={`w-[232px] flex-none flex flex-col bg-white border-r border-[#E9E9E7] fixed inset-y-0 left-0 z-[999] transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+        <Link href="/" className="flex items-center gap-2.5 px-4 pt-[14px] pb-3.5 text-[#111] font-disp font-bold text-[16px]">
+          <CchatLogo size={32} decorative className="shrink-0" />
           C-chat
         </Link>
-        <nav className="flex-1 overflow-auto px-2.5 py-1.5 space-y-0.5">
+        <nav className="flex-1 overflow-auto px-2.5 py-2 space-y-0.5">
           {NAV.map((n) => (
             <Link
               key={n.id}
               href={n.href}
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-sm font-semibold text-[#A9C2B0] hover:bg-white/5 hover:text-white transition-colors"
+              className="flex items-center gap-3 px-2.5 py-2 rounded-[8px] text-[13.5px] font-medium text-[#6B6B6B] hover:bg-[#F7F7F5] hover:text-[#111] transition-colors"
             >
-              <span className="opacity-90">{ICONS[n.icon]}</span>
+              <span className="text-[#9B9B9B]">{ICONS[n.icon]}</span>
               <span className="flex-1">{n.label}</span>
               {n.id === "inbox" && inboxUnread > 0 && (
-                <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-red-500 text-white text-[11px] font-extrabold leading-none">
+                <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#111] text-white text-[11px] font-bold leading-none">
                   {inboxUnread > 99 ? "99+" : inboxUnread}
                 </span>
               )}
             </Link>
           ))}
         </nav>
-        <div className="p-3.5 m-2.5 mt-auto rounded-xl bg-white/5 text-xs">
+        <div className="p-3 m-3 mt-auto rounded-[12px] bg-[#F7F7F5] border border-[#E9E9E7] text-xs">
           {(() => {
             const info = planBadgeInfo({
               status: settings?.planStatus ?? "inactive",
@@ -358,18 +358,18 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             });
             const tone =
               info.tone === "premium" || info.tone === "extra"
-                ? "bg-lime2 text-[#06170D]"
+                ? "bg-[#111] text-white"
                 : info.tone === "trial"
-                  ? "bg-[rgba(232,162,34,.15)] text-[#F5C563] border border-[rgba(232,162,34,.35)]"
-                  : "bg-white/10 text-white";
+                  ? "bg-white text-[#111] border border-[#E9E9E7]"
+                  : "bg-white text-[#6B6B6B] border border-[#E9E9E7]";
             return (
               <Link href="/billing" className="block group">
-                <div className={`flex items-center gap-2 px-3 py-2.5 rounded-[10px] font-bold transition-transform group-hover:scale-[1.02] ${tone}`}>
-                  {info.crown && <GoldCrown size={16} />}
-                  <span>{info.label}</span>
-                  <span className="ml-auto opacity-60">›</span>
+                <div className={`flex items-center gap-2 px-3 py-2 rounded-[8px] font-semibold transition-colors ${tone}`}>
+                  {info.crown && <GoldCrown size={14} />}
+                  <span className="text-[13px]">{info.label}</span>
+                  <span className="ml-auto opacity-40 text-[#9B9B9B]">›</span>
                 </div>
-                <div className="text-[#86A893] mt-2 px-1">
+                <div className="text-[#9B9B9B] mt-2 px-1 leading-relaxed">
                   {info.tone === "none"
                     ? "12,000 TSh/mo · 3-day free trial"
                     : info.tone === "trial"
@@ -385,76 +385,76 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       </aside>
 
       {/* main */}
-      <div className="flex-1 flex flex-col min-w-0 bg-surface">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#FCFCF9]">
         {isTrialing && trialEndsAt && (
-          <div className="flex-none bg-[#FEF9E7] border-b border-amber-200 px-3 sm:px-5 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 text-[13px] sm:text-sm leading-[1.4]">
-            <span className="flex items-center gap-2 font-medium text-amber-800 min-w-0">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+          <div className="flex-none bg-white border-b border-[#E9E9E7] px-3 sm:px-5 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 text-[13px] sm:text-sm leading-[1.4]">
+            <span className="flex items-center gap-2 font-medium text-[#111] min-w-0">
+              <span className="w-2 h-2 rounded-full bg-[#111] shrink-0" />
               <span className="truncate sm:whitespace-normal">Free trial: <b>{trialDaysLeft}d</b> left — ends {trialEndsAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
             </span>
-            <Link href="/billing" className="self-start sm:self-auto inline-flex items-center justify-center text-xs font-bold px-3.5 py-1.5 rounded-full bg-amber-500 text-white hover:bg-amber-600 transition-colors whitespace-nowrap shrink-0">View plans</Link>
+            <Link href="/billing" className="self-start sm:self-auto inline-flex items-center justify-center text-xs font-semibold px-3.5 py-1.5 rounded-[8px] bg-[#111] text-white hover:bg-black transition-colors whitespace-nowrap shrink-0">View plans</Link>
           </div>
         )}
-        <header className="h-[62px] flex-none bg-white border-b border-cborder flex items-center gap-2 sm:gap-3.5 px-3 sm:px-5">
+        <header className="h-14 flex-none bg-white/80 backdrop-blur-[10px] border-b border-[#E9E9E7] flex items-center gap-2 sm:gap-3.5 px-3 sm:px-5 sticky top-0 z-10">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="md:hidden flex-none text-dark p-1 -ml-1"
+            className="md:hidden flex-none w-8 h-8 grid place-items-center rounded-[8px] border border-[#E9E9E7] bg-white text-[#111]"
             aria-label="Toggle menu"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
           <Link href="/settings" className="flex items-center gap-2.5 min-w-0 group">
             {logo ? (
-              <span className="w-9 h-9 rounded-[10px] overflow-hidden flex-none ring-1 ring-cborder bg-white flex items-center justify-center p-1">
+              <span className="w-8 h-8 rounded-[8px] overflow-hidden flex-none border border-[#E9E9E7] bg-white flex items-center justify-center p-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={logo} alt={businessName || "Business logo"} className="w-full h-full object-contain" />
               </span>
             ) : (
-              <span className="w-9 h-9 rounded-[10px] bg-dark text-lime2 flex items-center justify-center font-extrabold font-disp flex-none">
+              <span className="w-8 h-8 rounded-[8px] bg-[#F1F1EF] border border-[#E9E9E7] text-[#6B6B6B] flex items-center justify-center font-semibold text-[12px] flex-none">
                 {hasIdentity ? initials(businessName) : "?"}
               </span>
             )}
             <span className="min-w-0 block">
-              <span className="font-bold text-sm truncate block group-hover:underline">
+              <span className="font-semibold text-[13px] truncate block text-[#111] group-hover:underline">
                 {hasIdentity ? businessName : "Set up your business"}
               </span>
-              <span className="text-[11.5px] text-muted font-mono truncate block">{subline}</span>
+              <span className="text-[11.5px] text-[#9B9B9B] truncate block">{subline}</span>
             </span>
           </Link>
           <div className="ml-auto flex items-center gap-1.5 sm:gap-3 min-w-0 shrink-0">
             {waConnected && !waPaused ? (
               <>
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-grn-bg text-grn-d border border-grn-br whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-grn animate-pulse" />
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white text-[#111] border border-[#E9E9E7] whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#149A5B]" />
                   WhatsApp Connected
                 </span>
-                <span className="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-full bg-grn-bg text-grn-d border border-grn-br">
-                  <span className="w-2 h-2 rounded-full bg-grn animate-pulse" />
+                <span className="sm:hidden inline-flex items-center justify-center w-7 h-7 rounded-full bg-white text-[#111] border border-[#E9E9E7]">
+                  <span className="w-2 h-2 rounded-full bg-[#149A5B]" />
                 </span>
               </>
             ) : waConnected && waPaused ? (
               <>
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-amb-bg text-amber-600 border border-amb-br whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                  WhatsApp Paused
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#F7F7F5] text-[#6B6B6B] border border-[#E9E9E7] whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#9B9B9B]" />
+                  Paused
                 </span>
-                <span className="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-full bg-amb-bg text-amber-600 border border-amb-br">
-                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="sm:hidden inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#F7F7F5] text-[#6B6B6B] border border-[#E9E9E7]">
+                  <span className="w-2 h-2 rounded-full bg-[#9B9B9B]" />
                 </span>
               </>
             ) : (
               <Link
                 href="/settings"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#EEF2ED] text-[#5D7064] border border-[#DFE7DF] hover:border-grn hover:text-grn-d transition-colors whitespace-nowrap"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white text-[#111] border border-[#E9E9E7] hover:bg-[#F7F7F5] transition-colors whitespace-nowrap"
               >
                 Connect WhatsApp
               </Link>
             )}
             {settings?.avatar ? (
               <Link href="/settings" title="Edit profile" className="flex-none hidden sm:block">
-                <span className="w-9 h-9 rounded-[10px] overflow-hidden ring-1 ring-cborder inline-block hover:ring-grn transition-all">
+                <span className="w-8 h-8 rounded-[8px] overflow-hidden border border-[#E9E9E7] inline-block hover:border-[#111] transition-all">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={settings.avatar} alt={user?.firstName || "Profile"} className="w-full h-full object-cover" />
                 </span>
@@ -463,7 +463,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             <UserButton
               appearance={{
                 elements: {
-                  avatarBox: "w-9 h-9 rounded-[10px]",
+                  avatarBox: "w-8 h-8 rounded-[8px]",
                   userButtonPopoverCard: "mx-2 sm:mx-0 w-[calc(100vw-16px)] sm:w-[360px] max-w-[360px]",
                   userButtonPopoverActionButton: "py-2.5",
                 },
@@ -471,7 +471,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             />
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-3 sm:p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-8">{children}</main>
       </div>
 
       {/* Global pop-up toasts */}

@@ -16,7 +16,7 @@ const FEATURES = [
 
 function Check() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-4 shrink-0 text-grn-d">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-4 shrink-0 text-[#111]">
       <polyline points="20 6 9 17 4 12" />
     </svg>
   );
@@ -102,7 +102,7 @@ export default function BillingPage() {
     ) : (
       <span
         className={`w-[52px] h-[52px] rounded-[13px] flex items-center justify-center flex-none ${
-          info.tone === "trial" ? "bg-[#FDF6E3]" : "bg-[#EEF2ED] text-muted"
+          info.tone === "trial" ? "bg-[#FDF6E3]" : "bg-[#F7F7F5] text-muted"
         }`}
       >
         <GoldCrown size={26} />
@@ -150,7 +150,7 @@ export default function BillingPage() {
 
       {/* pricing grid */}
       <div className="border border-cborder rounded-[18px] overflow-hidden">
-        <div className="grid grid-cols-1 gap-px bg-[#E4EDE5] md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px bg-[#E9E9E7] md:grid-cols-2 lg:grid-cols-3">
           <div className="flex flex-col justify-center bg-white p-8 md:col-span-2 lg:col-span-1">
             <p className="mb-5 text-muted text-[12px] font-bold uppercase tracking-wider">
               Pricing
@@ -207,7 +207,7 @@ export default function BillingPage() {
         </div>
 
         {/* feature list strip */}
-        <div className="bg-white px-8 py-7 border-t border-[#E4EDE5]">
+        <div className="bg-white px-8 py-7 border-t border-[#E9E9E7]">
           <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-muted">
             Every plan includes
           </p>
@@ -233,7 +233,7 @@ export default function BillingPage() {
               </button>
             )}
             {trialActive && (
-              <div className="mt-2 text-sm font-semibold text-grn-d">
+              <div className="mt-2 text-sm font-semibold text-[#111]">
                 Active — {trialLeft} day{trialLeft === 1 ? "" : "s"} remaining
               </div>
             )}
@@ -285,7 +285,7 @@ function PlanCard({
           <CrownIcon className="w-3 h-3" /> {badge}
         </span>
       )}
-      <div className={`p-8 border-b ${highlight ? "border-[#BCE5CB]" : "border-[#EEF2ED]"} flex flex-col flex-1`}>
+      <div className={`p-8 border-b ${highlight ? "border-[#BCE5CB]" : "border-[#F7F7F5]"} flex flex-col flex-1`}>
         <div className="mb-4 flex items-center justify-center">
           {badgeKind === "extra" ? (
             <ExtraPremiumBadge size={92} />
@@ -300,7 +300,7 @@ function PlanCard({
           </h3>
           <span className="text-muted text-[12px]">{period}</span>
         </div>
-        {footnote && <p className="text-[12px] text-grn-d font-semibold mb-1">{footnote}</p>}
+        {footnote && <p className="text-[12px] text-[#111] font-semibold mb-1">{footnote}</p>}
         <p className="mb-7 text-muted text-[13px]">{description}</p>
         <button
           onClick={onPay}

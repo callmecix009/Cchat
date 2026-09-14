@@ -505,16 +505,16 @@ export default async function DashboardPage() {
         <HandlingBars data={handlingData} />
 
         <Card className="md:col-span-2 gap-0">
-          <CardHeader className="border-b border-[#E4EDE5] pb-3">
+          <CardHeader className="border-b border-[#E9E9E7] pb-3">
             <CardTitle>Recent conversations</CardTitle>
             <CardDescription>Latest threads from your inbox.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {recentRows.length ? (
-              <ul className="divide-y divide-[#F1F5F0]">
+              <ul className="divide-y divide-[#F1F1EF]">
                 {recentRows.map(({ c, lm }) => (
                   <li key={c.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[#FAFCFA] transition-colors">
-                    <span className="w-8 h-8 rounded-full bg-grn-bg text-grn-d font-bold text-[11px] flex items-center justify-center flex-none">
+                    <span className="w-8 h-8 rounded-full bg-grn-bg text-[#111] font-bold text-[11px] flex items-center justify-center flex-none">
                       {initials(c.name)}
                     </span>
                     <div className="min-w-0 flex-1">
@@ -533,8 +533,8 @@ export default async function DashboardPage() {
             ) : (
               <div className="py-10 text-center text-muted text-[13px]">No conversations yet.</div>
             )}
-            <div className="flex justify-center border-t border-[#E4EDE5] py-2.5">
-              <Link href="/dashboard/inbox" className="text-[12.5px] font-bold text-grn-d hover:underline inline-flex items-center gap-1">
+            <div className="flex justify-center border-t border-[#E9E9E7] py-2.5">
+              <Link href="/dashboard/inbox" className="text-[12.5px] font-bold text-[#111] hover:underline inline-flex items-center gap-1">
                 View all conversations →
               </Link>
             </div>
@@ -542,13 +542,13 @@ export default async function DashboardPage() {
         </Card>
 
         <Card className="gap-0">
-          <CardHeader className="border-b border-[#E4EDE5] pb-3">
+          <CardHeader className="border-b border-[#E9E9E7] pb-3">
             <CardTitle>Live activity</CardTitle>
             <CardDescription>Sales & handoffs.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {feed.length ? (
-              <ul className="flex flex-col divide-y divide-[#F1F5F0] max-h-[300px] overflow-auto">
+              <ul className="flex flex-col divide-y divide-[#F1F1EF] max-h-[300px] overflow-auto">
                 {feed.slice(0, 8).map((f, i) => (
                   <ListRow
                     key={i}
@@ -567,7 +567,7 @@ export default async function DashboardPage() {
         </Card>
 
         <Card className="gap-0">
-          <CardHeader className="border-b border-[#E4EDE5] pb-3">
+          <CardHeader className="border-b border-[#E9E9E7] pb-3">
             <div className="flex items-center justify-between gap-2">
               <CardTitle>Stock alerts</CardTitle>
               <Badge variant={lowStock.length ? "amber" : "green"}>{lowStock.length} items</Badge>
@@ -580,9 +580,9 @@ export default async function DashboardPage() {
                 Catalog is empty — add products and the AI tracks stock automatically.
               </div>
             ) : lowStock.length === 0 ? (
-              <div className="py-10 text-center text-[13px] text-grn-d font-semibold">Everything is healthy.</div>
+              <div className="py-10 text-center text-[13px] text-[#111] font-semibold">Everything is healthy.</div>
             ) : (
-              <ul className="flex flex-col divide-y divide-[#F1F5F0]">
+              <ul className="flex flex-col divide-y divide-[#F1F1EF]">
                 {lowStock.slice(0, 6).map((p) => (
                   <ListRow
                     key={p.id}
@@ -605,8 +605,8 @@ export default async function DashboardPage() {
                 ))}
               </ul>
             )}
-            <div className="flex justify-center border-t border-[#E4EDE5] py-2.5">
-              <Link href="/dashboard/products" className="text-[12.5px] font-bold text-grn-d hover:underline inline-flex items-center gap-1">
+            <div className="flex justify-center border-t border-[#E9E9E7] py-2.5">
+              <Link href="/dashboard/products" className="text-[12.5px] font-bold text-[#111] hover:underline inline-flex items-center gap-1">
                 Manage catalog →
               </Link>
             </div>
@@ -628,7 +628,7 @@ export default async function DashboardPage() {
             <Link href="/onboarding" className="inline-flex items-center px-3.5 py-2 rounded-[9px] bg-grn text-white font-semibold text-[13px] hover:bg-grn-d transition-colors">
               {onboarded ? "Edit Setup Guide" : "Start Setup Guide"}
             </Link>
-            <Link href="/settings" className="inline-flex items-center px-3.5 py-2 rounded-[9px] border border-[#E4EDE5] text-dark font-semibold text-[13px] hover:border-grn transition-colors">
+            <Link href="/settings" className="inline-flex items-center px-3.5 py-2 rounded-[9px] border border-[#E9E9E7] text-dark font-semibold text-[13px] hover:border-[#111] transition-colors">
               {wa ? "Manage WhatsApp" : "Connect WhatsApp"}
             </Link>
           </div>
