@@ -90,82 +90,73 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="viewwrap max-w-[1240px] mx-auto">
-      <div className="section-h">
+    <div className="mx-auto max-w-[1120px]">
+      <div className="flex items-start justify-between gap-4 mb-8">
         <div>
-          <h2>Services</h2>
-          <p>Offerings that aren&apos;t sellable products. The AI can explain, quote and book these.</p>
+          <h2 className="font-disp text-[20px] font-semibold tracking-tight text-[#111]">Services</h2>
+          <p className="text-[13px] text-[#6B6B6B] mt-1">Offerings that aren&apos;t products — the AI can explain, quote and book these on WhatsApp.</p>
         </div>
-        <button className="btn pri" onClick={() => openEdit(null)}>
-          <Icon name="plus" size={15} /> Add service
+        <button className="btn pri shrink-0" onClick={() => openEdit(null)}>
+          <Icon name="plus" size={14} /> Add service
         </button>
       </div>
 
-      <div className="svcgrid">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {!loaded ? (
-          <div className="card">
-            <div className="empty">
-              <p>Loading your services…</p>
-            </div>
+          <div className="bg-white border border-[#E9E9E7] rounded-[12px] p-12 text-center">
+            <p className="text-[13px] text-[#6B6B6B]">Loading your services…</p>
           </div>
         ) : services.length ? (
           services.map((s) => (
-            <div className="svc" key={s.id}>
-              <div className="si"><Icon name="wrench" size={19} /></div>
-              <h4>{s.name}</h4>
-              <div className="desc">{s.desc}</div>
-              <div className="row">
-                <span>Price</span>
-                <b>{s.price === 0 ? "FREE" : (s.from ? "from " : "") + TZS(s.price)}</b>
+            <div key={s.id} className="bg-white border border-[#E9E9E7] rounded-[12px] p-6 flex flex-col">
+              <div className="w-9 h-9 rounded-[10px] bg-[#F7F7F5] border border-[#E9E9E7] text-[#6B6B6B] grid place-items-center mb-3">
+                <Icon name="wrench" size={16} />
               </div>
-              <div className="row">
-                <span>Duration</span>
-                <b>{s.dur}</b>
+              <h4 className="font-disp text-[15px] font-semibold text-[#111] leading-tight">{s.name}</h4>
+              <p className="text-[13px] text-[#6B6B6B] mt-1.5 line-clamp-2 min-h-[38px]">{s.desc || "No description"}</p>
+              <div className="mt-4 space-y-0 divide-y divide-[#F1F1EF] border-t border-[#F1F1EF]">
+                <div className="flex justify-between py-2 text-[12.5px]">
+                  <span className="text-[#9B9B9B]">Price</span>
+                  <b className="font-mono text-[#111]">{s.price === 0 ? "FREE" : (s.from ? "from " : "") + TZS(s.price)}</b>
+                </div>
+                <div className="flex justify-between py-2 text-[12.5px]">
+                  <span className="text-[#9B9B9B]">Duration</span>
+                  <b className="text-[#111]">{s.dur}</b>
+                </div>
+                <div className="flex justify-between py-2 text-[12.5px]">
+                  <span className="text-[#9B9B9B]">Booking</span>
+                  <b className="text-[#111]">{s.booking ? "Required" : "Walk-in ok"}</b>
+                </div>
+                <div className="flex justify-between py-2 text-[12.5px]">
+                  <span className="text-[#9B9B9B]">Warranty</span>
+                  <b className="text-[#111]">{s.warranty}</b>
+                </div>
               </div>
-              <div className="row">
-                <span>Booking</span>
-                <b>{s.booking ? "Required" : "Walk-in ok"}</b>
-              </div>
-              <div className="row">
-                <span>Warranty</span>
-                <b>{s.warranty}</b>
-              </div>
-              <div style={{ display: "flex", gap: 8, marginTop: 13 }}>
-                <button className="btn ghost sm" onClick={() => openEdit(s.id)}>
+              <div className="mt-4 flex gap-2">
+                <button className="btn ghost sm flex-1 justify-center" onClick={() => openEdit(s.id)}>
                   <Icon name="edit" size={13} /> Edit
                 </button>
-                <button className="btn danger sm" onClick={() => del(s.id)}>
-                  <Icon name="trash" size={13} />
+                <button className="w-9 h-9 grid place-items-center rounded-[8px] border border-[#E9E9E7] bg-white text-[#9B9B9B] hover:bg-[#F7F7F5] hover:text-[#111] hover:border-[#E9E9E7] transition-colors" onClick={() => del(s.id)} aria-label="Delete">
+                  <Icon name="trash" size={14} />
                 </button>
               </div>
             </div>
           ))
         ) : (
-          <div className="card" style={{ gridColumn: "1 / -1" }}>
-            <div className="empty">
-              <span className="ic-big"><Icon name="wrench" size={24} /></span>
-              <p style={{ marginBottom: 14 }}>
-                No services yet. Add one and the AI will be able to quote and book it on WhatsApp.
-              </p>
-            </div>
+          <div className="bg-white border border-[#E9E9E7] rounded-[12px] p-10 text-center sm:col-span-2 lg:col-span-3">
+            <div className="w-10 h-10 rounded-[10px] bg-[#F7F7F5] border border-[#E9E9E7] grid place-items-center mx-auto mb-3 text-[#9B9B9B]"><Icon name="wrench" size={18} /></div>
+            <p className="text-[13px] text-[#6B6B6B] max-w-[420px] mx-auto">
+              No services yet. Add one and the AI will be able to quote and book it on WhatsApp.
+            </p>
           </div>
         )}
-        <button className="addtile" onClick={() => openEdit(null)}>
-          <span
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
-              background: "var(--grn-bg)",
-              color: "var(--grn-d)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Icon name="plus" size={20} />
+        <button onClick={() => openEdit(null)} className="bg-[#F7F7F5] border border-dashed border-[#E9E9E7] rounded-[12px] min-h-[232px] grid place-items-center p-6 hover:bg-white hover:border-[#111] transition-colors group">
+          <span className="text-center">
+            <span className="w-10 h-10 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mx-auto mb-3 text-[#6B6B6B] group-hover:border-[#111] group-hover:text-[#111] transition-colors">
+              <Icon name="plus" size={16} />
+            </span>
+            <span className="text-[13px] font-medium text-[#6B6B6B] group-hover:text-[#111]">Add a service</span>
           </span>
-          Add a service
         </button>
       </div>
 

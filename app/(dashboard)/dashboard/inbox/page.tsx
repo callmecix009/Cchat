@@ -12,14 +12,14 @@ const FILTER_LABELS: Record<Filter, string> = { all: "All", ai: "AI-handled", ha
 function statusBadge(c: Convo) {
   if (c.status === "waiting")
     return (
-      <span className="badge b-amb">
-        <span className="dot a" /> Waiting
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FEF9E7] border border-[#F5E6C8] text-[11px] font-medium text-[#8A6B2A]">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#E8A222]" /> Waiting
       </span>
     );
-  if (c.status === "closed") return <span className="badge b-mut">Closed</span>;
+  if (c.status === "closed") return <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white border border-[#E9E9E7] text-[11px] font-medium text-[#9B9B9B]">Closed</span>;
   return (
-    <span className="badge b-grn">
-      <span className="dot g" /> AI
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[#E9E9E7] text-[11px] font-medium text-[#111]">
+      <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> AI live
     </span>
   );
 }
@@ -264,35 +264,35 @@ export default function InboxPage() {
   };
 
   return (
-    <div className="viewwrap max-w-[1240px] mx-auto">
-      <div className="section-h">
+    <div className="mx-auto max-w-[1120px]">
+      <div className="flex items-start justify-between gap-4 mb-8">
         <div>
-          <h2 className="flex items-center gap-2">
+          <h2 className="flex items-center gap-2 font-disp text-[20px] font-semibold tracking-tight text-[#111]">
             Inbox
             {totalUnread > 0 && (
-              <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-red-500 text-white text-[11px] font-extrabold leading-none">
+              <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-[#111] text-white text-[11px] font-bold leading-none">
                 {totalUnread > 99 ? "99+" : totalUnread}
               </span>
             )}
-            {totalUnread > 0 && <span className="text-[12px] font-semibold text-red-500">{totalUnread} unread</span>}
+            {totalUnread > 0 && <span className="text-[12px] font-medium text-[#6B6B6B]">{totalUnread} unread</span>}
           </h2>
-          <p>Every conversation, stored forever. Jump into any chat — the AI pauses instantly.</p>
+          <p className="text-[13px] text-[#6B6B6B] mt-1">Every conversation, stored forever. Jump into any chat — the AI pauses instantly.</p>
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div className="hidden md:flex items-center gap-2 flex-wrap justify-end">
           {wa ? (
             wa.connected && !wa.paused ? (
-              <span className="badge b-grn">
-                <span className="dot g" /> WhatsApp connected — replies delivered
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[#E9E9E7] text-[11px] font-medium text-[#111]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> WhatsApp connected
               </span>
             ) : (
-              <Link href="/settings" className="badge b-amb" title="Open Settings to connect">
-                <span className="dot a" /> WhatsApp {wa.paused ? "paused" : "not connected"}
+              <Link href="/settings" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F7F7F5] border border-[#E9E9E7] text-[11px] font-medium text-[#6B6B6B]" title="Open Settings to connect">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#9B9B9B]" /> WhatsApp {wa.paused ? "paused" : "not connected"}
               </Link>
             )
           ) : null}
-          <span className="badge b-grn">{conversations.filter((c) => c.status === "ai").length} AI handling</span>
-          <span className="badge b-amb">{conversations.filter((c) => c.status === "waiting").length} waiting</span>
-          <span className="badge b-mut">{conversations.filter((c) => c.status === "closed").length} closed</span>
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white border border-[#E9E9E7] text-[11px] font-medium text-[#6B6B6B]">{conversations.filter((c) => c.status === "ai").length} AI</span>
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#FEF9E7] border border-[#F5E6C8] text-[11px] font-medium text-[#8A6B2A]">{conversations.filter((c) => c.status === "waiting").length} waiting</span>
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white border border-[#E9E9E7] text-[11px] font-medium text-[#9B9B9B]">{conversations.filter((c) => c.status === "closed").length} closed</span>
         </div>
       </div>
 
@@ -353,29 +353,28 @@ export default function InboxPage() {
                   setOpenId(c.id);
                   setMobile("detail");
                 }}
+                style={(c as any).unreadCount > 0 ? { borderLeft: "2px solid #111" } : undefined}
               >
-                <span className="av" style={{ background: avColor(c.name) }}>{initials(c.name)}</span>
+                <span className="av">{initials(c.name)}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="nm">
                     <span className="flex items-center gap-1.5 min-w-0">
                       <span className="truncate">{c.name}</span>
                       {(c as any).unreadCount > 0 && (
-                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-extrabold leading-none shrink-0">
+                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#111] text-white text-[10px] font-bold leading-none shrink-0">
                           {(c as any).unreadCount > 9 ? "9+" : (c as any).unreadCount}
                         </span>
                       )}
                     </span>
                     <time className="shrink-0">{fmtDay(c.t)}</time>
                   </div>
-                  <div className="pv flex items-center gap-1.5">
-                    <span className="truncate flex-1">{prevText(c)}</span>
-                    {(c as any).unreadCount > 0 && <span className="text-[11px] font-bold text-red-500 whitespace-nowrap">{(c as any).unreadCount} new</span>}
+                  <div className="pv">
+                    <span className="truncate">{prevText(c)}</span>
                   </div>
                   <div className="meta">
                     {statusBadge(c)}
-                    <span className={`badge ${c.lang === "sw" ? "b-grn" : "b-blu"}`}>{c.lang.toUpperCase()}</span>
-                    {c.takeover && <span className="badge b-ink">You</span>}
-                    {(c as any).unreadCount > 0 && <span className="badge b-red">{(c as any).unreadCount} unread</span>}
+                    <span className="text-[10px] font-medium tracking-wide uppercase text-[#9B9B9B] px-1.5">{c.lang.toUpperCase()}</span>
+                    {c.takeover && <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#111] text-white text-[10px] font-medium">You</span>}
                   </div>
                 </div>
               </li>
@@ -399,31 +398,17 @@ export default function InboxPage() {
                 >
                   <Icon name="arrow" size={13} />
                 </button>
-                <span
-                  className="av"
-                  style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: "50%",
-                    background: avColor(open.name),
-                    color: "#fff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: 800,
-                    fontSize: 14,
-                  }}
-                >
+                <span className="w-9 h-9 rounded-full bg-[#F7F7F5] border border-[#E9E9E7] text-[#6B6B6B] grid place-items-center font-semibold text-[12px] flex-none">
                   {initials(open.name)}
                 </span>
                 <div className="who">
                   <b>{open.name}</b>
                   <span>{open.phone} · {open.lang.toUpperCase()} conversation</span>
                 </div>
-                <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                <div className="flex gap-2 flex-wrap items-center">
                   {statusBadge(open)}
                   {open.reason && (
-                    <span className="badge b-red" title={open.reason}>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FEF9E7] border border-[#F5E6C8] text-[11px] font-medium text-[#8A6B2A]" title={open.reason}>
                       <Icon name="hand" size={11} /> {open.reason.slice(0, 26)}
                       {open.reason.length > 26 ? "…" : ""}
                     </span>

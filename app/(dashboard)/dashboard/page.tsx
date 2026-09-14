@@ -103,12 +103,12 @@ function ProgressRing({ pct }: { pct: number }) {
   return (
     <div className="relative w-[76px] h-[76px] flex-none">
       <svg width="76" height="76" viewBox="0 0 76 76">
-        <circle cx="38" cy="38" r={r} fill="none" stroke="rgba(255,255,255,.15)" strokeWidth="7" />
-        <circle cx="38" cy="38" r={r} fill="none" stroke="#53E89B" strokeWidth="7" strokeLinecap="round" strokeDasharray={`${done} ${c}`} transform="rotate(-90 38 38)" />
+        <circle cx="38" cy="38" r={r} fill="none" stroke="#F1F1EF" strokeWidth="7" />
+        <circle cx="38" cy="38" r={r} fill="none" stroke="#111" strokeWidth="7" strokeLinecap="round" strokeDasharray={`${done} ${c}`} transform="rotate(-90 38 38)" />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-mono font-bold text-white text-[17px] leading-none">{pct}%</span>
-        <span className="text-[8px] uppercase tracking-wider text-[#8FF0B4] font-bold">ready</span>
+        <span className="font-mono font-bold text-[#111] text-[17px] leading-none">{pct}%</span>
+        <span className="text-[8px] uppercase tracking-wider text-[#9B9B9B] font-bold">ready</span>
       </div>
     </div>
   );
@@ -394,96 +394,90 @@ export default async function DashboardPage() {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="viewwrap max-w-[1240px] mx-auto">
-      <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
+    <div className="mx-auto max-w-[1120px]">
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
         <div>
-          <h1 className="text-[26px] font-disp font-bold tracking-tight text-dark">
+          <h1 className="text-[24px] font-disp font-semibold tracking-tight text-[#111]">
             {greeting}, {owner}
           </h1>
-          <p className="text-sm text-muted">
+          <p className="text-[13px] text-[#6B6B6B] mt-1">
             {displayName} · {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
           </p>
         </div>
-        <span className="livechip">
-          <span className="dot g pulse" /> LIVE — updating in real time
+        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#E9E9E7] text-[12px] font-medium text-[#111]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#111] animate-pulse" /> LIVE — updating in real time
         </span>
       </div>
 
       {!onboarded && (
-        <div className="bg-[#0C2417] text-white rounded-[18px] p-6 mb-5 flex items-center justify-between flex-wrap gap-4 shadow-[0_20px_50px_-24px_rgba(12,36,23,.7)]">
+        <div className="bg-white border border-[#E9E9E7] rounded-[12px] p-5 mb-6 flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
-            <span className="w-11 h-11 rounded-[14px] bg-lime2 text-[#06170D] flex items-center justify-center flex-none">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" /></svg>
+            <span className="w-9 h-9 rounded-[10px] bg-[#F7F7F5] border border-[#E9E9E7] text-[#111] grid place-items-center flex-none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" /></svg>
             </span>
             <div>
-              <h3 className="font-disp text-lg font-bold">Your AI agent isn&apos;t set up yet</h3>
-              <p className="text-sm text-[#9DB6A7] mt-0.5">Answer 10 quick questions so your agent can sell, book and reply in your voice.</p>
+              <h3 className="font-disp text-[15px] font-semibold text-[#111]">Your AI agent isn&apos;t set up yet</h3>
+              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Answer 10 quick questions so your agent can sell, book and reply in your voice.</p>
             </div>
           </div>
-          <Link href="/onboarding" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-lime2 text-[#06170D] font-semibold text-sm hover:bg-[#6ff0a8] transition-colors">
+          <Link href="/onboarding" className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#111] text-white font-medium text-[13px] hover:bg-black transition-colors">
             Finish Setup
           </Link>
         </div>
       )}
 
       {!fullySetUp && (
-        <div className="grid gap-4 sm:grid-cols-2 mb-5">
-          <div className="bg-[#0C2417] rounded-[16px] p-5 text-white relative overflow-hidden">
-            <div className="absolute inset-0 opacity-60" style={{ backgroundImage: "radial-gradient(circle at 85% 10%, rgba(83,232,155,.14) 0, transparent 45%)" }} />
-            <div className="relative">
-              <h3 className="font-disp font-bold text-white text-[15.5px] mb-3">Setup checklist</h3>
-              <div className="flex items-center gap-4">
-                <ProgressRing pct={progressPct} />
-                <ul className="flex flex-col gap-1 min-w-0">
-                  {checklist.map((c) => (
-                    <li key={c.label}>
-                      <Link href={c.href} className={`flex items-center gap-2 text-[12px] font-semibold hover:underline ${c.done ? "text-[#8FF0B4] line-through opacity-80" : "text-white/90"}`}>
-                        <span className={`w-[15px] h-[15px] rounded-full flex items-center justify-center flex-none ${c.done ? "bg-lime2 text-[#06170D]" : "border border-white/40 text-transparent"}`}>
-                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                        </span>
-                        {c.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        <div className="grid gap-6 sm:grid-cols-2 mb-6">
+          <div className="bg-white border border-[#E9E9E7] rounded-[12px] p-6">
+            <h3 className="font-disp font-semibold text-[#111] text-[14px] mb-4">Setup checklist</h3>
+            <div className="flex items-center gap-4">
+              <ProgressRing pct={progressPct} />
+              <ul className="flex flex-col gap-1.5 min-w-0">
+                {checklist.map((c) => (
+                  <li key={c.label}>
+                    <Link href={c.href} className={`flex items-center gap-2 text-[13px] hover:underline ${c.done ? "text-[#9B9B9B] line-through" : "text-[#111]"}`}>
+                      <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center flex-none border ${c.done ? "bg-[#111] border-[#111] text-white" : "border-[#E9E9E7] text-transparent bg-white"}`}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                      </span>
+                      {c.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          <div className="bg-[#0C2417] rounded-[16px] p-5 text-white relative overflow-hidden">
-            <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 10% 18%, rgba(83,232,155,.16) 0, transparent 40%), radial-gradient(circle at 90% 0%, rgba(20,154,91,.22) 0, transparent 45%)" }} />
-            <div className="relative flex flex-col justify-between h-full gap-4">
-              <div className="flex items-center gap-3">
-                {businessLogo ? (
-                  <span className="w-12 h-12 rounded-[14px] overflow-hidden flex-none ring-1 ring-white/20 bg-white/10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={businessLogo} alt={displayName} className="w-full h-full object-cover" />
-                  </span>
-                ) : (
-                  <span className="w-12 h-12 rounded-[14px] bg-lime2 text-[#06170D] flex items-center justify-center font-extrabold font-disp text-[17px] flex-none">
-                    {hasBusinessName ? initials(businessName) : "?"}
-                  </span>
-                )}
-                <div className="min-w-0">
-                  <h3 className="font-disp font-bold truncate">{displayName}</h3>
-                  <p className="text-[12px] text-[#9DB6A7] line-clamp-1">{description}</p>
-                </div>
+          <div className="bg-white border border-[#E9E9E7] rounded-[12px] p-6 flex flex-col justify-between gap-4">
+            <div className="flex items-center gap-3">
+              {businessLogo ? (
+                <span className="w-10 h-10 rounded-[10px] overflow-hidden flex-none border border-[#E9E9E7] bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={businessLogo} alt={displayName} className="w-full h-full object-cover" />
+                </span>
+              ) : (
+                <span className="w-10 h-10 rounded-[10px] bg-[#F7F7F5] border border-[#E9E9E7] text-[#6B6B6B] flex items-center justify-center font-semibold text-[14px] flex-none">
+                  {hasBusinessName ? initials(businessName) : "?"}
+                </span>
+              )}
+              <div className="min-w-0">
+                <h3 className="font-disp font-semibold text-[#111] truncate text-[14px]">{displayName}</h3>
+                <p className="text-[12px] text-[#6B6B6B] line-clamp-1">{description}</p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[9px] bg-grn text-white font-semibold text-[13px] hover:bg-grn-d transition-colors">
-                  Open Chat Agent
-                </Link>
-                <Link href="/dashboard/products" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[9px] bg-white/10 border border-white/10 text-white font-semibold text-[13px] hover:bg-white/20 transition-colors">
-                  Manage catalog
-                </Link>
-              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-[#111] text-white font-medium text-[13px] hover:bg-black transition-colors">
+                Open Chat Agent
+              </Link>
+              <Link href="/dashboard/products" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-white border border-[#E9E9E7] text-[#111] font-medium text-[13px] hover:bg-[#F7F7F5] transition-colors">
+                Manage catalog
+              </Link>
             </div>
           </div>
         </div>
       )}
 
-      {/* ─── analytics grid (dashboard-3 layout, C-chat palette) ─── */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* analytics — Notion breathing room */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCards items={stats} />
 
         <VolumeChart data={volumeData} />
@@ -513,19 +507,19 @@ export default async function DashboardPage() {
             {recentRows.length ? (
               <ul className="divide-y divide-[#F1F1EF]">
                 {recentRows.map(({ c, lm }) => (
-                  <li key={c.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[#FAFCFA] transition-colors">
-                    <span className="w-8 h-8 rounded-full bg-grn-bg text-[#111] font-bold text-[11px] flex items-center justify-center flex-none">
+                  <li key={c.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[#F7F7F5] transition-colors">
+                    <span className="w-8 h-8 rounded-full bg-[#F7F7F5] border border-[#E9E9E7] text-[#6B6B6B] font-semibold text-[11px] flex items-center justify-center flex-none">
                       {initials(c.name)}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-semibold text-dark leading-snug">{c.name}</p>
-                      <p className="line-clamp-1 text-[11.5px] text-muted">
+                      <p className="truncate text-[13px] font-medium text-[#111] leading-snug">{c.name}</p>
+                      <p className="line-clamp-1 text-[12px] text-[#6B6B6B]">
                         {lm ? (lm.fromCustomer ? "" : "You: ") + lm.content : "No messages yet"}
                       </p>
                     </div>
                     <div className="flex flex-col items-end gap-1 flex-none">
                       {statusBadge(c.status, c.outcome)}
-                      <span className="text-[10.5px] text-muted font-mono">{agoStr((lm?.t ?? c.createdAt).getTime())}</span>
+                      <span className="text-[10.5px] text-[#9B9B9B] font-mono">{agoStr((lm?.t ?? c.createdAt).getTime())}</span>
                     </div>
                   </li>
                 ))}
@@ -534,7 +528,7 @@ export default async function DashboardPage() {
               <div className="py-10 text-center text-muted text-[13px]">No conversations yet.</div>
             )}
             <div className="flex justify-center border-t border-[#E9E9E7] py-2.5">
-              <Link href="/dashboard/inbox" className="text-[12.5px] font-bold text-[#111] hover:underline inline-flex items-center gap-1">
+              <Link href="/dashboard/inbox" className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#111] inline-flex items-center gap-1">
                 View all conversations →
               </Link>
             </div>
@@ -552,14 +546,14 @@ export default async function DashboardPage() {
                 {feed.slice(0, 8).map((f, i) => (
                   <ListRow
                     key={i}
-                    dotColor={f.kind === "sale" ? "#149A5B" : "#E8A222"}
+                    dotColor={f.kind === "sale" ? "#111" : "#9B9B9B"}
                     title={f.title}
                     sub={f.sub}
                   />
                 ))}
               </ul>
             ) : (
-              <div className="py-10 text-center text-muted text-[13px] px-5">
+              <div className="py-10 text-center text-[#6B6B6B] text-[13px] px-5">
                 Nothing yet — sales and handoff alerts land here in real time.
               </div>
             )}
@@ -576,18 +570,18 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="p-0">
             {!catalogProducts.length ? (
-              <div className="py-10 text-center text-muted text-[13px] px-5">
+              <div className="py-10 text-center text-[#6B6B6B] text-[13px] px-5">
                 Catalog is empty — add products and the AI tracks stock automatically.
               </div>
             ) : lowStock.length === 0 ? (
-              <div className="py-10 text-center text-[13px] text-[#111] font-semibold">Everything is healthy.</div>
+              <div className="py-10 text-center text-[13px] text-[#6B6B6B]">Everything is healthy.</div>
             ) : (
               <ul className="flex flex-col divide-y divide-[#F1F1EF]">
                 {lowStock.slice(0, 6).map((p) => (
                   <ListRow
                     key={p.id}
                     dot={
-                      <span className="w-8 h-8 rounded-[9px] flex items-center justify-center text-[15px] flex-none" style={{ background: p.cl }}>
+                      <span className="w-8 h-8 rounded-[9px] bg-[#F7F7F5] border border-[#E9E9E7] flex items-center justify-center text-[15px] flex-none">
                         {p.emoji}
                       </span>
                     }
@@ -606,7 +600,7 @@ export default async function DashboardPage() {
               </ul>
             )}
             <div className="flex justify-center border-t border-[#E9E9E7] py-2.5">
-              <Link href="/dashboard/products" className="text-[12.5px] font-bold text-[#111] hover:underline inline-flex items-center gap-1">
+              <Link href="/dashboard/products" className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#111] inline-flex items-center gap-1">
                 Manage catalog →
               </Link>
             </div>
@@ -614,7 +608,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <Card className="mt-4">
+      <Card className="mt-6">
         <CardHeader className="sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <CardTitle>Your business</CardTitle>
@@ -625,10 +619,10 @@ export default async function DashboardPage() {
             </CardDescription>
           </div>
           <div className="flex gap-2">
-            <Link href="/onboarding" className="inline-flex items-center px-3.5 py-2 rounded-[9px] bg-grn text-white font-semibold text-[13px] hover:bg-grn-d transition-colors">
+            <Link href="/onboarding" className="inline-flex items-center px-3.5 py-2 rounded-[8px] bg-[#111] text-white font-medium text-[13px] hover:bg-black transition-colors">
               {onboarded ? "Edit Setup Guide" : "Start Setup Guide"}
             </Link>
-            <Link href="/settings" className="inline-flex items-center px-3.5 py-2 rounded-[9px] border border-[#E9E9E7] text-dark font-semibold text-[13px] hover:border-[#111] transition-colors">
+            <Link href="/settings" className="inline-flex items-center px-3.5 py-2 rounded-[8px] border border-[#E9E9E7] bg-white text-[#111] font-medium text-[13px] hover:bg-[#F7F7F5] transition-colors">
               {wa ? "Manage WhatsApp" : "Connect WhatsApp"}
             </Link>
           </div>

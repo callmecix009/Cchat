@@ -239,11 +239,11 @@ export default function ChatAgentPage() {
   const bw = 620 / state.msgsByDay.length;
 
   return (
-    <div className="viewwrap max-w-[1240px] mx-auto">
-      <div className="section-h">
+    <div className="mx-auto max-w-[1120px]">
+      <div className="flex items-start justify-between gap-4 mb-8">
         <div>
-          <h2>Chat Agent</h2>
-          <p>Verify exactly how your AI talks — before your customers ever meet it.</p>
+          <h2 className="font-disp text-[20px] font-semibold tracking-tight text-[#111]">Chat Agent</h2>
+          <p className="text-[13px] text-[#6B6B6B] mt-1">Verify exactly how your AI talks — before your customers ever meet it.</p>
         </div>
       </div>
 
