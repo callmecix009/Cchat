@@ -227,7 +227,7 @@ export default function BillingPage() {
               <button
                 onClick={startTrial}
                 disabled={loading}
-                className="mt-3 px-4 py-2 bg-grn text-white rounded-lg text-sm font-semibold hover:bg-grn-d transition-colors disabled:opacity-50"
+                className="mt-3 px-4 py-2 bg-[#111] text-white rounded-lg text-sm font-semibold hover:bg-black transition-colors disabled:opacity-50"
               >
                 {loading ? "Starting..." : "Start Free Trial"}
               </button>
@@ -275,7 +275,7 @@ function PlanCard({
   return (
     <div
       className={`relative flex flex-col bg-white transition-shadow ${
-        highlight ? "shadow-[inset_0_0_0_2px_#149A5B]" : ""
+        highlight ? "shadow-[inset_0_0_0_1.5px_#111]" : ""
       }`}
     >
       {badge && (
@@ -285,7 +285,7 @@ function PlanCard({
           <CrownIcon className="w-3 h-3" /> {badge}
         </span>
       )}
-      <div className={`p-8 border-b ${highlight ? "border-[#BCE5CB]" : "border-[#F7F7F5]"} flex flex-col flex-1`}>
+      <div className={`p-8 border-b ${highlight ? "border-[#111]" : "border-[#F7F7F5]"} flex flex-col flex-1`}>
         <div className="mb-4 flex items-center justify-center">
           {badgeKind === "extra" ? (
             <ExtraPremiumBadge size={92} />

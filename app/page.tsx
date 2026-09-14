@@ -642,7 +642,7 @@ export default function LandingPage() {
                     <span className="text-[#6B6B6B] text-[12px]">days free</span>
                   </div>
                   <p className="mb-6 text-[#6B6B6B] text-[13px]">Everything included. No card required.</p>
-                  <Link href="/sign-up" className="btn wide pri mt-auto justify-center">Start free trial</Link>
+                  <Link href="/sign-up" className="inline-flex items-center justify-center w-full mt-auto px-4 py-2.5 rounded-[8px] bg-[#149A5B] text-white font-semibold text-[13px] hover:bg-[#0E7A47] transition-colors">Start free trial</Link>
                 </div>
               </div>
 

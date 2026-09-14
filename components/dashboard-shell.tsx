@@ -427,11 +427,11 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             {waConnected && !waPaused ? (
               <>
                 <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white text-[#111] border border-[#E9E9E7] whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#149A5B]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#111]" />
                   WhatsApp Connected
                 </span>
                 <span className="sm:hidden inline-flex items-center justify-center w-7 h-7 rounded-full bg-white text-[#111] border border-[#E9E9E7]">
-                  <span className="w-2 h-2 rounded-full bg-[#149A5B]" />
+                  <span className="w-2 h-2 rounded-full bg-[#111]" />
                 </span>
               </>
             ) : waConnected && waPaused ? (

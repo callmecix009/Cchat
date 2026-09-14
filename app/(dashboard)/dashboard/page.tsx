@@ -319,19 +319,19 @@ export default async function DashboardPage() {
   ];
 
   const outcomeSlices: OutcomeSlice[] = [
-    { key: "sold", label: "Closed as sold", value: soldN, color: "#149A5B" },
-    { key: "waiting", label: "Waiting on you", value: waiting, color: "#E8A222" },
+    { key: "sold", label: "Closed as sold", value: soldN, color: "#111" },
+    { key: "waiting", label: "Waiting on you", value: waiting, color: "#9B9B9B" },
     {
       key: "open",
       label: "AI handling",
       value: convos.filter((c) => c.status !== "closed" && c.status !== "waiting").length,
-      color: "#53E89B",
+      color: "#E9E9E7",
     },
     {
       key: "closed",
       label: "Closed other",
       value: convos.filter((c) => c.status === "closed" && c.outcome !== "sold").length,
-      color: "#CFE0D4",
+      color: "#F1F1EF",
     },
   ].filter((s) => s.value > 0);
 
