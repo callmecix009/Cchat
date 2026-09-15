@@ -103,6 +103,8 @@ export async function POST(req: NextRequest) {
 
     if (outcome === 'sold') {
       if (body?.productId) {
+        const { ensureProductImageColumn } = await import('@/lib/db/ensure-columns');
+        await ensureProductImageColumn();
         const prod = (
           await db
             .select()

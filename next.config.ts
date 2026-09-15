@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Trim heavy client bundles (recharts, Clerk) via per-package code splitting.
+  experimental: {
+    optimizePackageImports: ["recharts", "@clerk/nextjs", "@clerk/clerk-react"],
+  },
   // This is a Next.js App Router app (SSR + API routes), NOT a static SPA.
   // DO NOT add a catch-all rewrite like { source: "/:path*", destination: "/index.html" }.
   // That pattern is only for Vite/CRA static exports and would break Next.js

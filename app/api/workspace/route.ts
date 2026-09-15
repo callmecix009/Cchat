@@ -17,11 +17,27 @@ type IncomingProduct = {
   price?: number | string;
   stock?: number | string;
   emoji?: string;
+  // Photo as data URL. `undefined` = keep existing photo (lets stock/price
+  // updates skip re-uploading images); `null` = remove photo.
+  image?: string | null;
   cl?: string;
   kw?: string[];
   sold?: number;
   hidden?: boolean;
 };
+
+// Product photos are resized client-side (~512px, JPEG/WebP). Server cap
+// ~600KB string (~450KB binary) keeps GET /api/workspace payloads sane.
+const MAX_IMAGE_CHARS = 600_000;
+const IMAGE_RE = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
+
+function cleanImage(v: unknown): string | null | undefined {
+  if (v === undefined) return undefined; // keep existing
+  if (v === null) return null; // remove
+  if (typeof v !== 'string' || !v) return null;
+  if (v.length > MAX_IMAGE_CHARS || !IMAGE_RE.test(v)) return null;
+  return v;
+}
 
 type IncomingService = {
   id?: string;
@@ -104,26 +120,43 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found in DB' }, { status: 404 });
     }
 
-    // Replace-all strategy for products
+    // Replace-all strategy for products.
+    // Photos are merged: `image: undefined` keeps the stored photo so that
+    // cheap stock/price updates don't need to re-upload image bytes.
     if (Array.isArray(body.products)) {
+      const { ensureProductImageColumn } = await import('@/lib/db/ensure-columns');
+      await ensureProductImageColumn();
       const list = body.products.filter((p) => typeof p?.name === 'string' && p.name.trim());
+      const existingImages = new Map<string, string | null>();
+      try {
+        const rows = await db
+          .select({ id: productsTable.id, image: productsTable.image })
+          .from(productsTable)
+          .where(eq(productsTable.userId, userRow.id));
+        for (const r of rows) existingImages.set(r.id, (r.image as string | null) ?? null);
+      } catch {}
       await db.delete(productsTable).where(eq(productsTable.userId, userRow.id));
       if (list.length) {
         await db.insert(productsTable).values(
-          list.map((p, i) => ({
-            id: (typeof p.id === 'string' && p.id) || crypto.randomUUID(),
-            userId: userRow.id,
-            name: p.name!.trim().slice(0, 200),
-            cat: (p.cat ?? '').toString().slice(0, 80),
-            price: num(p.price),
-            stock: Math.max(0, num(p.stock)),
-            emoji: (p.emoji ?? '📦').toString().slice(0, 16),
-            color: (p.cl ?? '#E3F4E9').toString().slice(0, 32),
-            keywords: Array.isArray(p.kw) ? p.kw.map(String).slice(0, 20) : [],
-            sold: Math.max(0, num(p.sold)),
-            hidden: !!p.hidden,
-            sortOrder: i,
-          }))
+          list.map((p, i) => {
+            const id = (typeof p.id === 'string' && p.id) || crypto.randomUUID();
+            const incoming = cleanImage((p as IncomingProduct).image);
+            return {
+              id,
+              userId: userRow.id,
+              name: p.name!.trim().slice(0, 200),
+              cat: (p.cat ?? '').toString().slice(0, 80),
+              price: num(p.price),
+              stock: Math.max(0, num(p.stock)),
+              emoji: (p.emoji ?? '📦').toString().slice(0, 16),
+              image: incoming === undefined ? (existingImages.get(id) ?? null) : incoming,
+              color: (p.cl ?? '#E3F4E9').toString().slice(0, 32),
+              keywords: Array.isArray(p.kw) ? p.kw.map(String).slice(0, 20) : [],
+              sold: Math.max(0, num(p.sold)),
+              hidden: !!p.hidden,
+              sortOrder: i,
+            };
+          })
         );
       }
     }

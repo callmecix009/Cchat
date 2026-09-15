@@ -1596,6 +1596,62 @@ html.dark .dashboard-theme:not(.light) .bg-\[\#111\] { background: #EDEDED !impo
 /* Scrollbar dark */
 .dashboard-theme.dark ::-webkit-scrollbar-thumb,
 html.dark .dashboard-theme:not(.light) ::-webkit-scrollbar-thumb { background: #2A2A2A; }
+
+/* ============ Dashboard dark: static-token utilities + headings + hovers ============ */
+/* Covers Tailwind `dark/surface/muted/cborder/black/white` tokens (hardcoded in
+   @theme inline) and hardcoded component headings that stayed black in dark. */
+.dashboard-theme.dark .text-dark,
+html.dark .dashboard-theme:not(.light) .text-dark,
+.dashboard-theme.dark .text-black,
+html.dark .dashboard-theme:not(.light) .text-black { color: #EDEDED !important; }
+.dashboard-theme.dark .text-dark\/80,
+html.dark .dashboard-theme:not(.light) .text-dark\/80 { color: #EDEDED !important; }
+.dashboard-theme.dark .text-white,
+html.dark .dashboard-theme:not(.light) .text-white { color: #0F0F0F !important; }
+.dashboard-theme.dark .text-muted,
+html.dark .dashboard-theme:not(.light) .text-muted { color: #9B9B9B !important; }
+.dashboard-theme.dark .bg-dark,
+html.dark .dashboard-theme:not(.light) .bg-dark,
+.dashboard-theme.dark .bg-black,
+html.dark .dashboard-theme:not(.light) .bg-black { background-color: #EDEDED !important; color: #0F0F0F !important; }
+.dashboard-theme.dark .border-dark,
+html.dark .dashboard-theme:not(.light) .border-dark,
+.dashboard-theme.dark .border-cborder,
+html.dark .dashboard-theme:not(.light) .border-cborder { border-color: #2A2A2A !important; }
+.dashboard-theme.dark .bg-white\/80,
+html.dark .dashboard-theme:not(.light) .bg-white\/80 { background-color: rgba(26,26,26,.85) !important; }
+/* Headings used hardcoded #111 while their card bg flips — follow the theme text */
+.dashboard-theme.dark .section-h h2,
+html.dark .dashboard-theme:not(.light) .section-h h2,
+.dashboard-theme.dark .pcard h3,
+html.dark .dashboard-theme:not(.light) .pcard h3,
+.dashboard-theme.dark .svc h4,
+html.dark .dashboard-theme:not(.light) .svc h4,
+.dashboard-theme.dark .polsec h3,
+html.dark .dashboard-theme:not(.light) .polsec h3,
+.dashboard-theme.dark .sidecard h4,
+html.dark .dashboard-theme:not(.light) .sidecard h4,
+.dashboard-theme.dark .ilist .nm,
+html.dark .dashboard-theme:not(.light) .ilist .nm,
+.dashboard-theme.dark .idetail .dhead .who b,
+html.dark .dashboard-theme:not(.light) .idetail .dhead .who b { color: var(--txt) !important; }
+/* Hover states that flashed black-on-dark */
+.dashboard-theme.dark .btn.pri:hover,
+html.dark .dashboard-theme:not(.light) .btn.pri:hover,
+.dashboard-theme.dark .btn.dark:hover,
+html.dark .dashboard-theme:not(.light) .btn.dark:hover { background: #FFFFFF !important; border-color: #FFFFFF !important; color: #0F0F0F !important; }
+.dashboard-theme.dark .hover\:bg-black:hover,
+html.dark .dashboard-theme:not(.light) .hover\:bg-black:hover { background-color: #FFFFFF !important; }
+.dashboard-theme.dark .hover\:text-black:hover,
+html.dark .dashboard-theme:not(.light) .hover\:text-black:hover,
+.dashboard-theme.dark .hover\:text-\[\#111\]:hover,
+html.dark .dashboard-theme:not(.light) .hover\:text-\[\#111\]:hover,
+.dashboard-theme.dark .hover\:text-dark:hover,
+html.dark .dashboard-theme:not(.light) .hover\:text-dark:hover { color: #EDEDED !important; }
+.dashboard-theme.dark .hover\:border-\[\#111\]:hover,
+html.dark .dashboard-theme:not(.light) .hover\:border-\[\#111\]:hover { border-color: #EDEDED !important; }
+.dashboard-theme.dark .hover\:bg-\[\#F7F7F5\]:hover,
+html.dark .dashboard-theme:not(.light) .hover\:bg-\[\#F7F7F5\]:hover { background-color: #242424 !important; }
 @media (prefers-color-scheme: dark) {
   .dashboard-theme:not(.light):not(.dark) .bg-white { background-color: #1E1E1E !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="bg-[#FCFCF9]"] { background-color: #0F0F0F !important; }
@@ -1644,4 +1700,29 @@ html.dark .dashboard-theme:not(.light) ::-webkit-scrollbar-thumb { background: #
   .dashboard-theme:not(.light):not(.dark) .intoolbar { background: #1E1E1E !important; border-color: #2A2A2A !important; }
   .dashboard-theme:not(.light):not(.dark) .bub.c { background: #1E1E1E !important; color: #EDEDED !important; border-color: #2A2A2A !important; }
   .dashboard-theme:not(.light):not(.dark) .bub.a { background: #EDEDED !important; color: #0F0F0F !important; border-color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .text-dark { color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .text-dark\/80 { color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .text-black { color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .text-white { color: #0F0F0F !important; }
+  .dashboard-theme:not(.light):not(.dark) .text-muted { color: #9B9B9B !important; }
+  .dashboard-theme:not(.light):not(.dark) .bg-dark { background-color: #EDEDED !important; color: #0F0F0F !important; }
+  .dashboard-theme:not(.light):not(.dark) .bg-black { background-color: #EDEDED !important; color: #0F0F0F !important; }
+  .dashboard-theme:not(.light):not(.dark) .border-dark { border-color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .border-cborder { border-color: #2A2A2A !important; }
+  .dashboard-theme:not(.light):not(.dark) .bg-white\/80 { background-color: rgba(26,26,26,.85) !important; }
+  .dashboard-theme:not(.light):not(.dark) .section-h h2,
+  .dashboard-theme:not(.light):not(.dark) .pcard h3,
+  .dashboard-theme:not(.light):not(.dark) .svc h4,
+  .dashboard-theme:not(.light):not(.dark) .polsec h3,
+  .dashboard-theme:not(.light):not(.dark) .sidecard h4,
+  .dashboard-theme:not(.light):not(.dark) .ilist .nm,
+  .dashboard-theme:not(.light):not(.dark) .idetail .dhead .who b { color: var(--txt) !important; }
+  .dashboard-theme:not(.light):not(.dark) .btn.pri:hover,
+  .dashboard-theme:not(.light):not(.dark) .btn.dark:hover { background: #FFFFFF !important; border-color: #FFFFFF !important; color: #0F0F0F !important; }
+  .dashboard-theme:not(.light):not(.dark) .hover\:bg-black:hover { background-color: #FFFFFF !important; }
+  .dashboard-theme:not(.light):not(.dark) .hover\:text-black:hover,
+  .dashboard-theme:not(.light):not(.dark) .hover\:text-\[\#111\]:hover,
+  .dashboard-theme:not(.light):not(.dark) .hover\:text-dark:hover { color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .hover\:border-\[\#111\]:hover { border-color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .hover\:bg-\[\#F7F7F5\]:hover { background-color: #242424 !important; }
 }

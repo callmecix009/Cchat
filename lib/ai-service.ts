@@ -33,6 +33,8 @@ type BusinessContext = {
 };
 
 async function loadBusinessContext(userId: string): Promise<BusinessContext> {
+  const { ensureProductImageColumn } = await import("./db/ensure-columns");
+  await ensureProductImageColumn();
   const user = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1);
   if (!user.length) {
     return { businessName: "", businessDesc: "", city: "", owner: "", phone: "", products: [], services: [], policies: null, aiConfig: null };
@@ -57,7 +59,8 @@ async function loadBusinessContext(userId: string): Promise<BusinessContext> {
     phone: biz?.phone || (typeof answers[43] === "string" ? answers[43] : "") || "",
     products: prodRows.map((r) => ({
       id: r.id, name: r.name, cat: r.cat, price: r.price, stock: r.stock,
-      emoji: r.emoji, cl: r.color, kw: Array.isArray(r.keywords) ? r.keywords : [],
+      emoji: r.emoji, image: (r as { image?: string | null }).image ?? null,
+      cl: r.color, kw: Array.isArray(r.keywords) ? r.keywords : [],
       sold: r.sold, hidden: r.hidden,
     })),
     services: svcRows.map((r) => ({

@@ -60,7 +60,8 @@ export async function GET(req: NextRequest) {
       })
       .from(conversations)
       .where(eq(conversations.userId, user.id))
-      .orderBy(desc(conversations.createdAt));
+      .orderBy(desc(conversations.createdAt))
+      .limit(60);
 
     // Try to fetch lastReadAt separately if column exists (gracefully handle missing column)
     let lastReadMap = new Map<string, number>();
@@ -76,7 +77,8 @@ export async function GET(req: NextRequest) {
         .select()
         .from(messages)
         .where(inArray(messages.conversationId, ids))
-        .orderBy(desc(messages.createdAt));
+        .orderBy(desc(messages.createdAt))
+        .limit(2000);
       for (const m of msgs) {
         const list = msgsByConvo.get(m.conversationId) ?? [];
         list.push({
