@@ -5,6 +5,7 @@ export type Product = {
   price: number;
   stock: number;
   emoji: string;
+  image: string | null;
   cl: string;
   kw: string[];
   sold: number;
@@ -160,7 +161,7 @@ export function createSeed(): DemoState {
     cl: string,
     kw: string[],
     sold: number
-  ): Product => ({ id, name, cat, price, stock, emoji, cl, kw, sold, hidden: false });
+  ): Product => ({ id, name, cat, price, stock, emoji, image: null, cl, kw, sold, hidden: false });
   const products: Product[] = [
     P("p1", "iPhone 13 128GB", "Phones", 1450000, 3, "📱", "#E8F0FE", ["iphone", "13", "apple"], 4),
     P("p2", "iPhone 11 64GB", "Phones", 720000, 3, "📱", "#FDECEC", ["iphone", "11", "apple"], 7),

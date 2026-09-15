@@ -12,18 +12,17 @@ import {
   policies as policiesTable,
   sales as salesTable,
 } from "@/lib/db/schema";
-import { eq, inArray, desc, gte } from "drizzle-orm";
-import { agoStr, initials, TZS, type Product, type Service } from "@/lib/demo";
+import { eq, inArray, desc, gte, and } from "drizzle-orm";
+import { initials, TZS, type Product, type Service } from "@/lib/demo";
 import { ensureUserRow } from "@/lib/ensureUser";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCards, ListRow, type StatItem } from "@/components/dashboard/stats";
+import CollapsibleCard from "@/components/collapsible-card";
+import ProductThumb from "@/components/product-thumb";
 import {
   VolumeChart,
-  OutcomeDonut,
   HandlingBars,
   type VolumePoint,
-  type OutcomeSlice,
   type HandlingBar,
 } from "@/components/dashboard/charts";
 
@@ -151,6 +150,12 @@ export default async function DashboardPage() {
           console.error("Demo seeding from dashboard failed:", e);
         }
       }
+      try {
+        const { ensureProductImageColumn } = await import("@/lib/db/ensure-columns");
+        await ensureProductImageColumn();
+      } catch (e) {
+        console.error("Ensure product image column failed:", e);
+      }
       // Run all independent queries in parallel
       const [convRows, saleRows, productRows, polRes, waRes, s] = await Promise.all([
         db.select({
@@ -164,7 +169,7 @@ export default async function DashboardPage() {
         db.select().from(salesTable)
           .where(eq(salesTable.userId, row.id))
           .orderBy(desc(salesTable.createdAt))
-          .limit(12),
+          .limit(60),
         db.select().from(productsTable)
           .where(eq(productsTable.userId, row.id))
           .orderBy(productsTable.sortOrder),
@@ -196,6 +201,7 @@ export default async function DashboardPage() {
         price: r.price,
         stock: r.stock,
         emoji: r.emoji,
+        image: (r as { image?: string | null }).image ?? null,
         cl: r.color,
         kw: Array.isArray(r.keywords) ? r.keywords : [],
         sold: r.sold,
@@ -225,7 +231,7 @@ export default async function DashboardPage() {
             createdAt: messages.createdAt,
           })
           .from(messages)
-          .where(inArray(messages.conversationId, ids));
+          .where(and(inArray(messages.conversationId, ids), gte(messages.createdAt, cutoff)));
         flatMsgs = msgRows
           .filter((m) => m.createdAt >= cutoff)
           .map((m) => ({
@@ -248,7 +254,7 @@ export default async function DashboardPage() {
   const description =
     bizSettings?.desc ||
     (data[2] as string) ||
-    (hasBusinessName ? "Your AI WhatsApp agent is standing by." : "Add your business name in Business Profile to get started.");
+    (hasBusinessName ? "I reply to your customers day and night." : "Add your shop name in Settings to start.");
   const city = bizSettings?.city || (data[3] as string) || "";
   const phone = bizSettings?.phone || (data[43] as string) || row?.phone || "";
   const owner = bizSettings?.owner || name.split(" ")[0] || "Boss";
@@ -261,7 +267,6 @@ export default async function DashboardPage() {
   const msgsYesterday = flatMsgs.filter((m) => m.t >= yest && m.t < startToday).length;
 
   const active = convos.filter((c) => c.status !== "closed").length;
-  const waiting = convos.filter((c) => c.status === "waiting").length;
   const soldN = convos.filter((c) => c.outcome === "sold").length;
 
   const weekAgo = new Date(startToday);
@@ -283,10 +288,6 @@ export default async function DashboardPage() {
   const volumeData = buildVolume(flatMsgs, 61);
   const handlingData = buildHandling(flatMsgs, 10);
 
-  const totalMsgs = flatMsgs.length;
-  const aiReplies = flatMsgs.filter((m) => !m.fromCustomer && m.aiSent).length;
-  const autoPct = totalMsgs ? Math.round((aiReplies / totalMsgs) * 100) : 0;
-
   const stats: StatItem[] = [
     {
       label: "Messages today",
@@ -296,93 +297,32 @@ export default async function DashboardPage() {
       footnote: "vs yesterday",
     },
     {
-      label: "Active conversations",
+      label: "Open chats",
       value: String(active),
       delta: pctDelta(convosThisWeek, convosPrevWeek).v,
       hasDelta: pctDelta(convosThisWeek, convosPrevWeek).has && (convosPrevWeek > 0 || convosThisWeek > 0),
       footnote: "new this week",
     },
     {
-      label: "Closed as sold",
+      label: "Sold",
       value: String(soldN),
       delta: pctDelta(salesRows30.length, salesPrev30).v,
       hasDelta: pctDelta(salesRows30.length, salesPrev30).has && (salesPrev30 > 0 || salesRows30.length > 0),
       footnote: "sales last 30d",
     },
     {
-      label: "Sales · 30 days",
+      label: "Money in (30 days)",
       value: TZS(revenue30),
       delta: pctDelta(revenue30, revenuePrev30).v,
       hasDelta: pctDelta(revenue30, revenuePrev30).has && (revenuePrev30 > 0 || revenue30 > 0),
-      footnote: "recorded via inbox",
+      footnote: "from chats you marked sold",
     },
   ];
 
-  const outcomeSlices: OutcomeSlice[] = [
-    { key: "sold", label: "Closed as sold", value: soldN, color: "#111" },
-    { key: "waiting", label: "Waiting on you", value: waiting, color: "#9B9B9B" },
-    {
-      key: "open",
-      label: "AI handling",
-      value: convos.filter((c) => c.status !== "closed" && c.status !== "waiting").length,
-      color: "#E9E9E7",
-    },
-    {
-      key: "closed",
-      label: "Closed other",
-      value: convos.filter((c) => c.status === "closed" && c.outcome !== "sold").length,
-      color: "#F1F1EF",
-    },
-  ].filter((s) => s.value > 0);
-
-  // recent conversations table rows
-  const lastMsgByConvo = new Map<string, FlatMsg>();
-  for (const m of flatMsgs) {
-    const prev = lastMsgByConvo.get(m.conversationId);
-    if (!prev || m.t > prev.t) lastMsgByConvo.set(m.conversationId, m);
-  }
-  const recentRows = convos
-    .map((c) => ({ c, lm: lastMsgByConvo.get(c.id) }))
-    .sort((a, b) => (b.lm?.t.getTime() ?? b.c.createdAt.getTime()) - (a.lm?.t.getTime() ?? a.c.createdAt.getTime()))
-    .slice(0, 5);
-
-  function statusBadge(status: string, outcome: string | null) {
-    if (outcome === "sold") return <Badge variant="green">Sold ✓</Badge>;
-    if (status === "waiting") return <Badge variant="red">Needs you</Badge>;
-    if (status === "closed") return <Badge variant="outline">Closed</Badge>;
-    return <Badge variant="gray">AI live</Badge>;
-  }
-
-  // live activity feed from real signals
-  type FeedItem = { kind: "sale" | "handoff"; title: React.ReactNode; sub: string };
-  const feed: FeedItem[] = [];
-  for (const s of saleEvents.slice(0, 5)) {
-    feed.push({
-      kind: "sale",
-      title: (
-        <>
-          Sold <b>{s.qty}×</b> {s.productName}
-        </>
-      ),
-      sub: `${TZS(s.amount)} · ${agoStr(s.t.getTime())}`,
-    });
-  }
-  for (const c of convos.filter((x) => x.status === "waiting").slice(0, 4)) {
-    feed.push({
-      kind: "handoff",
-      title: (
-        <>
-          Handed to you — <b>{c.name}</b>
-        </>
-      ),
-      sub: "AI paused, waiting for your reply",
-    });
-  }
-
   const checklist = [
-    { label: "Complete the Setup Guide", done: onboarded, href: "/onboarding", cta: onboarded ? "Edit" : "Start" },
-    { label: "Add your business name", done: hasBusinessName, href: "/settings", cta: "Add" },
-    { label: "Add your first product", done: catalogProducts.length > 0, href: "/dashboard/products", cta: "Add" },
+    { label: "Answer questions about your shop", done: onboarded, href: "/onboarding", cta: onboarded ? "Edit" : "Start" },
+    { label: "Add your shop name", done: hasBusinessName, href: "/settings", cta: "Add" },
+    { label: "Add what you sell", done: catalogProducts.length > 0, href: "/dashboard/products", cta: "Add" },
     { label: "Connect WhatsApp", done: !!wa, href: "/settings", cta: "Connect" },
   ];
   const doneCount = checklist.filter((c) => c.done).length;
@@ -405,7 +345,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#E9E9E7] text-[12px] font-medium text-[#111]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#111] animate-pulse" /> LIVE — updating in real time
+          <span className="w-1.5 h-1.5 rounded-full bg-[#149A5B]" /> Updated just now
         </span>
       </div>
 
@@ -416,12 +356,12 @@ export default async function DashboardPage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" /></svg>
             </span>
             <div>
-              <h3 className="font-disp text-[15px] font-semibold text-[#111]">Your AI agent isn&apos;t set up yet</h3>
-              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Answer 10 quick questions so your agent can sell, book and reply in your voice.</p>
+              <h3 className="font-disp text-[15px] font-semibold text-[#111]">Your helper isn&apos;t set up yet</h3>
+              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Answer 10 quick questions so it can sell and reply for you.</p>
             </div>
           </div>
           <Link href="/onboarding" className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#111] text-white font-medium text-[13px] hover:bg-black transition-colors">
-            Finish Setup
+            Finish set-up
           </Link>
         </div>
       )}
@@ -429,7 +369,7 @@ export default async function DashboardPage() {
       {!fullySetUp && (
         <div className="grid gap-6 sm:grid-cols-2 mb-6">
           <div className="bg-white border border-[#E9E9E7] rounded-[12px] p-6">
-            <h3 className="font-disp font-semibold text-[#111] text-[14px] mb-4">Setup checklist</h3>
+            <h3 className="font-disp font-semibold text-[#111] text-[14px] mb-4">Set-up list</h3>
             <div className="flex items-center gap-4">
               <ProgressRing pct={progressPct} />
               <ul className="flex flex-col gap-1.5 min-w-0">
@@ -450,9 +390,9 @@ export default async function DashboardPage() {
           <div className="bg-white border border-[#E9E9E7] rounded-[12px] p-6 flex flex-col justify-between gap-4">
             <div className="flex items-center gap-3">
               {businessLogo ? (
-                <span className="w-10 h-10 rounded-[10px] overflow-hidden flex-none border border-[#E9E9E7] bg-white">
+                <span className="w-10 h-10 rounded-[10px] overflow-hidden flex-none border border-[#E9E9E7] bg-white p-1 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={businessLogo} alt={displayName} className="w-full h-full object-cover" />
+                  <img src={businessLogo} alt={displayName} className="w-full h-full object-contain" />
                 </span>
               ) : (
                 <span className="w-10 h-10 rounded-[10px] bg-[#F7F7F5] border border-[#E9E9E7] text-[#6B6B6B] flex items-center justify-center font-semibold text-[14px] flex-none">
@@ -466,10 +406,10 @@ export default async function DashboardPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-[#149A5B] text-white font-medium text-[13px] hover:bg-[#0E7A47] transition-colors shadow-[0_2px_8px_rgba(20,154,91,.25)]">
-                Open Chat Agent
+                Test replies
               </Link>
               <Link href="/dashboard/products" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-white border border-[#E9E9E7] text-[#111] font-medium text-[13px] hover:bg-[#F7F7F5] transition-colors">
-                Manage catalog
+                Add goods
               </Link>
             </div>
           </div>
@@ -482,152 +422,65 @@ export default async function DashboardPage() {
 
         <VolumeChart data={volumeData} />
 
-        {outcomeSlices.length ? (
-          <OutcomeDonut slices={outcomeSlices} automatedPct={autoPct} />
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Outcome split</CardTitle>
-              <CardDescription>All conversations by result.</CardDescription>
-            </CardHeader>
-            <CardContent className="my-auto py-10 text-center text-muted text-[13px]">
-              No conversations yet — connect WhatsApp and they&apos;ll appear here.
-            </CardContent>
-          </Card>
-        )}
-
         <HandlingBars data={handlingData} />
 
-        <Card className="md:col-span-2 gap-0">
-          <CardHeader className="border-b border-[#E9E9E7] pb-3">
-            <CardTitle>Recent conversations</CardTitle>
-            <CardDescription>Latest threads from your inbox.</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            {recentRows.length ? (
-              <ul className="divide-y divide-[#F1F1EF]">
-                {recentRows.map(({ c, lm }) => (
-                  <li key={c.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[#F7F7F5] transition-colors">
-                    <span className="w-8 h-8 rounded-full bg-[#F7F7F5] border border-[#E9E9E7] text-[#6B6B6B] font-semibold text-[11px] flex items-center justify-center flex-none">
-                      {initials(c.name)}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-medium text-[#111] leading-snug">{c.name}</p>
-                      <p className="line-clamp-1 text-[12px] text-[#6B6B6B]">
-                        {lm ? (lm.fromCustomer ? "" : "You: ") + lm.content : "No messages yet"}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end gap-1 flex-none">
-                      {statusBadge(c.status, c.outcome)}
-                      <span className="text-[10.5px] text-[#9B9B9B] font-mono">{agoStr((lm?.t ?? c.createdAt).getTime())}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="py-10 text-center text-muted text-[13px]">No conversations yet.</div>
-            )}
-            <div className="flex justify-center border-t border-[#E9E9E7] py-2.5">
-              <Link href="/dashboard/inbox" className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#111] inline-flex items-center gap-1">
-                View all conversations →
-              </Link>
+        <CollapsibleCard
+          id="stock"
+          title="Running out"
+          desc={`${threshold} or less left.`}
+          badge={<Badge variant={lowStock.length ? "amber" : "green"}>{lowStock.length} items</Badge>}
+        >
+          {!catalogProducts.length ? (
+            <div className="py-10 text-center text-[#6B6B6B] text-[13px] px-5">
+              No goods yet — add products and the AI tracks stock for you.
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-0">
-          <CardHeader className="border-b border-[#E9E9E7] pb-3">
-            <CardTitle>Live activity</CardTitle>
-            <CardDescription>Sales & handoffs.</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            {feed.length ? (
-              <ul className="flex flex-col divide-y divide-[#F1F1EF] max-h-[300px] overflow-auto">
-                {feed.slice(0, 8).map((f, i) => (
-                  <ListRow
-                    key={i}
-                    dotColor={f.kind === "sale" ? "#111" : "#9B9B9B"}
-                    title={f.title}
-                    sub={f.sub}
-                  />
-                ))}
-              </ul>
-            ) : (
-              <div className="py-10 text-center text-[#6B6B6B] text-[13px] px-5">
-                Nothing yet — sales and handoff alerts land here in real time.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="gap-0">
-          <CardHeader className="border-b border-[#E9E9E7] pb-3">
-            <div className="flex items-center justify-between gap-2">
-              <CardTitle>Stock alerts</CardTitle>
-              <Badge variant={lowStock.length ? "amber" : "green"}>{lowStock.length} items</Badge>
-            </div>
-            <CardDescription>At or below {threshold} units.</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            {!catalogProducts.length ? (
-              <div className="py-10 text-center text-[#6B6B6B] text-[13px] px-5">
-                Catalog is empty — add products and the AI tracks stock automatically.
-              </div>
-            ) : lowStock.length === 0 ? (
-              <div className="py-10 text-center text-[13px] text-[#6B6B6B]">Everything is healthy.</div>
-            ) : (
-              <ul className="flex flex-col divide-y divide-[#F1F1EF]">
-                {lowStock.slice(0, 6).map((p) => (
-                  <ListRow
-                    key={p.id}
-                    dot={
-                      <span className="w-8 h-8 rounded-[9px] bg-[#F7F7F5] border border-[#E9E9E7] flex items-center justify-center text-[15px] flex-none">
-                        {p.emoji}
-                      </span>
-                    }
-                    dotColor="transparent"
-                    title={p.name}
-                    sub={p.stock === 0 ? "OUT OF STOCK" : `${p.stock} left`}
-                    right={
-                      p.stock === 0 ? (
-                        <Badge variant="red">Out</Badge>
-                      ) : (
-                        <Badge variant="amber">Low</Badge>
-                      )
-                    }
-                  />
-                ))}
-              </ul>
-            )}
-            <div className="flex justify-center border-t border-[#E9E9E7] py-2.5">
-              <Link href="/dashboard/products" className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#111] inline-flex items-center gap-1">
-                Manage catalog →
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+          ) : lowStock.length === 0 ? (
+            <div className="py-10 text-center text-[13px] text-[#6B6B6B]">Everything is healthy.</div>
+          ) : (
+            <ul className="flex flex-col divide-y divide-[#F1F1EF]">
+              {lowStock.slice(0, 6).map((p) => (
+                <ListRow
+                  key={p.id}
+                  dot={
+                    <ProductThumb image={p.image} emoji={p.emoji} name={p.name} cl={p.cl} size={32} radius={9} />
+                  }
+                  dotColor="transparent"
+                  title={p.name}
+                  sub={p.stock === 0 ? "Finished" : `${p.stock} left`}
+                  right={
+                    p.stock === 0 ? (
+                      <Badge variant="red">Out</Badge>
+                    ) : (
+                      <Badge variant="amber">Low</Badge>
+                    )
+                  }
+                />
+              ))}
+            </ul>
+          )}
+          <div className="flex justify-center border-t border-[#E9E9E7] py-2.5">
+            <Link href="/dashboard/products" className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#111] inline-flex items-center gap-1">
+              Add goods →
+            </Link>
+          </div>
+        </CollapsibleCard>
       </div>
 
-      <Card className="mt-6">
-        <CardHeader className="sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <CardTitle>Your business</CardTitle>
-            <CardDescription>
-              {city ? `${city} · ` : ""}
-              {phone ? `${phone} · ` : ""}
-              {wa ? `WhatsApp ${wa.displayPhoneNumber}` : "WhatsApp not connected"}
-            </CardDescription>
-          </div>
-          <div className="flex gap-2">
-            <Link href="/onboarding" className="inline-flex items-center px-3.5 py-2 rounded-[8px] bg-[#111] text-white font-medium text-[13px] hover:bg-black transition-colors">
-              {onboarded ? "Edit Setup Guide" : "Start Setup Guide"}
-            </Link>
-            <Link href="/settings" className="inline-flex items-center px-3.5 py-2 rounded-[8px] border border-[#E9E9E7] bg-white text-[#111] font-medium text-[13px] hover:bg-[#F7F7F5] transition-colors">
-              {wa ? "Manage WhatsApp" : "Connect WhatsApp"}
-            </Link>
-          </div>
-        </CardHeader>
-      </Card>
+      <CollapsibleCard
+        id="shop"
+        title="Your shop"
+        desc={`${city ? `${city} · ` : ""}${phone ? `${phone} · ` : ""}${wa ? `WhatsApp ${wa.displayPhoneNumber}` : "WhatsApp not connected"}`}
+        className="mt-6"
+      >
+        <div className="flex gap-2 flex-wrap p-5">
+          <Link href="/onboarding" className="inline-flex items-center px-3.5 py-2 rounded-[8px] bg-[#111] text-white font-medium text-[13px] hover:bg-black transition-colors">
+            {onboarded ? "Edit answers" : "Answer questions"}
+          </Link>
+          <Link href="/settings" className="inline-flex items-center px-3.5 py-2 rounded-[8px] border border-[#E9E9E7] bg-white text-[#111] font-medium text-[13px] hover:bg-[#F7F7F5] transition-colors">
+            {wa ? "Open settings" : "Connect WhatsApp"}
+          </Link>
+        </div>
+      </CollapsibleCard>
     </div>
   );
 }

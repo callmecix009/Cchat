@@ -325,8 +325,8 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      {/* Card — Notion white */}
-      <div className="max-w-[780px] mx-auto mt-[18px] bg-white border border-[#E9E9E7] rounded-[16px] p-8">
+      {/* Card — soft black frame so the question block stands off the page */}
+      <div className="max-w-[780px] mx-auto mt-[18px] bg-white border-[1.5px] border-[#111] rounded-[16px] p-8 shadow-[0_2px_0_#111]">
         <h2 className="font-disp text-[26px] tracking-[-.01em]">{st.t}</h2>
         <p className="text-muted text-[14px] mt-[6px] mb-6">{st.d} Every answer is editable later in its own section.</p>
 
@@ -334,7 +334,7 @@ export default function OnboardingPage() {
 
         {/* Dynamic product entry - Products step */}
         {st.t === 'Products & stock' && (
-          <div className="mt-6 p-4 bg-white rounded-xl border border-[#E9E9E7]">
+          <div className="mt-6 p-4 bg-[#F7F7F5] rounded-xl border border-[#E9E9E7]">
             <h4 className="font-disp font-bold text-[15px] mb-1">Your products (optional — you can also add them later)</h4>
             <p className="text-muted text-[13px] mb-3">Add each product separately. The AI will quote these prices and stock live.</p>
             {(dynLists.prods ?? [{ n: '', pr: '', st: '' }]).map((row, idx) => (
@@ -364,7 +364,7 @@ export default function OnboardingPage() {
 
         {/* Dynamic services entry - Services step */}
         {st.t === 'Services' && (
-          <div className="mt-6 p-4 bg-white rounded-xl border border-[#E9E9E7]">
+          <div className="mt-6 p-4 bg-[#F7F7F5] rounded-xl border border-[#E9E9E7]">
             <h4 className="font-disp font-bold text-[15px] mb-1">Your services (optional)</h4>
             <p className="text-muted text-[13px] mb-3">Add each service you offer.</p>
             {(dynLists.svcs ?? [{ n: '', pr: '' }]).map((row, idx) => (

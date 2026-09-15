@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/icons";
+import ProductThumb from "@/components/product-thumb";
+import { processProductImage, validateProductFile } from "@/lib/product-image";
 import { TZS, uid, type Product } from "@/lib/demo";
 
 const CHIP_COLORS = ["#E8F0FE", "#E7F6EC", "#FFF4DE", "#FDECEC", "#F3EDFB"];
@@ -21,7 +23,7 @@ type ModalState =
       price: string;
       stock: string;
       cat: string;
-      emoji: string;
+      image: string | null;
       kw: string;
     };
 
@@ -35,6 +37,9 @@ export default function ProductsPage() {
   const [threshold, setThreshold] = useState(3);
   const [behavior, setBehavior] = useState<"both" | "suggest" | "notify">("both");
   const [modal, setModal] = useState<ModalState>(emptyModal);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/workspace")
@@ -58,6 +63,7 @@ export default function ProductsPage() {
 
   const openEdit = (id: string | null) => {
     const p = id ? products.find((x) => x.id === id) : null;
+    setPhotoError(null);
     setModal({
       open: true,
       id,
@@ -65,21 +71,50 @@ export default function ProductsPage() {
       price: p ? String(p.price) : "",
       stock: p ? String(p.stock) : "0",
       cat: p?.cat ?? "",
-      emoji: p?.emoji ?? "📦",
+      image: p?.image ?? null,
       kw: (p?.kw ?? []).join(", "),
     });
   };
 
-  const persist = (list: Product[]) => {
+  // Photos stay out of the replace-all payload (they travel via the
+  // single-product image endpoint instead) — except `keepImageFor`,
+  // whose photo is included so a save never wipes it. The server keeps
+  // stored photos for every product whose payload omits `image`.
+  type ProductPayload = Omit<Product, "image"> & { image?: string | null };
+  const persist = (list: Product[], keepImageFor?: string | null) => {
     fetch("/api/workspace", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        products: list,
+        products: list.map(
+          (p): ProductPayload =>
+            keepImageFor && p.id === keepImageFor
+              ? p
+              : ({ ...p, image: undefined })
+        ),
         lowStockThreshold: threshold,
         policies: { outOfStockBehavior: behavior },
       }),
     }).catch(() => {});
+  };
+
+  const pickPhoto = async (file: File | undefined | null) => {
+    setPhotoError(null);
+    if (!file || !modal.open) return;
+    const invalid = validateProductFile(file);
+    if (invalid) {
+      setPhotoError(invalid);
+      return;
+    }
+    setPhotoBusy(true);
+    try {
+      const dataUrl = await processProductImage(file);
+      setModal({ ...modal, image: dataUrl });
+    } catch {
+      setPhotoError("Couldn't read that photo. Try another file.");
+    } finally {
+      setPhotoBusy(false);
+    }
   };
 
   const save = () => {
@@ -92,23 +127,29 @@ export default function ProductsPage() {
       price,
       stock: Math.max(0, Number(modal.stock) || 0),
       cat: modal.cat.trim() || "General",
-      emoji: modal.emoji || "📦",
+      image: modal.image,
       kw: modal.kw
         .split(",")
         .map((x) => x.trim().toLowerCase())
         .filter(Boolean),
     };
     let next: Product[];
+    let savedId: string;
     if (modal.id) {
-      next = products.map((p) => (p.id === modal.id ? { ...p, ...data } : p));
+      savedId = modal.id;
+      const prev = products.find((p) => p.id === modal.id);
+      next = products.map((p) =>
+        p.id === modal.id ? { ...p, ...data, emoji: prev?.emoji ?? "📦" } : p
+      );
     } else {
+      savedId = uid();
       next = [
-        { id: uid(), sold: 0, hidden: false, ...data, cl: CHIP_COLORS[Math.floor(Math.random() * CHIP_COLORS.length)] },
+        { id: savedId, sold: 0, hidden: false, emoji: "📦", ...data, cl: CHIP_COLORS[Math.floor(Math.random() * CHIP_COLORS.length)] },
         ...products,
       ];
     }
     setProducts(next);
-    persist(next);
+    persist(next, savedId);
     setModal(emptyModal);
   };
 
@@ -122,9 +163,10 @@ export default function ProductsPage() {
   const dup = (id: string) => {
     const p = products.find((x) => x.id === id);
     if (!p) return;
-    const next = [{ ...p, id: uid(), name: p.name + " (copy)", sold: 0 }, ...products];
+    const copyId = uid();
+    const next = [{ ...p, id: copyId, name: p.name + " (copy)", sold: 0 }, ...products];
     setProducts(next);
-    persist(next);
+    persist(next, copyId);
   };
 
   const stockStep = (id: string, d: number) => {
@@ -177,7 +219,8 @@ export default function ProductsPage() {
                 fetch("/api/workspace", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ products, lowStockThreshold: t, policies: { outOfStockBehavior: behavior } }),
+                  // Photos omitted — server keeps stored ones (see persist()).
+                  body: JSON.stringify({ products: products.map((p): ProductPayload => ({ ...p, image: undefined })), lowStockThreshold: t, policies: { outOfStockBehavior: behavior } }),
                 }).catch(() => {});
               }, 500);
             }}
@@ -191,7 +234,7 @@ export default function ProductsPage() {
             fetch("/api/workspace", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ products, lowStockThreshold: threshold, policies: { outOfStockBehavior: v } }),
+              body: JSON.stringify({ products: products.map((p): ProductPayload => ({ ...p, image: undefined })), lowStockThreshold: threshold, policies: { outOfStockBehavior: v } }),
             }).catch(() => {});
           }}>
             <option value="both">Suggest alternatives + offer restock notify</option>
@@ -227,7 +270,7 @@ export default function ProductsPage() {
                   <tr key={p.id}>
                     <td>
                       <div style={{ display: "flex", gap: 11, alignItems: "center" }}>
-                        <span className="pth" style={{ background: p.cl }}>{p.emoji}</span>
+                        <ProductThumb image={p.image} emoji={p.emoji} name={p.name} cl={p.cl} size={42} />
                         <div>
                           <b style={{ fontSize: 13.5 }}>{p.name}</b>
                           <div style={{ fontSize: 11, color: "var(--mut2)" }} className="mono">{p.sold} sold</div>
@@ -305,15 +348,46 @@ export default function ProductsPage() {
                   <input className="inp" type="number" value={modal.stock} onChange={(e) => setModal({ ...modal, stock: e.target.value })} />
                 </div>
               </div>
-              <div className="grid2">
-                <div className="field">
-                  <label>Category</label>
-                  <input className="inp" placeholder="Phones / Accessories…" value={modal.cat} onChange={(e) => setModal({ ...modal, cat: e.target.value })} />
+              <div className="field">
+                <label>Category</label>
+                <input className="inp" placeholder="Phones / Accessories…" value={modal.cat} onChange={(e) => setModal({ ...modal, cat: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Photo</label>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <ProductThumb image={modal.image} emoji="📦" name={modal.name || "Product"} cl="#E3F4E9" size={56} radius={12} />
+                  <div className="flex gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => photoInputRef.current?.click()}
+                      disabled={photoBusy}
+                      className="btn ghost sm"
+                    >
+                      <Icon name="plus" size={13} /> {photoBusy ? "Adding…" : modal.image ? "Change photo" : "Add photo"}
+                    </button>
+                    {modal.image && (
+                      <button
+                        type="button"
+                        onClick={() => setModal({ ...modal, image: null })}
+                        className="btn ghost sm"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={photoInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      pickPhoto(e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
+                  />
                 </div>
-                <div className="field">
-                  <label>Emoji / icon</label>
-                  <input className="inp" maxLength={4} value={modal.emoji} onChange={(e) => setModal({ ...modal, emoji: e.target.value })} />
-                </div>
+                {photoError && <div className="hint" style={{ color: "var(--red)" }}>{photoError}</div>}
+                <div className="hint">Shows in your catalog and low-stock alerts. PNG, JPG or WEBP.</div>
               </div>
               <div className="field">
                 <label>Keywords the AI should recognise (comma separated)</label>

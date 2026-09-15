@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
 import { conversations, messages } from '@/lib/db/schema';
-import { eq, inArray, desc } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import { type Convo, type ConvoMsg } from '@/lib/demo';
 import { ensureUserRow } from '@/lib/ensureUser';
 import { checkRateLimit, getClientIp, rateLimitedResponse, RL_INBOX } from '@/lib/rate-limit';
@@ -60,7 +60,8 @@ export async function GET(req: NextRequest) {
       })
       .from(conversations)
       .where(eq(conversations.userId, user.id))
-      .orderBy(desc(conversations.createdAt));
+      .orderBy(desc(conversations.createdAt))
+      .limit(60);
 
     // Try to fetch lastReadAt separately if column exists (gracefully handle missing column)
     let lastReadMap = new Map<string, number>();
@@ -72,19 +73,29 @@ export async function GET(req: NextRequest) {
     const msgsByConvo = new Map<string, ConvoMsg[]>();
     if (rows.length) {
       const ids = rows.map((r) => r.id);
-      const msgs = await db
-        .select()
-        .from(messages)
-        .where(inArray(messages.conversationId, ids))
-        .orderBy(desc(messages.createdAt));
+      // Per-conversation bounded transcript: the old global ORDER BY +
+      // LIMIT(2000) let busy threads starve quiet ones (empty transcript +
+      // wrong unreadCount). Window function keeps the newest N per thread.
+      const msgs = await db.execute<{
+        id: string;
+        conversation_id: string;
+        role: string;
+        content: string;
+        ai_handled: boolean | null;
+        created_at: Date;
+      }>(sql`SELECT id, conversation_id, role, content, ai_handled, created_at FROM (
+        SELECT m.*, ROW_NUMBER() OVER (PARTITION BY m.conversation_id ORDER BY m.created_at DESC) AS rn
+        FROM messages m WHERE m.conversation_id = ANY(${ids})
+      ) t WHERE rn <= 120 ORDER BY created_at DESC`);
       for (const m of msgs) {
-        const list = msgsByConvo.get(m.conversationId) ?? [];
+        const list = msgsByConvo.get(m.conversation_id) ?? [];
+        const at = m.created_at ? new Date(m.created_at) : new Date();
         list.push({
           from: ROLE_TO_FROM[m.role] ?? 'sys',
           text: m.content,
-          t: m.createdAt?.getTime() ?? Date.now(),
+          t: at.getTime(),
         });
-        msgsByConvo.set(m.conversationId, list);
+        msgsByConvo.set(m.conversation_id, list);
       }
       for (const list of msgsByConvo.values()) list.reverse();
     }

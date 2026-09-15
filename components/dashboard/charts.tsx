@@ -72,13 +72,13 @@ export function VolumeChart({ data }: { data: VolumePoint[] }) {
       <CardHeader className="flex-row items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
         <div className="min-w-0 space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
-            <CardTitle>Message volume</CardTitle>
+            <CardTitle>Messages each day</CardTitle>
             <Delta value={growth} variant="badge" />
           </div>
-          <CardDescription>Customer messages per day for the selected window.</CardDescription>
+          <CardDescription>How many customer messages came in.</CardDescription>
         </div>
         <select
-          aria-label="Message volume time range"
+          aria-label="Messages time range"
           value={String(days)}
           onChange={(e) => setDays(Number(e.target.value) as 7 | 30 | 60)}
           className="shrink-0 rounded-[9px] border border-[#E9E9E7] bg-white px-3 py-[7px] text-[13px] font-semibold text-dark outline-none focus:border-[#111] cursor-pointer"
@@ -218,8 +218,8 @@ export function HandlingBars({ data }: { data: HandlingBar[] }) {
   return (
     <Card className="md:col-span-2">
       <CardHeader>
-        <CardTitle>Replies per day</CardTitle>
-        <CardDescription>AI vs you, last {data.length} days.</CardDescription>
+        <CardTitle>Who replied?</CardTitle>
+        <CardDescription>Your AI or you, last {data.length} days.</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={190}>

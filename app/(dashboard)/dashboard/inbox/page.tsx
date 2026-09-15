@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useDeferredValue, useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/icons";
+import ProductThumb from "@/components/product-thumb";
 import { initials, avColor, fmtDay, fmtClock, type Convo, type Product } from "@/lib/demo";
 
 type Filter = "all" | "ai" | "hand" | "waiting" | "open";
@@ -83,6 +84,8 @@ export default function InboxPage() {
     }
   }, [open?.msgs?.length, openId]);
 
+  // Deferred so typing stays smooth while the full-text scan runs
+  const deferredQuery = useDeferredValue(query);
   const filtered = useMemo(() => {
     return conversations
       .filter((c) => {
@@ -94,8 +97,8 @@ export default function InboxPage() {
           if (!last || last.from !== "c") return false;
         }
         if (filter === "open" && c.status === "closed") return false;
-        if (query) {
-          const q = query.toLowerCase();
+        if (deferredQuery) {
+          const q = deferredQuery.toLowerCase();
           return (
             c.name.toLowerCase().includes(q) ||
             c.phone.includes(q) ||
@@ -104,8 +107,9 @@ export default function InboxPage() {
         }
         return true;
       })
-      .sort((a, b) => b.t - a.t);
-  }, [conversations, filter, query]);
+      .sort((a, b) => b.t - a.t)
+      .slice(0, 100);
+  }, [conversations, filter, deferredQuery]);
 
   const update = (id: string, fn: (c: Convo) => Convo) => {
     setConversations((list) => list.map((c) => (c.id === id ? fn(c) : c)));
@@ -517,7 +521,7 @@ export default function InboxPage() {
                                       setSaleStep("qty");
                                     }}
                                   >
-                                    <span className="pth" style={{ background: p.cl }}>{p.emoji}</span>
+                                    <ProductThumb image={p.image} emoji={p.emoji} name={p.name} cl={p.cl} size={34} radius={8} />
                                     <span className="nm">{p.name}</span>
                                     <span className="st" style={{ color: p.stock === 0 ? "var(--red)" : "var(--mut2)" }}>
                                       {p.stock === 0 ? "out" : p.stock + " left"}
@@ -554,7 +558,7 @@ export default function InboxPage() {
                             <>
                               <span className="saleq">How many {selProduct.name} did they buy?</span>
                               <div className="salepicked">
-                                <span className="pth" style={{ background: selProduct.cl }}>{selProduct.emoji}</span>
+                                <ProductThumb image={selProduct.image} emoji={selProduct.emoji} name={selProduct.name} cl={selProduct.cl} size={30} radius={8} />
                                 <span className="nm">{selProduct.name}</span>
                                 <span className="st">{selProduct.stock} left in stock</span>
                               </div>

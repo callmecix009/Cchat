@@ -26,6 +26,7 @@ function rowToProduct(r: typeof productsTable.$inferSelect): Product {
     price: r.price,
     stock: r.stock,
     emoji: r.emoji,
+    image: (r as { image?: string | null }).image ?? null,
     cl: r.color,
     kw: Array.isArray(r.keywords) ? r.keywords : [],
     sold: r.sold,
@@ -81,6 +82,7 @@ async function migrateLegacyCatalog(userId: string, catalog: Catalog | null) {
         price: Math.round(p.price ?? 0),
         stock: Math.round(p.stock ?? 0),
         emoji: p.emoji ?? '📦',
+        image: p.image ?? null,
         color: p.cl ?? '#E3F4E9',
         keywords: Array.isArray(p.kw) ? p.kw : [],
         sold: p.sold ?? 0,
@@ -132,15 +134,22 @@ export async function getWorkspaceForClerkUser(clerkId: string): Promise<Workspa
     // But keep isDemoOwner flag for UI; data will now come from DB
   }
 
-  let productRows = await db
-    .select()
-    .from(productsTable)
-    .where(eq(productsTable.userId, user.id))
-    .orderBy(asc(productsTable.sortOrder));
-  let serviceRows = await db
-    .select()
-    .from(servicesTable)
-    .where(eq(servicesTable.userId, user.id));
+  const { ensureProductImageColumn } = await import('@/lib/db/ensure-columns');
+  await ensureProductImageColumn();
+
+  // Independent reads run in parallel (was sequential: products → services → policies)
+  const [productRowsInit, serviceRowsInit, polRowInit] = await Promise.all([
+    db
+      .select()
+      .from(productsTable)
+      .where(eq(productsTable.userId, user.id))
+      .orderBy(asc(productsTable.sortOrder)),
+    db.select().from(servicesTable).where(eq(servicesTable.userId, user.id)),
+    db.select().from(policiesTable).where(eq(policiesTable.userId, user.id)).limit(1),
+  ]);
+  let productRows = productRowsInit;
+  let serviceRows = serviceRowsInit;
+  let polRow = polRowInit[0];
 
   // one-time migration from the old JSON blob
   const legacy = (user.catalog ?? null) as Catalog | null;
@@ -158,9 +167,6 @@ export async function getWorkspaceForClerkUser(clerkId: string): Promise<Workspa
     }
   }
 
-  let polRow = (
-    await db.select().from(policiesTable).where(eq(policiesTable.userId, user.id)).limit(1)
-  )[0];
   if (!polRow) {
     polRow = (
       await db.insert(policiesTable).values({ userId: user.id }).onConflictDoNothing().returning()

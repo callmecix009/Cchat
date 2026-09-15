@@ -61,6 +61,8 @@ export async function GET(req: NextRequest) {
 
     // Fetch existing catalog for pre-population if dynLists empty
     if (!dynLists || Object.keys(dynLists).length === 0) {
+      const { ensureProductImageColumn } = await import('@/lib/db/ensure-columns');
+      await ensureProductImageColumn();
       const prods = await db.select().from(productsTable).where(eq(productsTable.userId, row.id));
       const svcs = await db.select().from(servicesTable).where(eq(servicesTable.userId, row.id));
       if (prods.length || svcs.length) {
@@ -225,26 +227,48 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 7. Handle dynamic product/service lists from onboarding
+    // 7. Handle dynamic product/service lists from onboarding.
+    // Photos are preserved by product name so re-doing setup never wipes them.
     if (dynLists?.prods && Array.isArray(dynLists.prods) && dynLists.prods.length) {
       const prods = (dynLists.prods as any[]).filter((p) => p?.n?.trim());
       if (prods.length) {
+        const { ensureProductImageColumn } = await import('@/lib/db/ensure-columns');
+        await ensureProductImageColumn();
+        const photoByName = new Map<string, string>();
+        try {
+          const existing = await db
+            .select({ name: productsTable.name, image: productsTable.image })
+            .from(productsTable)
+            .where(eq(productsTable.userId, userIdField));
+          for (const r of existing) {
+            const img = (r.image as string | null) ?? null;
+            if (img) photoByName.set(r.name.trim().toLowerCase(), img);
+          }
+        } catch (e) {
+          // Never wipe the catalog when the lookup fails — bail out instead.
+          console.error('Onboarding image lookup failed:', e);
+          throw e;
+        }
         await db.delete(productsTable).where(eq(productsTable.userId, userIdField));
         await db.insert(productsTable).values(
-          prods.map((p: any, i: number) => ({
-            id: crypto.randomUUID(),
-            userId: userIdField,
-            name: String(p.n).trim().slice(0, 200),
-            cat: String(p.cat ?? answers[30] ?? "").slice(0, 80),
-            price: Math.max(0, Math.round(Number(p.pr) || 0)),
-            stock: Math.max(0, Math.round(Number(p.st) || 0)),
-            emoji: String(p.emoji ?? "📦").slice(0, 8),
-            color: "#E3F4E9",
-            keywords: String(p.n).toLowerCase().split(/\s+/).filter(Boolean).slice(0, 12),
-            sold: 0,
-            hidden: false,
-            sortOrder: i,
-          }))
+          prods.map((p: any, i: number) => {
+            const nm = String(p.n).trim().slice(0, 200);
+            return {
+              id: crypto.randomUUID(),
+              userId: userIdField,
+              name: nm,
+              cat: String(p.cat ?? answers[30] ?? "").slice(0, 80),
+              price: Math.max(0, Math.round(Number(p.pr) || 0)),
+              stock: Math.max(0, Math.round(Number(p.st) || 0)),
+              emoji: String(p.emoji ?? "📦").slice(0, 8),
+              image: photoByName.get(nm.toLowerCase()) ?? null,
+              color: "#E3F4E9",
+              keywords: String(p.n).toLowerCase().split(/\s+/).filter(Boolean).slice(0, 12),
+              sold: 0,
+              hidden: false,
+              sortOrder: i,
+            };
+          })
         );
       }
     }

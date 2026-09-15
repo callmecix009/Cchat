@@ -85,6 +85,7 @@ export const products = pgTable('products', {
   price: integer('price').default(0).notNull(),
   stock: integer('stock').default(0).notNull(),
   emoji: text('emoji').default('📦').notNull(),
+  image: text('image'),
   color: text('color').default('#E3F4E9').notNull(),
   keywords: jsonb('keywords').$type<string[]>().default([]).notNull(),
   sold: integer('sold').default(0).notNull(),

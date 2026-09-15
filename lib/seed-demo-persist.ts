@@ -129,6 +129,8 @@ export async function ensureDemoSeeded(userId: string): Promise<void> {
 
     // 3. Products - delete any existing demo-prefixed then insert seed
     if (!existingProducts.length || shouldWipe) {
+      const { ensureProductImageColumn } = await import('@/lib/db/ensure-columns');
+      await ensureProductImageColumn();
       await db.insert(productsTable).values(
         seed.products.map((p, i) => ({
           id: prodId(p.id),
@@ -138,6 +140,7 @@ export async function ensureDemoSeeded(userId: string): Promise<void> {
           price: p.price,
           stock: p.stock,
           emoji: p.emoji,
+          image: p.image ?? null,
           color: p.cl,
           keywords: p.kw,
           sold: p.sold,

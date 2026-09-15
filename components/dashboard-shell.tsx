@@ -11,13 +11,13 @@ import { GoldCrown, planBadgeInfo, type PlanState } from "@/components/premium";
 
 
 const NAV = [
-  { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: "grid" },
-  { id: "agent", label: "Chat Agent", href: "/dashboard/agent", icon: "bot" },
-  { id: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: "chat" },
+  { id: "dashboard", label: "Home", href: "/dashboard", icon: "grid" },
+  { id: "agent", label: "Test replies", href: "/dashboard/agent", icon: "bot" },
+  { id: "inbox", label: "Chats", href: "/dashboard/inbox", icon: "chat" },
   { id: "products", label: "Products", href: "/dashboard/products", icon: "box" },
   { id: "services", label: "Services", href: "/dashboard/services", icon: "wrench" },
-  { id: "policies", label: "Policies", href: "/dashboard/policies", icon: "shield" },
-  { id: "ai", label: "AI Configure", href: "/dashboard/ai", icon: "sliders" },
+  { id: "policies", label: "Shop rules", href: "/dashboard/policies", icon: "shield" },
+  { id: "ai", label: "AI behaviour", href: "/dashboard/ai", icon: "sliders" },
   { id: "settings", label: "Settings", href: "/settings", icon: "gear" },
   { id: "billing", label: "Billing", href: "/billing", icon: "card" },
 ];
@@ -95,6 +95,23 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [settings, setSettings] = useState<BizSettings | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accessChecked, setAccessChecked] = useState(false);
+  // Foldable sidebar: icons only, more screen for content. Remembered per device.
+  const [navCollapsed, setNavCollapsed] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("cchat-nav-collapsed") === "1") setNavCollapsed(true);
+    } catch {}
+  }, []);
+
+  const toggleNavCollapsed = useCallback(() => {
+    setNavCollapsed((c) => {
+      try {
+        localStorage.setItem("cchat-nav-collapsed", c ? "0" : "1");
+      } catch {}
+      return !c;
+    });
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -174,6 +191,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     let stopped = false;
 
     const poll = async () => {
+      // Skip background work when the tab isn't visible — saves data + battery
+      if (typeof document !== "undefined" && document.hidden) return;
       try {
         // 1) Inbox: new customer messages (even when AI is handling) — show at most ONE per poll
         const inboxRes = await fetch("/api/inbox").then((r) => (r.ok ? r.json() : null)).catch(() => null);
@@ -251,9 +270,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       } catch {}
     };
 
-    // Initial poll after 4s, then every 15s
+    // Initial poll after 4s, then every 45s (was 15s — same alerts, 3x less traffic)
     const initial = setTimeout(poll, 4000);
-    timer = setInterval(poll, 15000);
+    timer = setInterval(poll, 45000);
     return () => {
       stopped = true;
       clearTimeout(initial);
@@ -268,6 +287,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     if (!accessChecked) return;
     let stopped = false;
     const fetchUnread = async () => {
+      if (typeof document !== "undefined" && document.hidden) return;
       try {
         const res = await fetch("/api/inbox").then((r) => (r.ok ? r.json() : null)).catch(() => null);
         const convos: any[] = res?.conversations ?? [];
@@ -276,7 +296,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       } catch {}
     };
     fetchUnread();
-    const id = setInterval(fetchUnread, 15000);
+    const id = setInterval(fetchUnread, 45000);
     // Also update when inbox read event fires
     const onRead = () => fetchUnread();
     window.addEventListener("inbox:read", onRead);
@@ -309,14 +329,14 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const trialDaysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86400000)) : 0;
   const isTrialing = settings?.planStatus === "trialing" && trialDaysLeft > 0;
 
-  const fallback = hasIdentity ? "AI live" : "Add your business name";
+  const fallback = hasIdentity ? "Replies on" : "Add your shop name";
   const subline = !hasIdentity
-    ? "Set up your business profile"
+    ? "Set up your shop in Settings"
     : waConnected && !waPaused
-      ? "WhatsApp connected · AI live"
+      ? "WhatsApp ON — I reply for you"
       : waConnected && waPaused
-        ? "WhatsApp paused · AI live"
-        : "Connect WhatsApp · AI live";
+        ? "WhatsApp stopped"
+        : "Link WhatsApp to start";
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#FCFCF9]">
@@ -325,64 +345,89 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         <div className="fixed inset-0 z-[998] md:hidden bg-[#111]/20 backdrop-blur-[1px]" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* sidebar — Notion light */}
-      <aside className={`w-[232px] flex-none flex flex-col bg-white border-r border-[#E9E9E7] fixed inset-y-0 left-0 z-[999] transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
-        <Link href="/" className="flex items-center gap-2.5 px-4 pt-[14px] pb-3.5 text-[#111] font-disp font-bold text-[16px]">
+      {/* sidebar — Notion light, foldable to icons */}
+      <aside className={`${navCollapsed ? "md:w-[64px]" : "md:w-[232px]"} w-[232px] flex-none flex flex-col bg-white border-r border-[#E9E9E7] fixed inset-y-0 left-0 z-[999] transition-all duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+        <Link href="/" className={`flex items-center gap-2.5 px-4 pt-[14px] pb-3.5 text-[#111] font-disp font-bold text-[16px] ${navCollapsed ? "md:justify-center md:px-0" : ""}`}>
           <CchatLogo size={32} decorative className="shrink-0" />
-          C-chat
+          <span className={navCollapsed ? "md:hidden" : ""}>C-chat</span>
         </Link>
         <nav className="flex-1 overflow-auto px-2.5 py-2 space-y-0.5">
           {NAV.map((n) => (
             <Link
               key={n.id}
               href={n.href}
+              title={n.label}
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-3 px-2.5 py-2 rounded-[8px] text-[13.5px] font-medium text-[#6B6B6B] hover:bg-[#F7F7F5] hover:text-[#111] transition-colors"
+              className={`flex items-center gap-3 px-2.5 py-2 rounded-[8px] text-[13.5px] font-medium text-[#6B6B6B] hover:bg-[#F7F7F5] hover:text-[#111] transition-colors ${navCollapsed ? "md:justify-center md:px-0" : ""}`}
             >
-              <span className="text-[#9B9B9B]">{ICONS[n.icon]}</span>
-              <span className="flex-1">{n.label}</span>
+              <span className="text-[#9B9B9B] flex-none">{ICONS[n.icon]}</span>
+              <span className={`flex-1 ${navCollapsed ? "md:hidden" : ""}`}>{n.label}</span>
               {n.id === "inbox" && inboxUnread > 0 && (
-                <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#111] text-white text-[11px] font-bold leading-none">
+                <span className={`ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#111] text-white text-[11px] font-bold leading-none ${navCollapsed ? "md:absolute md:ml-5 md:-mt-5 md:min-w-[16px] md:h-[16px] md:text-[10px]" : ""}`}>
                   {inboxUnread > 99 ? "99+" : inboxUnread}
                 </span>
               )}
             </Link>
           ))}
         </nav>
-        <div className="p-3 m-3 mt-auto rounded-[12px] bg-[#F7F7F5] border border-[#E9E9E7] text-xs">
-          {(() => {
-            const info = planBadgeInfo({
-              status: settings?.planStatus ?? "inactive",
-              plan: settings?.plan ?? null,
-              trialEndsAt: settings?.trialEndsAt ?? null,
-              expiresAt: settings?.expiresAt ?? null,
-            });
-            const tone =
-              info.tone === "premium" || info.tone === "extra"
-                ? "bg-[#111] text-white"
-                : info.tone === "trial"
-                  ? "bg-white text-[#111] border border-[#E9E9E7]"
-                  : "bg-white text-[#6B6B6B] border border-[#E9E9E7]";
-            const isTrial = info.tone === "trial";
-            return (
-              <Link href="/billing" className="block group">
-                <div className={`flex items-center gap-2 px-3 py-2 rounded-[8px] font-semibold transition-colors ${tone}`}>
-                  {isTrial ? <Icon name="clock" size={14} /> : info.crown ? <GoldCrown size={14} /> : null}
-                  <span className="text-[13px]">{info.label}</span>
-                  <span className="ml-auto opacity-40 text-[#9B9B9B]">›</span>
-                </div>
-                <div className="text-[#9B9B9B] mt-2 px-1 leading-relaxed">
-                  {info.tone === "none"
-                    ? "12,000 TSh/mo · 3-day free trial"
-                    : info.tone === "trial"
-                      ? "Full access while you try C-chat"
-                      : info.tone === "extra"
-                        ? "Yearly plan · thanks for the support "
-                        : "Monthly plan · thanks for the support "}
-                </div>
-              </Link>
-            );
-          })()}
+        {!navCollapsed && (
+          <div className="p-3 m-3 mt-auto rounded-[12px] bg-[#F7F7F5] border border-[#E9E9E7] text-xs">
+            {(() => {
+              const info = planBadgeInfo({
+                status: settings?.planStatus ?? "inactive",
+                plan: settings?.plan ?? null,
+                trialEndsAt: settings?.trialEndsAt ?? null,
+                expiresAt: settings?.expiresAt ?? null,
+              });
+              const tone =
+                info.tone === "premium" || info.tone === "extra"
+                  ? "bg-[#111] text-white"
+                  : info.tone === "trial"
+                    ? "bg-white text-[#111] border border-[#E9E9E7]"
+                    : "bg-white text-[#6B6B6B] border border-[#E9E9E7]";
+              const isTrial = info.tone === "trial";
+              return (
+                <Link href="/billing" className="block group">
+                  <div className={`flex items-center gap-2 px-3 py-2 rounded-[8px] font-semibold transition-colors ${tone}`}>
+                    {isTrial ? <Icon name="clock" size={14} /> : info.crown ? <GoldCrown size={14} /> : null}
+                    <span className="text-[13px]">{info.label}</span>
+                    <span className="ml-auto opacity-40 text-[#9B9B9B]">›</span>
+                  </div>
+                  <div className="text-[#9B9B9B] mt-2 px-1 leading-relaxed">
+                    {info.tone === "none"
+                      ? "12,000 TSh/mo · 3-day free trial"
+                      : info.tone === "trial"
+                        ? "Full access while you try C-chat"
+                        : info.tone === "extra"
+                          ? "Yearly plan · thanks for the support "
+                          : "Monthly plan · thanks for the support "}
+                  </div>
+                </Link>
+              );
+            })()}
+          </div>
+        )}
+        <div className={`hidden md:flex p-2.5 ${navCollapsed ? "justify-center" : "justify-end"}`}>
+          <button
+            onClick={toggleNavCollapsed}
+            aria-label={navCollapsed ? "Expand menu" : "Fold menu to icons"}
+            title={navCollapsed ? "Expand menu" : "Fold to icons"}
+            className="w-8 h-8 grid place-items-center rounded-[8px] border border-[#E9E9E7] bg-white text-[#6B6B6B] hover:text-[#111] hover:border-[#111] transition-colors"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`transition-transform duration-200 ${navCollapsed ? "rotate-180" : ""}`}
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
         </div>
       </aside>
 
