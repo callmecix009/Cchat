@@ -134,30 +134,42 @@ export async function POST(req: NextRequest) {
           .from(productsTable)
           .where(eq(productsTable.userId, userRow.id));
         for (const r of rows) existingImages.set(r.id, (r.image as string | null) ?? null);
-      } catch {}
-      await db.delete(productsTable).where(eq(productsTable.userId, userRow.id));
-      if (list.length) {
-        await db.insert(productsTable).values(
-          list.map((p, i) => {
-            const id = (typeof p.id === 'string' && p.id) || crypto.randomUUID();
-            const incoming = cleanImage((p as IncomingProduct).image);
-            return {
-              id,
-              userId: userRow.id,
-              name: p.name!.trim().slice(0, 200),
-              cat: (p.cat ?? '').toString().slice(0, 80),
-              price: num(p.price),
-              stock: Math.max(0, num(p.stock)),
-              emoji: (p.emoji ?? '📦').toString().slice(0, 16),
-              image: incoming === undefined ? (existingImages.get(id) ?? null) : incoming,
-              color: (p.cl ?? '#E3F4E9').toString().slice(0, 32),
-              keywords: Array.isArray(p.kw) ? p.kw.map(String).slice(0, 20) : [],
-              sold: Math.max(0, num(p.sold)),
-              hidden: !!p.hidden,
-              sortOrder: i,
-            };
-          })
+      } catch (e) {
+        // Never wipe the catalog when the lookup fails — bail out instead.
+        console.error('Workspace image lookup failed:', e);
+        throw e;
+      }
+      const merged = list.map((p, i) => {
+        const id = (typeof p.id === 'string' && p.id) || crypto.randomUUID();
+        const incoming = cleanImage((p as IncomingProduct).image);
+        return {
+          id,
+          userId: userRow.id,
+          name: p.name!.trim().slice(0, 200),
+          cat: (p.cat ?? '').toString().slice(0, 80),
+          price: num(p.price),
+          stock: Math.max(0, num(p.stock)),
+          emoji: (p.emoji ?? '📦').toString().slice(0, 16),
+          image: incoming === undefined ? (existingImages.get(id) ?? null) : incoming,
+          color: (p.cl ?? '#E3F4E9').toString().slice(0, 32),
+          keywords: Array.isArray(p.kw) ? p.kw.map(String).slice(0, 20) : [],
+          sold: Math.max(0, num(p.sold)),
+          hidden: !!p.hidden,
+          sortOrder: i,
+        };
+      });
+      // Aggregate photo cap (per-image cap alone allows 100 × 600KB):
+      // keeps POST bodies under platform limits and GET payloads bounded.
+      const totalImageChars = merged.reduce((s, p) => s + (p.image?.length ?? 0), 0);
+      if (totalImageChars > 3_000_000) {
+        return NextResponse.json(
+          { error: 'Photos too large in total (max ~3MB). Remove some product photos and try again.' },
+          { status: 400 }
         );
+      }
+      await db.delete(productsTable).where(eq(productsTable.userId, userRow.id));
+      if (merged.length) {
+        await db.insert(productsTable).values(merged);
       }
     }
 

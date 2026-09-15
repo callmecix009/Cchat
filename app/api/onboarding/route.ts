@@ -244,7 +244,11 @@ export async function POST(req: NextRequest) {
             const img = (r.image as string | null) ?? null;
             if (img) photoByName.set(r.name.trim().toLowerCase(), img);
           }
-        } catch {}
+        } catch (e) {
+          // Never wipe the catalog when the lookup fails — bail out instead.
+          console.error('Onboarding image lookup failed:', e);
+          throw e;
+        }
         await db.delete(productsTable).where(eq(productsTable.userId, userIdField));
         await db.insert(productsTable).values(
           prods.map((p: any, i: number) => {

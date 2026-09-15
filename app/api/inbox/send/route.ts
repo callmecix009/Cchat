@@ -117,7 +117,9 @@ export async function POST(req: NextRequest) {
 
     await db
       .update(conversations)
-      .set({ status: 'waiting', contactName, contactPhone })
+      // Bump createdAt: inbox lists order by desc(createdAt) with a limit,
+      // so a conversation the owner just messaged must resurface at the top.
+      .set({ status: 'waiting', contactName, contactPhone, createdAt: new Date() })
       .where(eq(conversations.id, conversationId));
 
     return NextResponse.json({ ok: true, delivered: true }, { status: 200 });
