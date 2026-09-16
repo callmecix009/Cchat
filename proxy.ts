@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   '/privacy(.*)',
   '/terms(.*)',
   '/acceptable-use(.*)',
+  '/jinsi-ya-kufanya-biashara-mtandaoni-tanzania(.*)',
   '/sitemap(.*)',
   '/robots(.*)',
   '/icon(.*)',

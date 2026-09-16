@@ -61,6 +61,7 @@ export default function LandingPage() {
           <a href="#capture" className="hover:text-[#111] transition-colors">How it works</a>
           <a href="#languages" className="hover:text-[#111] transition-colors">Languages</a>
           <a href="#pricing" className="hover:text-[#111] transition-colors">Pricing</a>
+          <a href="#mwongozo" className="hover:text-[#111] transition-colors">Mwongozo</a>
           <a href="#faq" className="hover:text-[#111] transition-colors">FAQ</a>
         </div>
         <div className="hidden lg:flex items-center gap-3 ml-auto">
@@ -600,6 +601,38 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* MWONGOZO — SEO: Biashara Mtandaoni Tanzania (public, indexable) */}
+      <section className="bg-[#FCFCF9] py-16 md:py-20 px-[5vw] border-y border-[#E9E9E7]" id="mwongozo">
+        <div className="mx-auto max-w-[1120px]">
+          <div className="max-w-[640px] mb-8">
+            <div className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[.14em] uppercase text-[#149A5B] bg-[#E3F4E9] border border-[#BCE5CB] px-2.5 py-1 rounded-full">Elimu · Bure · 2025/2026</div>
+            <h2 className="font-disp font-[700] tracking-[-.02em] leading-[1.05] text-[clamp(26px,3vw,36px)] mt-3 text-[#111]">Mwongozo Kamili wa Kufanya Biashara Mtandaoni Tanzania</h2>
+            <p className="text-[#6B6B6B] text-[14.5px] leading-[1.6] mt-3">Jifunze jinsi ya kuanza bila mtaji, kufungua account ya biashara, kuuza bidhaa, na kutangaza kwa WhatsApp — hatua kwa hatua, kwa Kiswahili. Bofya usome mwongozo wote (hakuna login).</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              { n: "01", t: "Kuanza Bila Mtaji", d: "Affiliate, freelancing, kuuza ujuzi — njia 3 za jinsi ya kufanya biashara online free.", href: "/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#sura-1" },
+              { n: "02", t: "Kufungua Account", d: "WhatsApp Business, Instagram, Facebook, TikTok — hatua za jinsi ya kufungua account ya biashara.", href: "/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#sura-2" },
+              { n: "03", t: "Kuuza Bidhaa", d: "Picha, copywriting, urgency & huduma — siri ya jinsi ya kuuza bidhaa mtandaoni.", href: "/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#sura-3" },
+              { n: "04", t: "Kutangaza Bure & Kulipia", d: "Status, hashtags, collaboration, Ads — jinsi ya kutangaza biashara mtandaoni.", href: "/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#sura-4" },
+              { n: "05", t: "WhatsApp Pekee", d: "Catalog, Labels, Broadcast, VIP — jinsi ya kutangaza biashara whatsapp.", href: "/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#sura-5" },
+              { n: "06", t: "Kujiajiri & Makosa", d: "Malengo, kujiajiri mtandaoni & makosa 5 ya kuepuka.", href: "/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#sura-6" },
+            ].map((s) => (
+              <Link key={s.n} href={s.href} className="group bg-white border border-[#E9E9E7] rounded-[16px] p-6 hover:border-[#111] hover:shadow-[0_8px_24px_rgba(0,0,0,.06)] transition-all">
+                <div className="w-8 h-8 rounded-[9px] bg-[#111] text-white grid place-items-center text-[11px] font-bold">{s.n}</div>
+                <h3 className="font-disp font-[600] text-[15px] text-[#111] mt-3 group-hover:text-[#149A5B]">{s.t}</h3>
+                <p className="text-[13px] leading-[1.6] text-[#6B6B6B] mt-1.5">{s.d}</p>
+                <span className="inline-flex items-center gap-1 mt-3 text-[12px] font-semibold text-[#111] group-hover:gap-1.5 transition-all">Soma zaidi <Icon name="arrow" size={12} /></span>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] bg-[#111] text-white text-[13px] font-semibold hover:bg-black">Soma Mwongozo Kamili <Icon name="arrow" size={14} /></Link>
+            <span className="inline-flex items-center gap-2 text-[12px] text-[#6B6B6B]"><span className="w-1.5 h-1.5 rounded-full bg-[#149A5B]" /> Bure · Hakuna login · Inapangwa Google</span>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ — notion light */}
       <section className="bg-[#F7F7F5] text-[#111] py-16 md:py-20 px-[5vw] border-y border-[#E9E9E7]" id="faq">
         <div className="max-w-[1120px] mx-auto">
@@ -649,6 +682,7 @@ export default function LandingPage() {
             <a href="#features" className="block text-[13.5px] mb-2.5 hover:text-[#111]">Features</a>
             <a href="#pricing" className="block text-[13.5px] mb-2.5 hover:text-[#111]">Pricing</a>
             <a href="#faq" className="block text-[13.5px] mb-2.5 hover:text-[#111]">FAQ</a>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania" className="block text-[13.5px] mb-2.5 hover:text-[#111] font-semibold text-[#149A5B]">Mwongozo: Biashara Mtandaoni →</Link>
           </div>
           <div>
             <h5 className="text-[#111] text-[12px] font-bold uppercase tracking-[.08em] mb-3">Get started</h5>
