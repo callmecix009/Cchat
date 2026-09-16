@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CchatLogo from "@/components/branding/CchatLogo";
+import { Icon } from "@/components/icons";
 
 const PLANS = [
   {
@@ -90,9 +91,7 @@ function PlanCard({ plan, onSelect, loading }: { plan: typeof PLANS[0]; onSelect
         <ul className="space-y-3 mb-8 flex-1">
           {plan.features.map((f, i) => (
             <li key={i} className="flex items-start gap-3 text-sm text-dark/80">
-              <svg className="shrink-0 w-5 h-5 mt-0.5 text-[#111]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+              <span className="shrink-0 w-5 h-5 mt-0.5 text-[#111] grid place-items-center"><Icon name="check" size={16} /></span>
               <span>{f}</span>
             </li>
           ))}

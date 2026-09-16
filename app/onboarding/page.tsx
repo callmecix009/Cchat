@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CchatLogo from "@/components/branding/CchatLogo";
+import { Icon } from "@/components/icons";
 
 type FieldDef = [number, string, string, (string | string[] | null)?, (string[])?];
 type StepDef = { t: string; d: string; f: FieldDef[] };
@@ -89,49 +90,7 @@ const ONB_STEPS: StepDef[] = [
     [81,'radio','The #1 result you want from this AI',null,['More sales','24/7 coverage','Fewer repetitive questions']]]},
 ];
 
-function ArrowRight({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>
-  );
-}
 
-function ArrowLeft({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="19" y1="12" x2="5" y2="12" />
-      <polyline points="12 19 5 12 12 5" />
-    </svg>
-  );
-}
-
-function XIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
-
-function PlusIcon({ size = 13 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
-
-function ZapIcon({ size = 15 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -352,12 +311,12 @@ export default function OnboardingPage() {
                   <input type="number" className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="3" value={row.st ?? ''} onChange={(e) => updateRow('prods', idx, 'st', e.target.value)} />
                 </div>
                 <button type="button" onClick={() => removeRow('prods', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
-                  <XIcon size={14} />
+                  <Icon name="x" size={14} />
                 </button>
               </div>
             ))}
             <button type="button" onClick={() => addRow('prods', { n: '', pr: '', st: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E9E9E7] bg-white text-[#111] text-[13px] font-medium hover:border-[#111] hover:bg-[#F7F7F5] transition-colors">
-              <PlusIcon /> Add another product
+              <Icon name="plus" size={13} /> Add another product
             </button>
           </div>
         )}
@@ -378,12 +337,12 @@ export default function OnboardingPage() {
                   <input type="number" className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="120000" value={row.pr ?? ''} onChange={(e) => updateRow('svcs', idx, 'pr', e.target.value)} />
                 </div>
                 <button type="button" onClick={() => removeRow('svcs', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
-                  <XIcon size={14} />
+                  <Icon name="x" size={14} />
                 </button>
               </div>
             ))}
             <button type="button" onClick={() => addRow('svcs', { n: '', pr: '' })} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E9E9E7] bg-white text-[#111] text-[13px] font-medium hover:border-[#111] hover:bg-[#F7F7F5] transition-colors">
-              <PlusIcon /> Add another service
+              <Icon name="plus" size={13} /> Add another service
             </button>
           </div>
         )}
@@ -391,18 +350,18 @@ export default function OnboardingPage() {
         <div className="flex justify-between items-center mt-[26px] gap-3 flex-wrap">
           <button onClick={goBack} disabled={step === 0}
             className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[10px] border border-[#E9E9E7] text-dark font-semibold text-[14px] bg-white hover:border-[#111] transition-all disabled:opacity-40 disabled:pointer-events-none">
-            <ArrowLeft /> Back
+            <Icon name="arrow" size={14} className="rotate-180" /> Back
           </button>
           <div className="flex gap-[10px]">
             {step === ONB_STEPS.length - 1 ? (
               <button onClick={launch}
                 className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[8px] bg-[#111] text-white font-medium text-[14px] hover:bg-black transition-colors">
-                <ZapIcon /> Launch my AI agent
+                <Icon name="zap" size={15} /> Launch my AI agent
               </button>
             ) : (
               <button onClick={goNext}
                 className="inline-flex items-center gap-2 px-[18px] py-[10px] rounded-[8px] bg-[#111] text-white font-medium text-[14px] hover:bg-black transition-colors">
-                Continue <ArrowRight />
+                Continue <Icon name="arrow" size={14} />
               </button>
             )}
           </div>

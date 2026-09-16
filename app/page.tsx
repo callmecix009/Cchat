@@ -5,94 +5,9 @@ import Link from "next/link";
 import CchatLogo from "@/components/branding/CchatLogo";
 import Reveal from "@/components/reveal";
 import { CrownIcon } from "@/components/premium";
-
-function ChatIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
-
-function ZapIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
-
-function ArrowIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>
-  );
-}
-
-function CheckIcon({ size = 13 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function HandIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 11V6a2 2 0 0 0-4 0v6" />
-      <path d="M14 10V4a2 2 0 0 0-4 0v7" />
-      <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
-      <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 13" />
-    </svg>
-  );
-}
-
-function GlobeIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  );
-}
-
-function SparkIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
-    </svg>
-  );
-}
-
-function ShieldIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  );
-}
-
-function CardIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-      <line x1="1" y1="10" x2="23" y2="10" />
-    </svg>
-  );
-}
-
-function PlusIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
+import { Icon } from "@/components/icons";
+import { FaWhatsapp } from "react-icons/fa6";
+import { SiAirtel, SiVisa } from "react-icons/si";
 
 const FAQ_DATA = [
   ["Does C-chat read all my WhatsApp?", "No. C-chat only handles customer conversations that come through your business number. Your personal chats are not touched."],
@@ -113,19 +28,11 @@ const PRICING_FEATURES = [
 ];
 
 function MenuIcon({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-    </svg>
-  );
+  return <Icon name="menu" size={size} />;
 }
 
 function CloseIcon({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
+  return <Icon name="x" size={size} />;
 }
 
 const TRUST_ITEMS = ["Duka la Simu Kariakoo", "Salon ya Mikocheni", "Fundi wa Vifaa", "Duka la Nguo Gongo la Mboto", "Hoteli Ndogo Sinza", "Duka la Vipuri Posta"];
@@ -238,7 +145,7 @@ export default function LandingPage() {
                 href="/sign-up"
                 className="inline-flex items-center gap-2 px-[22px] py-[13px] rounded-[12px] bg-[#149A5B] text-white font-semibold text-[15px] hover:bg-[#0E7A47] transition-colors shadow-[0_6px_16px_-6px_rgba(20,154,91,.45)] min-h-[44px]"
               >
-                Get C-chat free <ArrowIcon size={16} />
+                Get C-chat free <Icon name="arrow" size={16} />
               </Link>
               <a
                 href="#capture"
@@ -268,7 +175,7 @@ export default function LandingPage() {
               {/* floating capture pin */}
               <div className="hidden md:flex notion-pin absolute -bottom-5 -right-3 items-center gap-3 px-3.5 py-3 rotate-[0.8deg]">
                 <div className="w-9 h-9 rounded-[10px] bg-[#E3F4E9] text-[#0E7A47] grid place-items-center">
-                  <ZapIcon size={16} />
+                  <Icon name="zap" size={16} />
                 </div>
                 <div className="text-left leading-none">
                   <div className="text-[13px] font-bold text-[#111]">Jibu la haraka</div>
@@ -319,7 +226,7 @@ export default function LandingPage() {
               Tell C-chat about your products, prices, stock and delivery rules once — in your own words. Change a price and every customer hears the new one.
             </p>
             <a href="#pricing" className="inline-flex items-center gap-1.5 mt-5 text-[14px] font-semibold text-[#111] hover:text-[#149A5B] transition-colors">
-              Set up in 10 minutes <ArrowIcon size={14} />
+              Set up in 10 minutes <Icon name="arrow" size={14} />
             </a>
             <div className="flex flex-wrap gap-2 mt-6">
               {["10-minute setup", "Products & prices", "Delivery & policies"].map((t) => (
@@ -392,9 +299,9 @@ export default function LandingPage() {
               Every chat lands in one inbox. When a customer needs a person — hard negotiation, “let me talk to owner” — the AI steps aside and tells you why.
             </p>
             <ul className="mt-5 space-y-2 text-[14px] text-[#111]">
-              <li className="flex gap-2"><CheckIcon size={14} /> One inbox, full history</li>
-              <li className="flex gap-2"><CheckIcon size={14} /> You get alerted</li>
-              <li className="flex gap-2"><CheckIcon size={14} /> AI waits until you’re done</li>
+              <li className="flex gap-2"><Icon name="check" size={14} /> One inbox, full history</li>
+              <li className="flex gap-2"><Icon name="check" size={14} /> You get alerted</li>
+              <li className="flex gap-2"><Icon name="check" size={14} /> AI waits until you’re done</li>
             </ul>
           </Reveal>
           <Reveal delay={120}>
@@ -453,10 +360,12 @@ export default function LandingPage() {
             <h3 className="font-disp font-[700] text-[26px] leading-[1.15] tracking-tight text-[#111]">Your money stays yours.</h3>
             <p className="text-[#6B6B6B] text-[14.5px] leading-[1.6] mt-3">Customers pay you directly — <b className="text-[#111] font-semibold">M-Pesa, Tigo Pesa, Airtel Money, cash</b>. C-chat never holds a payment. You only pay your subscription: <b className="text-[#111]">TSh 12,000/mo</b>.</p>
             <div className="mt-4 flex flex-wrap gap-2 text-[12px] font-semibold">
-              <span className="px-3 py-1.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7]">M-Pesa</span>
-              <span className="px-3 py-1.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7]">Tigo Pesa</span>
-              <span className="px-3 py-1.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7]">Airtel Money</span>
-              <span className="px-3 py-1.5 rounded-full bg-[#E3F4E9] border border-[#BCE5CB] text-[#0E7A47]">Cash</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7]"><Icon name="phone" size={12} /> M-Pesa</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7]"><Icon name="phone" size={12} /> Tigo Pesa</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7]"><SiAirtel size={14} className="text-[#FF0000]" /> Airtel Money</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E3F4E9] border border-[#BCE5CB] text-[#0E7A47]"><Icon name="dollar" size={12} /> Cash</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#E9E9E7]"><FaWhatsapp size={14} className="text-[#25D366]" /> WhatsApp</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#E9E9E7]"><SiVisa size={14} className="text-[#1A1F71]" /> Card</span>
             </div>
           </Reveal>
           <Reveal delay={120}>
@@ -478,9 +387,9 @@ export default function LandingPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-4 max-w-[1000px] mx-auto">
             {[
-              { n: "01", title: "Tell it about your business", desc: "Products, prices, services and delivery rules — once, in your own words.", icon: <SparkIcon size={18} /> },
-              { n: "02", title: "It answers your customers", desc: "Swahili or English, day and night. If it doesn’t know, it passes to you.", icon: <ChatIcon size={18} /> },
-              { n: "03", title: "You take over when it matters", desc: "One inbox. AI steps aside, tells you why — you reply, then it continues.", icon: <HandIcon size={18} /> },
+              { n: "01", title: "Tell it about your business", desc: "Products, prices, services and delivery rules — once, in your own words.", icon: <Icon name="spark" size={18} /> },
+              { n: "02", title: "It answers your customers", desc: "Swahili or English, day and night. If it doesn’t know, it passes to you.", icon: <Icon name="chat" size={18} /> },
+              { n: "03", title: "You take over when it matters", desc: "One inbox. AI steps aside, tells you why — you reply, then it continues.", icon: <Icon name="hand" size={18} /> },
             ].map((s, i) => (
               <Reveal key={i} delay={i * 80}>
                 <div className="bg-white border border-[#E9E9E7] rounded-[16px] p-6 h-full hover:shadow-[0_8px_24px_rgba(0,0,0,.06)] transition-shadow">
@@ -505,7 +414,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-12 gap-3">
             <Reveal className="col-span-12 lg:col-span-7">
               <div className="bg-[#FCFCF9] border border-[#E9E9E7] rounded-[16px] p-6 h-full">
-                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3 text-[#111]"><ZapIcon size={16} /></div>
+                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3 text-[#111]"><Icon name="zap" size={16} /></div>
                 <h3 className="font-disp font-[600] text-[16px] text-[#111]">Keep your AI up to date</h3>
                 <p className="text-[#6B6B6B] text-[13.5px] leading-[1.6] mt-1">Update once — every customer hears the new price or stock.</p>
                 <div className="flex items-center gap-2 mt-4 flex-wrap text-[12px] font-semibold">
@@ -519,42 +428,42 @@ export default function LandingPage() {
             </Reveal>
             <Reveal delay={80} className="col-span-12 lg:col-span-5">
               <div className="bg-[#FCFCF9] border border-[#E9E9E7] rounded-[16px] p-6 h-full">
-                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><HandIcon size={16} /></div>
+                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><Icon name="hand" size={16} /></div>
                 <h3 className="font-disp font-[600] text-[16px] text-[#111]">You take over when it matters</h3>
                 <p className="text-[#6B6B6B] text-[13.5px] leading-[1.6] mt-1">“Let me talk to the owner” — AI steps aside, tells you why. You reply, it waits.</p>
               </div>
             </Reveal>
             <Reveal className="col-span-12 lg:col-span-4">
               <div className="bg-[#FCFCF9] border border-[#E9E9E7] rounded-[16px] p-6 h-full">
-                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><GlobeIcon size={16} /></div>
+                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><Icon name="globe" size={16} /></div>
                 <h3 className="font-disp font-[600] text-[16px] text-[#111]">Swahili. And English.</h3>
                 <p className="text-[#6B6B6B] text-[13.5px] mt-1">Customer writes English → whole chat switches. No restart.</p>
               </div>
             </Reveal>
             <Reveal delay={80} className="col-span-12 lg:col-span-4">
               <div className="bg-[#FCFCF9] border border-[#E9E9E7] rounded-[16px] p-6 h-full">
-                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><SparkIcon size={16} /></div>
+                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><Icon name="spark" size={16} /></div>
                 <h3 className="font-disp font-[600] text-[16px] text-[#111]">It helps you sell</h3>
                 <p className="text-[#6B6B6B] text-[13.5px] mt-1">Answers buying questions and suggests extras — case with phone, booking repair.</p>
               </div>
             </Reveal>
             <Reveal delay={160} className="col-span-12 lg:col-span-4">
               <div className="bg-[#FCFCF9] border border-[#E9E9E7] rounded-[16px] p-6 h-full">
-                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><ShieldIcon size={16} /></div>
+                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><Icon name="shield" size={16} /></div>
                 <h3 className="font-disp font-[600] text-[16px] text-[#111]">Your rules, kept</h3>
                 <p className="text-[#6B6B6B] text-[13.5px] mt-1">Delivery fees, warranty, returns — repeated exactly as you wrote them.</p>
               </div>
             </Reveal>
             <Reveal className="col-span-12 lg:col-span-5">
               <div className="bg-[#FCFCF9] border border-[#E9E9E7] rounded-[16px] p-6 h-full">
-                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><ChatIcon size={16} /></div>
+                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><Icon name="chat" size={16} /></div>
                 <h3 className="font-disp font-[600] text-[16px] text-[#111]">Every chat in one inbox</h3>
                 <p className="text-[#6B6B6B] text-[13.5px] mt-1">Search by name, number or word. Open any chat where it left off.</p>
               </div>
             </Reveal>
             <Reveal delay={80} className="col-span-12 lg:col-span-7">
               <div className="bg-[#FCFCF9] border border-[#E9E9E7] rounded-[16px] p-6 h-full">
-                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><CardIcon size={16} /></div>
+                <div className="w-9 h-9 rounded-[10px] bg-white border border-[#E9E9E7] grid place-items-center mb-3"><Icon name="card" size={16} /></div>
                 <h3 className="font-disp font-[600] text-[16px] text-[#111]">Your money stays yours</h3>
                 <p className="text-[#6B6B6B] text-[13.5px] mt-1">Customers pay you directly — M-Pesa, Tigo Pesa, Airtel Money, cash. C-chat only charges your subscription.</p>
               </div>
@@ -679,7 +588,7 @@ export default function LandingPage() {
             <ul className="list-none mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2.5 max-w-[820px] mx-auto">
               {PRICING_FEATURES.map((f, i) => (
                 <li key={i} className="flex gap-2.5 items-start text-[13.5px] text-[#111]">
-                  <span className="mt-0.5 w-5 h-5 rounded-full bg-[#E3F4E9] text-[#0E7A47] grid place-items-center flex-none"><CheckIcon size={12} /></span>
+                  <span className="mt-0.5 w-5 h-5 rounded-full bg-[#E3F4E9] text-[#0E7A47] grid place-items-center flex-none"><Icon name="check" size={12} /></span>
                   {f}
                 </li>
               ))}
@@ -709,7 +618,7 @@ export default function LandingPage() {
                 >
                   <span className="text-[15px] font-semibold font-disp text-[#111]">{q}</span>
                   <span className={`flex-none w-7 h-7 rounded-full border grid place-items-center transition-transform duration-200 ${openFaq === i ? "bg-[#111] text-white border-[#111] rotate-45" : "bg-white text-[#6B6B6B] border-[#E9E9E7]"}`}>
-                    <PlusIcon size={14} />
+                    <Icon name="plus" size={14} />
                   </span>
                 </button>
                 <div className="overflow-hidden transition-[max-height] duration-300" style={{ maxHeight: openFaq === i ? "240px" : "0" }}>
