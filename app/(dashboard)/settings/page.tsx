@@ -6,49 +6,6 @@ import { initials } from "@/lib/demo";
 import { Icon } from "@/components/icons";
 import { useTheme } from "@/components/theme-provider";
 
-function StoreIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9l1.5-5h15L21 9" /><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" /><path d="M5 11v9h14v-9" /><path d="M9 20v-6h6v6" />
-    </svg>
-  );
-}
-function ShieldIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  );
-}
-function GearIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  );
-}
-function CheckIcon({ size = 15 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-function EditIcon({ size = 13 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-    </svg>
-  );
-}
-function AlertIcon({ size = 15 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-    </svg>
-  );
-}
-
 function Polsec({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white border border-cborder rounded-[16px] p-5 mb-3.5">
@@ -71,37 +28,15 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 const inpCls = "w-full px-3 py-2.5 border border-[#E9E9E7] rounded-lg bg-white text-[14px] focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 transition-all";
 
-function SunIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-    </svg>
-  );
-}
-function MoonIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-    </svg>
-  );
-}
-function MonitorIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
-    </svg>
-  );
-}
-
 function AppearanceCard() {
   const { theme, setTheme } = useTheme();
   const opts: Array<{ v: "light" | "dark" | "system"; label: string; desc: string; icon: React.ReactNode }> = [
-    { v: "light", label: "Light", desc: "Bright, clean Notion-style", icon: <SunIcon /> },
-    { v: "dark", label: "Dark", desc: "Easy on the eyes at night", icon: <MoonIcon /> },
-    { v: "system", label: "System", desc: "Follows your device", icon: <MonitorIcon /> },
+    { v: "light", label: "Light", desc: "Bright, clean Notion-style", icon: <Icon name="sun" size={14} /> },
+    { v: "dark", label: "Dark", desc: "Easy on the eyes at night", icon: <Icon name="moon" size={14} /> },
+    { v: "system", label: "System", desc: "Follows your device", icon: <Icon name="monitor" size={14} /> },
   ];
   return (
-    <Polsec icon={<SunIcon />} title="Appearance">
+    <Polsec icon={<Icon name="sun" size={14} />} title="Appearance">
       <p className="text-[13px] text-muted mb-3">Choose how C-chat looks on this device. System follows your OS preference.</p>
       <div className="grid grid-cols-3 gap-2">
         {opts.map((o) => (
@@ -345,7 +280,7 @@ export default function SettingsPage() {
       {loaded && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <div>
-            <Polsec icon={<StoreIcon />} title="Business Profile">
+            <Polsec icon={<Icon name="store" size={17} />} title="Business Profile">
               <div className="flex gap-4 items-start mb-4 flex-wrap">
                 {logo ? (
                   <div className="w-16 h-16 rounded-2xl overflow-hidden ring-1 ring-cborder flex-none bg-white flex items-center justify-center p-1.5">
@@ -363,7 +298,7 @@ export default function SettingsPage() {
                       onClick={() => logoInputRef.current?.click()}
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[10px] border border-[#E9E9E7] bg-white text-[13px] font-semibold text-dark cursor-pointer hover:border-[#111] transition-colors"
                     >
-                      <EditIcon /> Upload logo
+                      <Icon name="edit" size={13} /> Upload logo
                     </button>
                     {logo && (
                       <button
@@ -406,7 +341,7 @@ export default function SettingsPage() {
                 <input className={inpCls} value={biz.phone} onChange={(e) => set("phone", e.target.value)} />
               </Field>
               <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[12.5px] text-muted flex gap-2.5 items-start mb-4">
-                <span className="text-[#111] flex-none"><StoreIcon size={14} /></span>
+                <span className="text-[#111] flex-none"><Icon name="store" size={14} /></span>
                 <span>
                   <b className="text-dark">Personal account: {(user?.firstName || "") + (user?.lastName ? " " + user.lastName : "")}</b>
                   <span className="block font-mono text-[11.5px]">{user?.primaryEmailAddress?.emailAddress || ""}</span>
@@ -458,7 +393,7 @@ export default function SettingsPage() {
               )}
               {waError && (
                 <div className="mt-3 bg-[#FFF7F7] border border-[#F0C4C4] rounded-[10px] p-3.5 text-[12.5px] text-[#8E2F2F] leading-[1.6] flex items-start gap-2.5">
-                  <AlertIcon />
+                  <Icon name="alert" size={15} />
                   <span>
                     {waError}{" "}
                     <button onClick={startWhatsAppConnect} className="font-bold underline" disabled={waConnecting}>
@@ -469,11 +404,11 @@ export default function SettingsPage() {
               )}
               <button onClick={saveAccount} disabled={saving}
                 className="w-full mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[10px] bg-[#149A5B] text-white font-semibold text-sm hover:bg-[#0E7A47] transition-colors shadow-[0_2px_8px_rgba(20,154,91,.2)] disabled:opacity-60">
-                <CheckIcon /> {saved ? "Saved!" : saving ? "Saving..." : "Save business profile"}
+                <Icon name="check" size={15} /> {saved ? "Saved!" : saving ? "Saving..." : "Save business profile"}
               </button>
             </Polsec>
 
-            <Polsec icon={<ShieldIcon />} title="Subscription">
+            <Polsec icon={<Icon name="shield" size={17} />} title="Subscription">
               {(() => {
                 if (!billing) return <div className="text-sm text-muted py-4">Loading subscription…</div>;
                 const status = billing.status;
@@ -521,7 +456,7 @@ export default function SettingsPage() {
                         )}
                       </div>
                       <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[13px] text-muted flex gap-2.5 items-start mt-3">
-                        <span className="text-[#111] flex-none"><ShieldIcon size={14} /></span>
+                        <span className="text-[#111] flex-none"><Icon name="shield" size={14} /></span>
                         <span>Your subscription is active. Manage billing at <a href="/billing" className="underline font-semibold">Billing</a>.</span>
                       </div>
                     </>
@@ -558,7 +493,7 @@ export default function SettingsPage() {
                 );
               })()}
               <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[13px] text-muted flex gap-2.5 items-start mt-4">
-                <span className="text-amber-500 flex-none"><AlertIcon /></span>
+                <span className="text-amber-500 flex-none"><Icon name="alert" size={15} /></span>
                 <span>Payment of this subscription is <b>managed externally</b>. C-chat processes no transactions inside the app — your customers&apos; M-Pesa, Tigo Pesa, Airtel Money and cash stay 100% between you and them.</span>
               </div>
             </Polsec>
@@ -566,9 +501,9 @@ export default function SettingsPage() {
 
           <div>
             <AppearanceCard />
-            <Polsec icon={<GearIcon />} title="More settings">
+            <Polsec icon={<Icon name="gear" size={17} />} title="More settings">
               <div className="bg-[#F8FAF7] border border-cborder rounded-[10px] p-3.5 text-[12.5px] text-muted flex gap-2.5 items-start">
-                <span className="text-[#111] flex-none"><GearIcon size={14} /></span>
+                <span className="text-[#111] flex-none"><Icon name="gear" size={14} /></span>
                 <span>More workspace settings will live here soon.</span>
               </div>
             </Polsec>

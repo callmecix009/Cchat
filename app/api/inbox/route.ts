@@ -100,12 +100,34 @@ export async function GET(req: NextRequest) {
       for (const list of msgsByConvo.values()) list.reverse();
     }
 
+    // Server-side unread counts (not bounded by the 120-msg preview above).
+    // Counts all customer messages newer than each conversation's last-read.
+    const unreadCountMap = new Map<string, number>();
+    if (rows.length && lastReadMap.size) {
+      try {
+        const countIds = rows.map((r) => r.id);
+        const counts = await db.execute<{
+          conversation_id: string;
+          cnt: number;
+        }>(sql`SELECT m.conversation_id, COUNT(*)::int AS cnt FROM messages m
+          JOIN conversations c ON c.id = m.conversation_id
+          WHERE m.conversation_id = ANY(${countIds})
+            AND m.role = 'customer'
+            AND c.last_read_at IS NOT NULL
+            AND m.created_at > c.last_read_at
+          GROUP BY m.conversation_id`);
+        for (const row of counts) unreadCountMap.set(row.conversation_id, Number(row.cnt));
+      } catch {}
+    }
+
     const dbConvos: any[] = rows.map((r) => {
       const msgs = msgsByConvo.get(r.id) ?? [];
       const lastReadAt = lastReadMap.get(r.id) ?? 0;
       let unreadCount = 0;
       if (lastReadMap.has(r.id)) {
-        unreadCount = msgs.filter((m) => m.from === "c" && m.t > lastReadAt).length;
+        unreadCount = unreadCountMap.has(r.id)
+          ? unreadCountMap.get(r.id)!
+          : msgs.filter((m) => m.from === "c" && m.t > lastReadAt).length;
       } else {
         const last = msgs[msgs.length - 1];
         if (last && last.from === "c" && Date.now() - last.t < 2 * 3600000) {

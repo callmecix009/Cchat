@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { Icon } from "@/components/icons";
 
 const DEFAULT_AI = {
   tone: "friendly",
@@ -29,62 +30,7 @@ const DEFAULT_AI = {
   maxDiscount: 10,
 };
 
-function SparkIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3l1.9 5.7L19.5 10l-5.6 1.3L12 17l-1.9-5.7L4.5 10l5.6-1.3L12 3z" />
-    </svg>
-  );
-}
-function GlobeIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" /><line x1="3" y1="12" x2="21" y2="12" /><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z" />
-    </svg>
-  );
-}
-function ZapIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
-function HandIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 11V6a2 2 0 0 0-4 0v5" /><path d="M14 10V4a2 2 0 0 0-4 0v6" /><path d="M10 10.5V6a2 2 0 0 0-4 0v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-5.9-2.5L2 14.5c-.8-1.1-.5-2.6.6-3.3a2 2 0 0 1 2.8.5L7 13.5" />
-    </svg>
-  );
-}
-function TagIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" /><circle cx="7.5" cy="7.5" r="1.5" />
-    </svg>
-  );
-}
-function AlertIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-    </svg>
-  );
-}
-function CheckIcon({ size = 15 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-function ChatIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
+
 
 function Chip({ on, children, onClick }: { on: boolean; children: React.ReactNode; onClick: () => void }) {
   return (
@@ -179,11 +125,11 @@ export default function AIConfigPage() {
         </div>
         <div className="flex gap-2.5">
           <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] border border-[#E9E9E7] text-dark font-semibold text-sm bg-white hover:border-[#111] transition-colors">
-            <ChatIcon /> Test in Chat Agent
+            <Icon name="chat" size={14} /> Test in Chat Agent
           </Link>
           <button onClick={save} disabled={saving}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-grn text-white font-semibold text-sm hover:bg-grn-d transition-colors shadow-[0_6px_16px_-6px_rgba(20,154,91,.5)] disabled:opacity-60">
-            <CheckIcon /> {saved ? "Saved!" : saving ? "Saving..." : "Save"}
+            <Icon name="check" size={15} /> {saved ? "Saved!" : saving ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
@@ -193,7 +139,7 @@ export default function AIConfigPage() {
       {loaded && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           <div>
-            <Polsec icon={<SparkIcon />} title="Tone & personality">
+            <Polsec icon={<Icon name="spark" size={17} />} title="Tone & personality">
               <div className="flex flex-wrap gap-2 mb-3">
                 {["friendly", "professional", "playful", "respectful"].map((t) => (
                   <Chip key={t} on={ai.tone === t} onClick={() => set("tone", t as typeof ai.tone)}>
@@ -220,7 +166,7 @@ export default function AIConfigPage() {
               </div>
             </Polsec>
 
-            <Polsec icon={<GlobeIcon />} title="Language" sub="Swahili is primary. The AI auto-detects English and switches mid-conversation.">
+            <Polsec icon={<Icon name="globe" size={17} />} title="Language" sub="Swahili is primary. The AI auto-detects English and switches mid-conversation.">
               <div className="flex flex-wrap gap-2">
                 <Chip on={ai.langMode === "auto"} onClick={() => set("langMode", "auto")}>Auto-detect — Swahili first</Chip>
                 <Chip on={ai.langMode === "sw"} onClick={() => set("langMode", "sw")}>Force Swahili</Chip>
@@ -236,7 +182,7 @@ export default function AIConfigPage() {
               </div>
             </Polsec>
 
-            <Polsec icon={<ZapIcon />} title="Proactive conversation" sub="The AI doesn't just answer — it asks smart follow-ups (budget, model, colour, use case, urgency) to guide customers toward a sale or booking.">
+            <Polsec icon={<Icon name="zap" size={17} />} title="Proactive conversation" sub="The AI doesn't just answer — it asks smart follow-ups (budget, model, colour, use case, urgency) to guide customers toward a sale or booking.">
               <div className="flex items-center gap-3 mb-3.5">
                 <Switch checked={ai.proactive} onChange={(v) => set("proactive", v)} />
                 <b className="text-[13.5px]">{ai.proactive ? "On — the AI guides the conversation" : "Off — answers only"}</b>
@@ -266,7 +212,7 @@ export default function AIConfigPage() {
           </div>
 
           <div>
-            <Polsec icon={<HandIcon />} title="Handoff to human">
+            <Polsec icon={<Icon name="hand" size={17} />} title="Handoff to human">
               <Field label="Triggers">
                 <div className="grid gap-2.5">
                   {(
@@ -315,7 +261,7 @@ export default function AIConfigPage() {
               </div>
             </Polsec>
 
-            <Polsec icon={<TagIcon />} title="Negotiation rule">
+            <Polsec icon={<Icon name="tag" size={17} />} title="Negotiation rule">
               <div className="flex flex-wrap gap-2 mb-3">
                 <Chip on={ai.negotiable} onClick={() => set("negotiable", true)}>AI may discount up to a limit</Chip>
                 <Chip on={!ai.negotiable} onClick={() => set("negotiable", false)}>AI never negotiates — always hand over</Chip>
@@ -336,9 +282,9 @@ export default function AIConfigPage() {
               )}
             </Polsec>
 
-            <Polsec icon={<AlertIcon />} title="Unknown-answer rule">
+            <Polsec icon={<Icon name="alert" size={17} />} title="Unknown-answer rule">
               <div className="rulecard">
-                <span className="flex-none"><AlertIcon size={16} /></span>
+                <span className="flex-none"><Icon name="alert" size={16} /></span>
                 <span>The AI <b>never invents prices or stock</b>. When unsure, it says it will check with you and hands the conversation over. This rule is always on and cannot be disabled — it protects your reputation.</span>
               </div>
             </Polsec>
@@ -346,11 +292,11 @@ export default function AIConfigPage() {
             <div className="flex gap-2.5">
               <button onClick={save} disabled={saving}
                 className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[10px] bg-grn text-white font-semibold text-sm hover:bg-grn-d transition-colors shadow-[0_6px_16px_-6px_rgba(20,154,91,.5)] disabled:opacity-60">
-                <CheckIcon /> {saved ? "Saved!" : saving ? "Saving..." : "Save configuration"}
+                <Icon name="check" size={15} /> {saved ? "Saved!" : saving ? "Saving..." : "Save configuration"}
               </button>
               <Link href="/dashboard/agent"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-dark text-white font-semibold text-sm hover:bg-[#0C2417] transition-colors">
-                <ChatIcon /> Test in Chat Agent
+                <Icon name="chat" size={14} /> Test in Chat Agent
               </Link>
             </div>
           </div>
