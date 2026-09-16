@@ -213,6 +213,7 @@ export default function GuidePage() {
             </section>
 
             {/* Sura 1 */}
+            <span id="sura-1" className="block h-0 overflow-hidden" aria-hidden="true" />
             <section id="kuanza" className="mt-12 scroll-mt-24">
               <h2 className="font-disp font-[700] text-[22px] tracking-tight text-[#111]">1. Kuanza bila mtaji</h2>
               <p className="text-[14.5px] leading-[1.7] text-[#6B6B6B] mt-2">Huhitaji kununua bidhaa nyingi kuanza. Tumia zana za bure kwenye simu yako.</p>
@@ -243,6 +244,7 @@ export default function GuidePage() {
             </section>
 
             {/* Sura 2 */}
+            <span id="sura-2" className="block h-0 overflow-hidden" aria-hidden="true" />
             <section id="akaunti" className="mt-12 scroll-mt-24">
               <h2 className="font-disp font-[700] text-[22px] tracking-tight text-[#111]">2. Kufungua akaunti ya biashara</h2>
               <p className="text-[14.5px] leading-[1.7] text-[#6B6B6B] mt-2">Akaunti rasmi inaongeza uaminifu. Tumia majina na picha zinazofanana kila mahali.</p>
@@ -279,6 +281,7 @@ export default function GuidePage() {
             </section>
 
             {/* Sura 3 */}
+            <span id="sura-3" className="block h-0 overflow-hidden" aria-hidden="true" />
             <section id="kuuza" className="mt-12 scroll-mt-24">
               <h2 className="font-disp font-[700] text-[22px] tracking-tight text-[#111]">3. Kuuza bidhaa mtandaoni</h2>
               <p className="text-[14.5px] leading-[1.7] text-[#6B6B6B] mt-2">Mteja hawezi kugusa bidhaa. Picha na maelezo ndivyo muuzaji wako.</p>
@@ -309,6 +312,7 @@ export default function GuidePage() {
             </section>
 
             {/* Sura 4 */}
+            <span id="sura-4" className="block h-0 overflow-hidden" aria-hidden="true" />
             <section id="kutangaza" className="mt-12 scroll-mt-24">
               <h2 className="font-disp font-[700] text-[22px] tracking-tight text-[#111]">4. Kutangaza biashara</h2>
               <div className="mt-5 grid md:grid-cols-2 gap-4">
@@ -333,6 +337,7 @@ export default function GuidePage() {
             </section>
 
             {/* Sura 5 */}
+            <span id="sura-5" className="block h-0 overflow-hidden" aria-hidden="true" />
             <section id="whatsapp" className="mt-12 scroll-mt-24">
               <h2 className="font-disp font-[700] text-[22px] tracking-tight text-[#111]">5. Kutangaza kwa WhatsApp</h2>
               <p className="text-[14.5px] leading-[1.7] text-[#6B6B6B] mt-2">WhatsApp ndiyo duka kubwa. Tumia Features zote, usitume ovyo.</p>
@@ -350,6 +355,7 @@ export default function GuidePage() {
             </section>
 
             {/* Sura 6 & 7 */}
+            <span id="sura-6" className="block h-0 overflow-hidden" aria-hidden="true" />
             <section id="kujiajiri" className="mt-12 scroll-mt-24">
               <h2 className="font-disp font-[700] text-[22px] tracking-tight text-[#111]">6. Kujiajiri na kuepuka makosa</h2>
               <div className="mt-5 grid md:grid-cols-2 gap-4">
@@ -448,7 +454,15 @@ export default function GuidePage() {
                     <p><b>5. Data yako:</b> Unamiliki data yako. Unatupa leseni ya kuchakata tu kwa ajili ya huduma.</p>
                     <p><b>6. Acceptable Use:</b> Usitume spam/udanganyifu. Soma <a href="#acceptable-use" className="underline">Acceptable Use Policy</a>.</p>
                     <p><b>7. Fees:</b> Malipo ni 15,000/mo au 144,000/year (20% saving). Inajirudia kila mwezi/mwaka hadi ughairi. Kughairi = mwisho wa kipindi.</p>
-                    <p><b>8–16.</b> IP, third-party (WhatsApp), warranty disclaimer, liability limit (12 months fees au $100), indemnification, termination, sheria ya Tanzania, mabadiliko, mawasiliano: chrispinmatiko@gmail.com.</p>
+                    <p><b>8. Intellectual Property:</b> C-chat, vipengele na muundo ni mali ya C-chat, inalindwa na hakimiliki na alama za biashara. Usinakili, kubadilisha au kufanya reverse-engineering bila ruhusa ya maandishi.</p>
+                    <p><b>9. Third-Party Services:</b> Kuunganisha WhatsApp ni kwa sera za mtoa huduma husika (Meta). C-chat haiwajibiki kwa upatikanaji au utendaji wa huduma za nje.</p>
+                    <p><b>10. Disclaimer:</b> Huduma inatolewa &quot;kama ilivyo&quot; bila dhamana — hatutoi dhamana ya kutokuwa na hitilafu au usalama kamili.</p>
+                    <p><b>11. Liability:</b> Kwa kiwango cha juu kinachoruhusiwa na sheria, C-chat haiwajibiki kwa hasara zisizo za moja kwa moja au hasara ya faida/data. Dhima yetu ni kiwango ulicholipa miezi 12 iliyopita au $100.</p>
+                    <p><b>12. Indemnification:</b> Unakubali kulinda C-chat dhidi ya madai kutokana na matumizi yako, ukiukaji wa Terms, sheria, au haki za wengine.</p>
+                    <p><b>13. Termination:</b> Tunaweza kusitisha ufikiaji kwa tabia inayokiuka Terms; haki ya matumizi inaisha mara moja, data inahifadhiwa kulingana na Privacy Policy.</p>
+                    <p><b>14. Governing Law:</b> Sheria ya Tanzania; mizozo katika mahakama za Tanzania isipokuwa imekubaliwa vingine kwa maandishi.</p>
+                    <p><b>15. Amendments:</b> Tunaweza kusasisha Terms kwa taarifa ya email au ndani ya huduma; kuendelea kutumia ni kukubali mabadiliko.</p>
+                    <p><b>16. Contact:</b> chrispinmatiko@gmail.com</p>
                   </div>
                 </article>
 
@@ -471,7 +485,7 @@ export default function GuidePage() {
                     <p><b>Kanuni:</b> tumia kwa mujibu wa sheria za Tanzania, ulinzi wa data, na sera za WhatsApp.</p>
                     <p><b>Hairuhusiwi:</b> spam, phishing, udanganyifu, kujifanya mtu mwingine, maudhui ya chuki/hatari, malware, kupenya mfumo, kuzunguka rate-limit, resell bila ruhusa.</p>
                     <p><b>Ridhia ya wateja:</b> lazima uwe na consent, heshimu opt-out, toa taarifa sahihi za bidhaa/sera.</p>
-                    <p><b>AI:</b> hakiki majibu kabla hayajatumwa, usizalishe spam. Tunaweza kuzuia maudhui yanayokiuka.</p>
+                    <p><b>AI:</b> fuatilia majibu ya moja kwa moja na hakiki au sahihisha inapohitajika, usizalishe spam. Tunaweza kuzuia maudhui yanayokiuka.</p>
                     <p><b>Utekelezaji:</b> onyo, kusitisha muda, kufunga akaunti, kuripoti kwa mamlaka. Ripoti: chrispinmatiko@gmail.com.</p>
                   </div>
                 </article>
