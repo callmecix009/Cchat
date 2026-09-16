@@ -310,7 +310,7 @@ export default function OnboardingPage() {
                   <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Stock</label>
                   <input type="number" className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="3" value={row.st ?? ''} onChange={(e) => updateRow('prods', idx, 'st', e.target.value)} />
                 </div>
-                <button type="button" onClick={() => removeRow('prods', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
+                <button type="button" aria-label="Remove product" onClick={() => removeRow('prods', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
                   <Icon name="x" size={14} />
                 </button>
               </div>
@@ -336,7 +336,7 @@ export default function OnboardingPage() {
                   <label className="text-[11px] font-bold text-muted uppercase tracking-wide">Price TZS</label>
                   <input type="number" className="w-full px-3 py-[9px] border border-[#E9E9E7] rounded-[8px] bg-white text-[13.5px]" placeholder="120000" value={row.pr ?? ''} onChange={(e) => updateRow('svcs', idx, 'pr', e.target.value)} />
                 </div>
-                <button type="button" onClick={() => removeRow('svcs', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
+                <button type="button" aria-label="Remove service" onClick={() => removeRow('svcs', idx)} className="p-2 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors mb-[2px]">
                   <Icon name="x" size={14} />
                 </button>
               </div>
