@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { CrownIcon, GoldCrown, planBadgeInfo } from "@/components/premium";
+import { GoldCrown, planBadgeInfo } from "@/components/premium";
 import { PremiumBadge, ExtraPremiumBadge, MiniPlanBadge } from "@/components/plan-badges";
 import { Icon } from "@/components/icons";
 
@@ -183,7 +183,7 @@ export default function BillingPage() {
           {/* PREMIUM — monthly */}
           <PlanCard
             name="Premium"
-            price="12,000"
+            price="15,000"
             period="TSh / month"
             description="Everything included, billed monthly."
             cta="Subscribe"
@@ -195,14 +195,14 @@ export default function BillingPage() {
           {/* EXTRA PREMIUM — yearly */}
           <PlanCard
             name="Extra Premium"
-            price="115,200"
+            price="144,000"
             period="TSh / year"
-            description="Same everything, billed once a year."
+            description="Same everything, billed once a year. Save 20% vs 180,000."
             cta="Subscribe"
             highlight={yearly}
             badge="SAVE 20%"
             badgeKind={yearly ? "extra" : undefined}
-            footnote="Works out to 9,600 TSh / month"
+            footnote="Works out to 12,000 TSh / month"
             onPay={() => subscribe("yearly")}
           />
         </div>
@@ -283,7 +283,7 @@ function PlanCard({
         <span
           className={`absolute -top-[1px] right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-b-[8px] text-[10.5px] font-extrabold uppercase tracking-wider bg-amb-bg text-amber-600`}
         >
-          <CrownIcon className="w-3 h-3" /> {badge}
+          <Icon name="award" size={12} /> {badge}
         </span>
       )}
       <div className={`p-8 border-b ${highlight ? "border-[#149A5B]" : "border-[#F7F7F5]"} flex flex-col flex-1`}>

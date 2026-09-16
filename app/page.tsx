@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import CchatLogo from "@/components/branding/CchatLogo";
 import Reveal from "@/components/reveal";
-import { CrownIcon } from "@/components/premium";
 import { Icon } from "@/components/icons";
 import { FaWhatsapp } from "react-icons/fa6";
 import { SiAirtel, SiVisa } from "react-icons/si";
@@ -12,10 +11,10 @@ import { SiAirtel, SiVisa } from "react-icons/si";
 const FAQ_DATA = [
   ["Does C-chat read all my WhatsApp?", "No. C-chat only handles customer conversations that come through your business number. Your personal chats are not touched."],
   ["What if the AI doesn't know an answer?", "It tells the customer it will check, and passes the chat to you. If you're away, it asks for the customer's name and number so you can call back."],
-  ["How do payments work?", "Your customers pay you directly — M-Pesa, Tigo Pesa, Airtel Money or cash. For your C-chat subscription, you pay TSh 12,000/month (or 115,200/year) after your 3-day free trial."],
+  ["How do payments work?", "Your customers pay you directly — M-Pesa, Tigo Pesa, Airtel Money or cash. For your C-chat subscription, you pay TSh 15,000/month (or 144,000/year) after your 3-day free trial."],
   ["Can it really speak proper Swahili?", "Yes. Swahili is the main language of the AI, and you can teach it your own slang during setup. When a customer writes in English, it switches."],
   ["What do I need to start?", "A WhatsApp Business number and about ten minutes for setup. No hardware, no developers. Every new account starts with a free 3-day trial."],
-  ["Is there a contract?", "No. TSh 12,000/month, or save 20% with the yearly plan. Cancel anytime."],
+  ["Is there a contract?", "No. TSh 15,000/month, or save 20% with the yearly plan. Cancel anytime."],
 ];
 
 const PRICING_FEATURES = [
@@ -155,7 +154,7 @@ export default function LandingPage() {
                 See how it works
               </a>
             </div>
-            <div className="mt-4 text-[12.5px] font-medium text-[#9B9B9B]">TSh 12,000/mo · Save 20% yearly · Cancel anytime · Built for Tanzania</div>
+            <div className="mt-4 text-[12.5px] font-medium text-[#9B9B9B]">TSh 15,000/mo · Save 20% yearly · Cancel anytime · Built for Tanzania</div>
           </Reveal>
 
           {/* HERO pile — main + floating pin like Notion */}
@@ -359,7 +358,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1120px] grid lg:grid-cols-[1fr_480px] gap-8 items-center">
           <Reveal>
             <h3 className="font-disp font-[700] text-[26px] leading-[1.15] tracking-tight text-[#111]">Your money stays yours.</h3>
-            <p className="text-[#6B6B6B] text-[14.5px] leading-[1.6] mt-3">Customers pay you directly — <b className="text-[#111] font-semibold">M-Pesa, Tigo Pesa, Airtel Money, cash</b>. C-chat never holds a payment. You only pay your subscription: <b className="text-[#111]">TSh 12,000/mo</b>.</p>
+            <p className="text-[#6B6B6B] text-[14.5px] leading-[1.6] mt-3">Customers pay you directly — <b className="text-[#111] font-semibold">M-Pesa, Tigo Pesa, Airtel Money, cash</b>. C-chat never holds a payment. You only pay your subscription: <b className="text-[#111]">TSh 15,000/mo</b>.</p>
             <div className="mt-4 flex flex-wrap gap-2 text-[12px] font-semibold">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7]"><Icon name="phone" size={12} /> M-Pesa</span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7]"><Icon name="phone" size={12} /> Tigo Pesa</span>
@@ -560,7 +559,7 @@ export default function LandingPage() {
                 <div className="p-8 flex flex-col flex-1">
                   <p className="mb-4 text-[#9B9B9B] text-[11px] font-bold uppercase tracking-wide">Premium</p>
                   <div className="mb-1 flex items-baseline gap-2">
-                    <h3 className="font-disp font-[700] text-[34px] leading-none tracking-tight text-[#111]">12,000</h3>
+                    <h3 className="font-disp font-[700] text-[34px] leading-none tracking-tight text-[#111]">15,000</h3>
                     <span className="text-[#6B6B6B] text-[12px]">TSh / month</span>
                   </div>
                   <p className="mb-6 text-[#6B6B6B] text-[13px]">Everything included, billed monthly. Cancel anytime.</p>
@@ -570,12 +569,12 @@ export default function LandingPage() {
 
               <div className="relative flex flex-col bg-white">
                 <span className="absolute top-0 right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-b-[8px] bg-[#FCF0D8] text-[#9A6A06] text-[10.5px] font-bold uppercase tracking-wide border border-[#EFD9A8] border-t-0">
-                  <CrownIcon className="w-3 h-3" /> Save 20%
+                  <Icon name="award" size={12} /> Save 20%
                 </span>
                 <div className="p-8 flex flex-col flex-1">
                   <p className="mb-4 text-[#9B9B9B] text-[11px] font-bold uppercase tracking-wide">Extra Premium</p>
                   <div className="mb-1 flex items-baseline gap-2">
-                    <h3 className="font-disp font-[700] text-[34px] leading-none tracking-tight text-[#111]">115,200</h3>
+                    <h3 className="font-disp font-[700] text-[34px] leading-none tracking-tight text-[#111]">144,000</h3>
                     <span className="text-[#6B6B6B] text-[12px]">TSh / year</span>
                   </div>
                   <p className="mb-6 text-[#6B6B6B] text-[13px]">Same everything, billed once a year. Two months free.</p>
@@ -698,11 +697,12 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="max-w-[1120px] mx-auto flex flex-col md:flex-row justify-between gap-3 pt-6 text-[12.5px]">
-          <span className="text-[#9B9B9B]">© 2026 C-chat · 3-day free trial · 12,000 TSh/mo or save 20% yearly</span>
+          <span className="text-[#9B9B9B]">© 2026 C-chat · 3-day free trial · 15,000 TSh/mo or save 20% yearly · 144,000 TSh/year</span>
           <div className="flex gap-4">
-            <Link href="/privacy" className="hover:text-[#111]">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-[#111]">Terms of Service</Link>
-            <Link href="/acceptable-use" className="hover:text-[#111]">Acceptable Use</Link>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#privacy" className="hover:text-[#111]">Privacy</Link>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#terms" className="hover:text-[#111]">Terms</Link>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#acceptable-use" className="hover:text-[#111]">Acceptable Use</Link>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#sheria" className="hover:text-[#111] font-semibold text-[#111]">Mwongozo wa Biashara Mtandao</Link>
           </div>
         </div>
       </footer>
