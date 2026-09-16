@@ -43,6 +43,7 @@ import {
   FiLayers,
   FiBriefcase,
   FiMenu,
+  FiAward,
 } from "react-icons/fi";
 import { LuBot, LuSparkles, LuHand, LuRocket, LuLanguages, LuWandSparkles } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa6";
@@ -105,6 +106,7 @@ const MAP: Record<string, IconType> = {
   layers: FiLayers,
   briefcase: FiBriefcase,
   menu: FiMenu,
+  award: FiAward,
   airtel: SiAirtel,
   visa: SiVisa,
   mastercard: SiMastercard,

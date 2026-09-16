@@ -30,7 +30,7 @@ const PLANS = [
   {
     id: "monthly",
     name: "Monthly",
-    price: "12,000",
+    price: "15,000",
     period: "TSh / month",
     badge: "Coming Soon",
     badgeColor: "bg-amber-100 text-amber-700",
@@ -48,13 +48,13 @@ const PLANS = [
   {
     id: "yearly",
     name: "Yearly",
-    price: "115,200",
+    price: "144,000",
     period: "TSh / year",
     badge: "Save 20% · Coming Soon",
     badgeColor: "bg-grn-bg text-[#111]",
     features: [
       "Everything in Monthly",
-      "Best value — save 20%",
+      "Best value — save 20% · 144,000 TSh/year (was 180,000)",
       "Yearly billing",
       "Priority support",
       "Cancel anytime",
@@ -227,9 +227,10 @@ export default function PlanSelectionPage() {
           </p>
 
           <div className="mt-10 text-center">
-            <Link href="/privacy" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors mr-4">Privacy Policy</Link>
-            <Link href="/terms" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors mr-4">Terms of Service</Link>
-            <Link href="/acceptable-use" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors">Acceptable Use</Link>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#privacy" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors mr-4">Privacy</Link>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#terms" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors mr-4">Terms</Link>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#acceptable-use" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors mr-4">Acceptable Use</Link>
+            <Link href="/jinsi-ya-kufanya-biashara-mtandaoni-tanzania#sheria" className="text-sm text-[#6B6B6B] hover:text-[#111] transition-colors font-semibold">Mwongozo wa Biashara Mtandao</Link>
           </div>
         </div>
       </main>
