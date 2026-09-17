@@ -19,13 +19,22 @@ async function hit(path, opts={}) {
   const url = BASE + path;
   const headers = { ...(opts.headers||{}) };
   if (TOKEN) headers['Authorization'] = `Bearer ${TOKEN}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3000);
   const start = performance.now();
   try {
-    const r = await fetch(url, { ...opts, headers });
+    const r = await fetch(url, { ...opts, headers, signal: controller.signal });
+    clearTimeout(timeout);
     const dur = performance.now() - start;
     return { status: r.status, dur, ok: r.ok };
   } catch (e) {
-    return { status: 0, dur: performance.now()-start, err: String(e), ok: false };
+    clearTimeout(timeout);
+    const msg = String(e && e.message || e);
+    const name = e && e.name || '';
+    const isAbort = name === 'AbortError' || msg.includes('aborted') || msg.includes('TimeoutError');
+    const isConnRefused = msg.includes('ECONNREFUSED') || msg.includes('fetch failed') || msg.includes('ECONNRESET');
+    const dur = performance.now() - start;
+    return { status: 0, dur, err: msg, ok: false, isAbort, isConnRefused };
   }
 }
 
@@ -46,7 +55,9 @@ async function vuLoop(id, endAt, stats) {
     stats.reqs++;
     stats.durs.push(res.dur);
     if (res.ok) stats.success++; else if (res.status>=400 && res.status<500) stats.c4xx++; else if (res.status>=500) stats.c5xx++;
-    if (res.status===0) stats.timeouts++;
+    if (res.isAbort) stats.aborts = (stats.aborts||0)+1;
+    else if (res.isConnRefused) stats.connRefused = (stats.connRefused||0)+1;
+    else if (res.status===0) stats.timeouts = (stats.timeouts||0)+1;
     // small think time 300-1200ms
     await new Promise(r=>setTimeout(r, 300 + Math.random()*900));
   }
@@ -54,7 +65,7 @@ async function vuLoop(id, endAt, stats) {
 
 (async () => {
   console.log(`C-chat Node load test — ${VUS} VU for ${DURATION}s against ${BASE} ${TOKEN ? '(auth)' : '(public only)'}`);
-  const stats = { reqs:0, success:0, c4xx:0, c5xx:0, timeouts:0, durs:[] };
+  const stats = { reqs:0, success:0, c4xx:0, c5xx:0, timeouts:0, aborts:0, connRefused:0, durs:[] };
   const endAt = Date.now() + DURATION*1000;
   const start = performance.now();
   const workers = Array.from({length: VUS}, (_,i)=>vuLoop(i, endAt, stats));
@@ -70,7 +81,7 @@ async function vuLoop(id, endAt, stats) {
     requests: stats.reqs,
     rps: Number(rps.toFixed(2)),
     successRate: stats.reqs? (stats.success/stats.reqs).toFixed(4):0,
-    c4xx: stats.c4xx, c5xx: stats.c5xx, timeouts: stats.timeouts,
+    c4xx: stats.c4xx, c5xx: stats.c5xx, timeouts: stats.timeouts, aborts: stats.aborts||0, connRefused: stats.connRefused||0,
     avg: Math.round(avg), p50: Math.round(p50), p90: Math.round(p90), p95: Math.round(p95), p99: Math.round(p99)
   }, null, 2));
 })();

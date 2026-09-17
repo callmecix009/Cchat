@@ -11,7 +11,7 @@ Realistic concurrent traffic for Next.js 16 + Supabase Postgres + Clerk + DeepSe
 
 ## Prerequisites
 - Install k6: https://k6.io/docs/getting-started/installation/ or `npm i -g artillery` or `npm i -D autocannon`
-- For authenticated tests, create test businesses via `POST /api/seed-mawese` with `SEED_SECRET=cchat-seed-2026` or use Clerk test users, export `TEST_CLERK_TOKEN` (Clerk `__session` JWT) and `TEST_BUSINESS_IDS=A,B,C`.
+- For authenticated tests, create test businesses via `POST /api/seed-mawese` with `SEED_SECRET=<configured-secret>` (route is fail-closed when `SEED_SECRET` is absent; set `SEED_SECRET` env, never commit). Or use Clerk test users, export `TEST_CLERK_TOKEN` (Clerk `__session` JWT) and `TEST_BUSINESS_IDS=A,B,C`.
 
 ## Quick start
 ```bash
@@ -29,7 +29,7 @@ npx k6 run k6-deepseek.js --vus 10
 - `k6-realistic.js` — realistic VU: open `/`, `/privacy`, `/sitemap.xml`, `GET /api/workspace`, `GET /api/inbox`, `GET /dashboard`, `GET /api/ai-config`, `GET /api/settings` with think 1-3s, variation.
 - `k6-webhook.js` — `POST /api/whatsapp/webhook` HMAC, rapid/duplicate/retries.
 - `k6-deepseek.js` — `POST /api/chat` isolated, measures AI latency, rate-limit, timeout.
-- `multi-tenant` — same realistic script with `TEST_BUSINESS_IDS` rotation, asserts isolation.
+- `multi-tenant` — `k6-realistic.js` `cross-tenant isolation` group with `TEST_TENANT_TOKENS=tokenA,tokenB` per-VU (`__VU`) rotation, distinct tenant-scoped `Authorization: Bearer` requests, negative assertions: other tenant inbox must not contain own conversation IDs and `GET /api/workspace` isolation (`other tenant workspace 200` + `cross-tenant isolation` checks).
 
 ## Metrics collected
 - `http_reqs`, `http_req_failed`, `http_req_duration p50/p90/p95/p99`, `checks`, `iterations`, `vus`, `data_received`, plus custom `db_latency` (from `x-db-duration` header if added), `ai_latency`.

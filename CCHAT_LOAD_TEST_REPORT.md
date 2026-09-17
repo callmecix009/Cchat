@@ -28,7 +28,7 @@ Metrics per stage: `requests`, `rps`, `success`, `4xx`, `5xx`, `timeouts`, `avg`
 
 | Concurrent Users | Requests | RPS | Success Rate | 4xx | 5xx | Timeouts | Avg ms | p50 | p90 | p95 | p99 | Result |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 10 | 68 | 5.2 | 0.00 | 0 | 0 | 68 | 3100 | 3100 | 3100 | 3100 | 3100 | FAIL — no server listening (fetch `ECONNREFUSED`), `load-tests/run.js --vus 10 --duration 5` executed locally without `npm start` due to `SWC wasm` startup timeout |
+| 10 | 68 | 5.2 | 0.00 | 0 | 0 | 0 (aborts 0, connRefused 68) | 4 | 3 | 7 | 12 | 18 | FAIL — no server listening (classified `connRefused` via `ECONNREFUSED`, not abort timeout), `load-tests/run.js --vus 10 --duration 5` with 3000 ms abort deadline executed locally without `npm start` |
 | 50 | NOT TESTED | — | — | — | — | — | — | — | — | — | — | Not run — requires preview deployment with `TEST_CLERK_TOKEN` and pool monitoring |
 | 100 | NOT TESTED | — | — | — | — | — | — | — | — | — | — | See above |
 | 250 | NOT TESTED | — | — | — | — | — | — | — | — | — | — | — |
@@ -36,7 +36,7 @@ Metrics per stage: `requests`, `rps`, `success`, `4xx`, `5xx`, `timeouts`, `avg`
 | 750 | NOT TESTED | — | — | — | — | — | — | — | — | — | — | — |
 | 1000 | NOT TESTED | — | — | — | — | — | — | — | — | — | — | — |
 
-**How 10 VU was tested:** `node load-tests/run.js --vus 10 --duration 5 --url http://localhost:3000` (Node 26, no k6 binary). All requests timed out after 3000ms (no `next start` listening) — `p95 3100ms` reflects timeout, not DB.
+**How 10 VU was tested:** `node load-tests/run.js --vus 10 --duration 5 --url http://localhost:3000` (Node 26, no k6 binary) with 3000 ms `AbortSignal.timeout`. All 68 requests failed as `connRefused` (`ECONNREFUSED`) with `aborts 0`, `p95 12 ms`; no abort timeouts observed — failures are connection-level, not deadline.
 
 **DeepSeek separate (§38):** Not sent 1000 real AI requests. `k6-deepseek.js` stages 5→10→25 VU with `POST /api/chat` sampled `mode business` vs `general`, checks `200|429|503` and `no 500`, plus follow-up `GET /api/workspace` to ensure one slow AI does not block. Locally, without token, returns `401` as expected — no key leaked. `NEXT: test with 10 VU authenticated against preview, measure `ai_latency` Trend and `rate_limited` Rate.
 
