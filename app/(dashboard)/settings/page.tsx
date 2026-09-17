@@ -6,7 +6,6 @@ import { initials } from "@/lib/demo";
 import { Icon } from "@/components/icons";
 import { useTheme } from "@/components/theme-provider";
 import LogoCropDialog from "@/components/logo-crop-dialog";
-import { PremiumCrown } from "@/components/premium-indicator";
 
 function Polsec({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
@@ -431,9 +430,9 @@ export default function SettingsPage() {
                     <>
                       <div className="flex justify-between items-start gap-3 flex-wrap">
                         <div>
-                          <div className="font-disp text-[22px] font-extrabold text-dark flex items-center gap-2">{isYearly ? "Yearly" : "Monthly"} <span className="inline-flex"><span className="w-7 h-7 rounded-full bg-[#111] text-white grid place-items-center"><span className="scale-[0.85]"><PremiumCrown size={16} /></span></span></span> <span className="text-[14px] text-muted font-normal">{isYearly ? "TZS 115,200 / year" : "TZS 12,000 / month"}</span></div>
+                          <div className="font-disp text-[22px] font-extrabold text-dark flex items-center gap-2">{isYearly ? "Yearly" : "Monthly"} <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#111] text-white text-[11px] font-bold">Premium</span> <span className="text-[14px] text-muted font-normal">{isYearly ? "TZS 115,200 / year" : "TZS 12,000 / month"}</span></div>
                           <span className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-[#111] bg-white border border-[#E9E9E7] rounded-full px-2.5 py-1 mt-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> Active <PremiumCrown size={12} />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> Active • Premium
                           </span>
                         </div>
                         {exp && (

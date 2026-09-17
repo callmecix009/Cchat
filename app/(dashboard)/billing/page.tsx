@@ -1,9 +1,9 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { GoldCrown, planBadgeInfo } from "@/components/premium";
-import { PremiumBadge, ExtraPremiumBadge, MiniPlanBadge } from "@/components/plan-badges";
-import { PremiumCrown, SaveCrown } from "@/components/premium-indicator";
+import { planBadgeInfo } from "@/components/premium";
+import { PremiumBadge, ExtraPremiumBadge } from "@/components/plan-badges";
+import { SaveCrown } from "@/components/premium-indicator";
 import { Icon } from "@/components/icons";
 
 const FEATURES = [
@@ -97,10 +97,10 @@ export default function BillingPage() {
   }
 
   const currentBadge =
-    info.tone === "extra" ? (
-      <MiniPlanBadge kind="extra" size={52} />
-    ) : info.tone === "premium" ? (
-      <MiniPlanBadge kind="premium" size={52} />
+    info.tone === "extra" || info.tone === "premium" ? (
+      <span className="w-[52px] h-[52px] rounded-[13px] bg-[#111] text-white grid place-items-center flex-none text-[11px] font-extrabold tracking-wide">
+        Premium
+      </span>
     ) : info.tone === "trial" ? (
       <span className="w-[52px] h-[52px] rounded-[13px] bg-white border border-[#E9E9E7] grid place-items-center flex-none text-[#111]">
         <Icon name="clock" size={24} />

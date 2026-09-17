@@ -39,7 +39,21 @@ export default function ProductsPage() {
   const [modal, setModal] = useState<ModalState>(emptyModal);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [photoBusy, setPhotoBusy] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  // Warn on unsaved changes
+  useEffect(() => {
+    if (!modal.open) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [modal.open]);
 
   useEffect(() => {
     fetch("/api/workspace")
@@ -64,6 +78,9 @@ export default function ProductsPage() {
   const openEdit = (id: string | null) => {
     const p = id ? products.find((x) => x.id === id) : null;
     setPhotoError(null);
+    setSaveError(null);
+    setSaveSuccess(false);
+    setSaving(false);
     setModal({
       open: true,
       id,
@@ -74,6 +91,21 @@ export default function ProductsPage() {
       image: p?.image ?? null,
       kw: (p?.kw ?? []).join(", "),
     });
+  };
+
+  const closeModal = () => {
+    if (saving) return;
+    if (modal.open) {
+      // simple dirty check: if user typed something, confirm
+      const hasContent = modal.open && (modal.name.trim() || modal.price.trim() || modal.cat.trim());
+      if (hasContent && !saveSuccess) {
+        // allow closing but warn via confirm if they had started editing existing product
+        if (modal.id && !window.confirm("Discard unsaved changes?")) return;
+      }
+    }
+    setModal(emptyModal);
+    setSaveError(null);
+    setSaveSuccess(false);
   };
 
   // Photos stay out of the replace-all payload (they travel via the
@@ -117,40 +149,86 @@ export default function ProductsPage() {
     }
   };
 
-  const save = () => {
-    if (!modal.open) return;
+  const keepImageForAndImage = (p: Product, savedId: string): ProductPayload =>
+    savedId && p.id === savedId ? p : ({ ...p, image: undefined } as ProductPayload);
+
+  const save = async () => {
+    if (!modal.open || saving) return;
+    setSaveError(null);
     const name = modal.name.trim();
     const price = Number(modal.price);
-    if (!name || !price) return;
-    const data = {
-      name,
-      price,
-      stock: Math.max(0, Number(modal.stock) || 0),
-      cat: modal.cat.trim() || "General",
-      image: modal.image,
-      kw: modal.kw
-        .split(",")
-        .map((x) => x.trim().toLowerCase())
-        .filter(Boolean),
-    };
-    let next: Product[];
-    let savedId: string;
-    if (modal.id) {
-      savedId = modal.id;
-      const prev = products.find((p) => p.id === modal.id);
-      next = products.map((p) =>
-        p.id === modal.id ? { ...p, ...data, emoji: prev?.emoji ?? "📦" } : p
-      );
-    } else {
-      savedId = uid();
-      next = [
-        { id: savedId, sold: 0, hidden: false, emoji: "📦", ...data, cl: CHIP_COLORS[Math.floor(Math.random() * CHIP_COLORS.length)] },
-        ...products,
-      ];
+    const stock = Number(modal.stock);
+    if (!name) {
+      setSaveError("Product name is required.");
+      return;
     }
-    setProducts(next);
-    persist(next, savedId);
-    setModal(emptyModal);
+    if (!price || isNaN(price) || price <= 0) {
+      setSaveError("Enter a valid price greater than 0.");
+      return;
+    }
+    if (isNaN(stock) || stock < 0) {
+      setSaveError("Stock must be 0 or more.");
+      return;
+    }
+    setSaving(true);
+    try {
+      const data = {
+        name,
+        price: Math.round(price),
+        stock: Math.max(0, Math.floor(stock)),
+        cat: modal.cat.trim() || "General",
+        image: modal.image,
+        kw: modal.kw
+          .split(",")
+          .map((x) => x.trim().toLowerCase())
+          .filter(Boolean),
+      };
+      let next: Product[];
+      let savedId: string;
+      if (modal.id) {
+        savedId = modal.id;
+        const prev = products.find((p) => p.id === modal.id);
+        next = products.map((p) =>
+          p.id === modal.id ? { ...p, ...data, emoji: prev?.emoji ?? "📦" } : p
+        );
+      } else {
+        savedId = uid();
+        next = [
+          { id: savedId, sold: 0, hidden: false, emoji: "📦", ...data, cl: CHIP_COLORS[Math.floor(Math.random() * CHIP_COLORS.length)] },
+          ...products,
+        ];
+      }
+      const res = await fetch("/api/workspace", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          products: next.map((p): ProductPayload => keepImageForAndImage(p, savedId)),
+          lowStockThreshold: threshold,
+          policies: { outOfStockBehavior: behavior },
+        }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j?.message || "save failed");
+      }
+      // Refresh from DB as source of truth
+      const fresh = await fetch("/api/workspace")
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+      if (fresh?.products) setProducts(fresh.products);
+      else setProducts(next);
+      setSaveSuccess(true);
+      window.dispatchEvent(new Event("seechat:business-updated"));
+      setTimeout(() => {
+        setModal(emptyModal);
+        setSaveSuccess(false);
+        setSaveError(null);
+      }, 700);
+    } catch (e: any) {
+      setSaveError(e?.message || "Could not save. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const del = (id: string) => {
@@ -325,11 +403,11 @@ export default function ProductsPage() {
 
       {modal.open && (
         <div id="modalRoot" style={{ position: "static" }}>
-          <div className="mback" onClick={() => setModal(emptyModal)} />
+          <div className="mback" onClick={closeModal} />
           <div className="mpanel">
             <div className="mhead">
               <h3>{modal.id ? "Edit product" : "Add product"}</h3>
-              <button className="mx" onClick={() => setModal(emptyModal)} aria-label="Close">
+              <button className="mx" onClick={closeModal} aria-label="Close">
                 <Icon name="x" size={17} />
               </button>
             </div>
@@ -394,10 +472,22 @@ export default function ProductsPage() {
                 <input className="inp" placeholder="e.g. samsung, a35, galaxy" value={modal.kw} onChange={(e) => setModal({ ...modal, kw: e.target.value })} />
               </div>
             </div>
+            {saveError && (
+              <div className="mx-5 mb-3 rounded-[10px] border border-[#F0C4C4] bg-[#FFF7F7] px-3 py-2.5 text-[12.5px] font-medium text-[#8E2F2F]">
+                {saveError}
+              </div>
+            )}
+            {saveSuccess && (
+              <div className="mx-5 mb-3 rounded-[10px] border border-[#BCE5CB] bg-[#E3F4E9] px-3 py-2.5 text-[12.5px] font-semibold text-[#0E7A47] flex items-center gap-2">
+                <Icon name="check" size={14} /> Saved — AI now uses the updated product.
+              </div>
+            )}
             <div className="mfoot">
-              <button className="btn ghost" onClick={() => setModal(emptyModal)}>Cancel</button>
-              <button className="btn grn" onClick={save}>
-                <Icon name="check" size={14} /> Save &amp; sync to AI
+              <button className="btn ghost" onClick={closeModal} disabled={saving}>
+                Cancel
+              </button>
+              <button className="btn grn" onClick={save} disabled={saving || photoBusy}>
+                <Icon name="check" size={14} /> {saving ? "Saving…" : saveSuccess ? "Saved!" : "Save Changes"}
               </button>
             </div>
           </div>
