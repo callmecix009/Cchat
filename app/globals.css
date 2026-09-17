@@ -53,6 +53,22 @@
   --motion-base: 200ms;
   --motion-slow: 300ms;
   --focus-ring: 0 0 0 3px rgba(20,154,91,.14);
+
+  /* Semantic tokens — light */
+  --surface: #FFFFFF;
+  --surface-2: #F7F7F5;
+  --surface-3: #F1F1EF;
+  --surface-warm: #F9F9F7;
+  --text-primary: #111111;
+  --text-secondary: #6B6B6B;
+  --text-muted: #9B9B9B;
+  --text-on-dark: #EDEDED;
+  --border: #E9E9E7;
+  --border-strong: #111111;
+  --input-bg: #FFFFFF;
+  --input-text: #111111;
+  --input-placeholder: #9B9B9B;
+  --input-border: #E9E9E7;
 }
 
 /* Dashboard dark theme — scoped, does NOT affect landing (landing is outside .dashboard-theme) */
@@ -92,6 +108,21 @@ html.dark .dashboard-theme:not(.light) {
   --background: #0F0F0F;
   --foreground: #EDEDED;
   --focus-ring: 0 0 0 3px rgba(22,165,106,.22);
+  /* Semantic tokens — dark */
+  --surface: #1E1E1E;
+  --surface-2: #1A1A1A;
+  --surface-3: #242424;
+  --surface-warm: #0F0F0F;
+  --text-primary: #EDEDED;
+  --text-secondary: #9B9B9B;
+  --text-muted: #7A7A7A;
+  --text-on-dark: #0F0F0F;
+  --border: #2A2A2A;
+  --border-strong: #EDEDED;
+  --input-bg: #1A1A1A;
+  --input-text: #EDEDED;
+  --input-placeholder: #7A7A7A;
+  --input-border: #2A2A2A;
   color-scheme: dark;
 }
 .dashboard-theme.light {
@@ -110,7 +141,11 @@ html.dark .dashboard-theme:not(.light) {
 .dashboard-theme.light .ptable,
 .dashboard-theme.light .arearow,
 .dashboard-theme.light .payrow,
-.dashboard-theme.light .stockalert {
+.dashboard-theme.light .stockalert,
+.dashboard-theme.light [class*="rounded-[16px]"].border,
+.dashboard-theme.light .salebar,
+.dashboard-theme.light .salecard,
+.dashboard-theme.light .salepicked {
   border-color: #111 !important;
   border-width: 1.5px !important;
   box-shadow: 0 2px 0 #111 !important;
@@ -119,7 +154,9 @@ html.dark .dashboard-theme:not(.light) {
 .dashboard-theme.light .chip,
 .dashboard-theme.light .inp,
 .dashboard-theme.light select.inp,
-.dashboard-theme.light textarea.inp {
+.dashboard-theme.light textarea.inp,
+.dashboard-theme.light .arearow .inp,
+.dashboard-theme.light .payrow .inp {
   border-width: 1.5px !important;
   border-color: #111 !important;
 }
@@ -137,7 +174,11 @@ html.dark .dashboard-theme:not(.light) {
   .dashboard-theme:not(.light):not(.dark) .ptable,
   .dashboard-theme:not(.light):not(.dark) .arearow,
   .dashboard-theme:not(.light):not(.dark) .payrow,
-  .dashboard-theme:not(.light):not(.dark) .stockalert {
+  .dashboard-theme:not(.light):not(.dark) .stockalert,
+  .dashboard-theme:not(.light):not(.dark) [class*="rounded-[16px]"].border,
+  .dashboard-theme:not(.light):not(.dark) .salebar,
+  .dashboard-theme:not(.light):not(.dark) .salecard,
+  .dashboard-theme:not(.light):not(.dark) .salepicked {
     border-color: #111 !important;
     border-width: 1.5px !important;
     box-shadow: 0 2px 0 #111 !important;
@@ -146,7 +187,9 @@ html.dark .dashboard-theme:not(.light) {
   .dashboard-theme:not(.light):not(.dark) .chip,
   .dashboard-theme:not(.light):not(.dark) .inp,
   .dashboard-theme:not(.light):not(.dark) select.inp,
-  .dashboard-theme:not(.light):not(.dark) textarea.inp {
+  .dashboard-theme:not(.light):not(.dark) textarea.inp,
+  .dashboard-theme:not(.light):not(.dark) .arearow .inp,
+  .dashboard-theme:not(.light):not(.dark) .payrow .inp {
     border-width: 1.5px !important;
     border-color: #111 !important;
   }
@@ -1481,6 +1524,7 @@ textarea.inp { resize: vertical; min-height: 74px; }
 
 /* ============ Dashboard Dark Overrides — scoped to .dashboard-theme only ============ */
 /* Utilities — hard-coded Tailwind arbitrary values */
+/* Semantic token aware — uses --surface/--text-primary etc */
 .dashboard-theme.dark .bg-white,
 html.dark .dashboard-theme:not(.light) .bg-white { background-color: #1E1E1E !important; }
 .dashboard-theme.dark [class*="bg-[#FCFCF9]"],
@@ -1495,6 +1539,12 @@ html.dark .dashboard-theme:not(.light) [class*="bg-[#F9F9F7]"] { background-colo
 html.dark .dashboard-theme:not(.light) [class*="bg-[#F8FAF7]"] { background-color: #1A1A1A !important; }
 .dashboard-theme.dark [class*="bg-[#FBFDFB]"],
 html.dark .dashboard-theme:not(.light) [class*="bg-[#FBFDFB]"] { background-color: #111C14 !important; }
+.dashboard-theme.dark [class*="bg-[#E9E9E7]"],
+html.dark .dashboard-theme:not(.light) [class*="bg-[#E9E9E7]"] { background-color: #2A2A2A !important; }
+.dashboard-theme.dark [class*="bg-[#FFF7F7]"],
+html.dark .dashboard-theme:not(.light) [class*="bg-[#FFF7F7]"] { background-color: #2A1818 !important; }
+.dashboard-theme.dark [class*="bg-[#FEF9E7]"],
+html.dark .dashboard-theme:not(.light) [class*="bg-[#FEF9E7]"] { background-color: #2A2110 !important; }
 .dashboard-theme.dark [class*="bg-[#111]"],
 html.dark .dashboard-theme:not(.light) [class*="bg-[#111]"] { background-color: #EDEDED !important; color: #0F0F0F !important; }
 .dashboard-theme.dark [class*="text-[#111]"],
@@ -1513,12 +1563,30 @@ html.dark .dashboard-theme:not(.light) [class*="text-[#4A6154]"] { color: #B0C0B
 html.dark .dashboard-theme:not(.light) [class*="text-[#B9CDBF]"] { color: #8FAA99 !important; }
 .dashboard-theme.dark [class*="text-[#8FAA99]"],
 html.dark .dashboard-theme:not(.light) [class*="text-[#8FAA99]"] { color: #A8B8A8 !important; }
+.dashboard-theme.dark [class*="text-[#8E2F2F]"],
+html.dark .dashboard-theme:not(.light) [class*="text-[#8E2F2F]"] { color: #E8A0A0 !important; }
+.dashboard-theme.dark [class*="text-[#8A6B2A]"],
+html.dark .dashboard-theme:not(.light) [class*="text-[#8A6B2A]"] { color: #E8C86A !important; }
+.dashboard-theme.dark [class*="text-[#9A6A06]"],
+html.dark .dashboard-theme:not(.light) [class*="text-[#9A6A06]"] { color: #E8C86A !important; }
 .dashboard-theme.dark [class*="border-[#E9E9E7]"],
 html.dark .dashboard-theme:not(.light) [class*="border-[#E9E9E7]"] { border-color: #2A2A2A !important; }
 .dashboard-theme.dark [class*="border-[#F1F1EF]"],
 html.dark .dashboard-theme:not(.light) [class*="border-[#F1F1EF]"] { border-color: #2A2A2A !important; }
 .dashboard-theme.dark [class*="border-[#111]"],
 html.dark .dashboard-theme:not(.light) [class*="border-[#111]"] { border-color: #EDEDED !important; }
+.dashboard-theme.dark [class*="border-[#F0C4C4]"],
+html.dark .dashboard-theme:not(.light) [class*="border-[#F0C4C4]"] { border-color: #4A2424 !important; }
+.dashboard-theme.dark [class*="border-[#E3C7C7]"],
+html.dark .dashboard-theme:not(.light) [class*="border-[#E3C7C7]"] { border-color: #4A2424 !important; }
+.dashboard-theme.dark [class*="border-[#F5E6C8]"],
+html.dark .dashboard-theme:not(.light) [class*="border-[#F5E6C8]"] { border-color: #4A3A10 !important; }
+.dashboard-theme.dark [class*="border-[#EFD9A8]"],
+html.dark .dashboard-theme:not(.light) [class*="border-[#EFD9A8]"] { border-color: #4A3A10 !important; }
+.dashboard-theme.dark [class*="divide-[#F1F1EF]"] > :not([hidden]) ~ :not([hidden]),
+html.dark .dashboard-theme:not(.light) [class*="divide-[#F1F1EF]"] > :not([hidden]) ~ :not([hidden]) { border-color: #2A2A2A !important; }
+.dashboard-theme.dark [class*="bg-[#E8A222]"],
+html.dark .dashboard-theme:not(.light) [class*="bg-[#E8A222]"] { background-color: #E8A222 !important; }
 
 /* System fallback for utilities */
 @media (prefers-color-scheme: dark) {
@@ -1527,10 +1595,18 @@ html.dark .dashboard-theme:not(.light) [class*="border-[#111]"] { border-color: 
   .dashboard-theme:not(.light):not(.dark) [class*="bg-[#F7F7F5]"] { background-color: #1A1A1A !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="bg-[#F1F1EF]"] { background-color: #242424 !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="bg-[#F9F9F7]"] { background-color: #151515 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="bg-[#E9E9E7]"] { background-color: #2A2A2A !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="bg-[#FFF7F7]"] { background-color: #2A1818 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="bg-[#FEF9E7]"] { background-color: #2A2110 !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="bg-[#111]"] { background-color: #EDEDED !important; color: #0F0F0F !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="text-[#111]"] { color: #EDEDED !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="text-[#6B6B6B]"] { color: #9B9B9B !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-[#8E2F2F]"] { color: #E8A0A0 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-[#8A6B2A]"] { color: #E8C86A !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="border-[#E9E9E7]"] { border-color: #2A2A2A !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="border-[#F0C4C4]"] { border-color: #4A2424 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="border-[#E3C7C7]"] { border-color: #4A2424 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="border-[#F5E6C8]"] { border-color: #4A3A10 !important; }
 }
 
 /* Semantic component dark overrides */
@@ -1635,9 +1711,9 @@ html.dark .dashboard-theme:not(.light) .ifilters button { background: #1A1A1A !i
 .dashboard-theme.dark .ifilters button.on,
 html.dark .dashboard-theme:not(.light) .ifilters button.on { background: #EDEDED !important; color: #0F0F0F !important; border-color: #EDEDED !important; }
 .dashboard-theme.dark .bub.c,
-html.dark .dashboard-theme:not(.light) .bub.c { background: #1E1E1E !important; color: #EDEDED !important; border-color: #2A2A2A !important; }
+html.dark .dashboard-theme:not(.light) .bub.c { background: #242424 !important; color: #EDEDED !important; border-color: #2E2E2E !important; }
 .dashboard-theme.dark .bub.a,
-html.dark .dashboard-theme:not(.light) .bub.a { background: #EDEDED !important; color: #0F0F0F !important; border-color: #EDEDED !important; }
+html.dark .dashboard-theme:not(.light) .bub.a { background: #12261C !important; color: #EDEDED !important; border-color: #1E4D30 !important; }
 .dashboard-theme.dark .takebanner,
 html.dark .dashboard-theme:not(.light) .takebanner { background: #2A2110 !important; border-color: #4A3A10 !important; color: #E8A222 !important; }
 .dashboard-theme.dark .handline,
@@ -1646,6 +1722,59 @@ html.dark .dashboard-theme:not(.light) .handline { background: #2A2110 !importan
 html.dark .dashboard-theme:not(.light) .livechip { background: #12261C !important; border-color: #1E4D30 !important; color: #16A56A !important; }
 .dashboard-theme.dark .rulecard,
 html.dark .dashboard-theme:not(.light) .rulecard { background: #12261C !important; border-color: #1E4D30 !important; color: #16A56A !important; }
+.dashboard-theme.dark #modalRoot .mpanel,
+html.dark .dashboard-theme:not(.light) #modalRoot .mpanel { background: #1E1E1E !important; border: 1px solid #2A2A2A !important; color: #EDEDED !important; }
+.dashboard-theme.dark #modalRoot .mhead,
+html.dark .dashboard-theme:not(.light) #modalRoot .mhead,
+.dashboard-theme.dark #modalRoot .mfoot,
+html.dark .dashboard-theme:not(.light) #modalRoot .mfoot { border-color: #2A2A2A !important; }
+.dashboard-theme.dark #modalRoot .mpanel h3,
+html.dark .dashboard-theme:not(.light) #modalRoot .mpanel h3 { color: #EDEDED !important; }
+.dashboard-theme.dark .phone .ph,
+html.dark .dashboard-theme:not(.light) .phone .ph { background: #0F0F0F !important; color: #EDEDED !important; border-bottom: 1px solid #2A2A2A !important; }
+.dashboard-theme.dark .hintchips button,
+html.dark .dashboard-theme:not(.light) .hintchips button { background: #1A1A1A !important; border-color: #2A2A2A !important; color: #EDEDED !important; }
+.dashboard-theme.dark .hintchips button:hover,
+html.dark .dashboard-theme:not(.light) .hintchips button:hover { background: #EDEDED !important; color: #0F0F0F !important; border-color: #EDEDED !important; }
+.dashboard-theme.dark .who-tag,
+html.dark .dashboard-theme:not(.light) .who-tag { background: rgba(22,165,106,.18) !important; color: #16A56A !important; }
+.dashboard-theme.dark .who-tag.me,
+html.dark .dashboard-theme:not(.light) .who-tag.me { background: rgba(232,162,34,.18) !important; color: #E8C86A !important; }
+.dashboard-theme.dark .bub.a .who-tag,
+html.dark .dashboard-theme:not(.light) .bub.a .who-tag { background: rgba(255,255,255,.12) !important; color: #A7E3C0 !important; }
+.dashboard-theme.dark .bub.a .who-tag.me,
+html.dark .dashboard-theme:not(.light) .bub.a .who-tag.me { background: rgba(255,255,255,.14) !important; color: #FFE3A6 !important; }
+.dashboard-theme.dark .transcript .bub.a time,
+html.dark .dashboard-theme:not(.light) .transcript .bub.a time,
+.dashboard-theme.dark .pbody .bub.a time,
+html.dark .dashboard-theme:not(.light) .pbody .bub.a time,
+.dashboard-theme.dark .transcript .bub.c time,
+html.dark .dashboard-theme:not(.light) .transcript .bub.c time,
+.dashboard-theme.dark .pbody .bub.c time,
+html.dark .dashboard-theme:not(.light) .pbody .bub.c time { color: rgba(237,237,237,.55) !important; }
+.dashboard-theme.dark .inp::placeholder,
+html.dark .dashboard-theme:not(.light) .inp::placeholder,
+.dashboard-theme.dark textarea.inp::placeholder,
+html.dark .dashboard-theme:not(.light) textarea.inp::placeholder,
+.dashboard-theme.dark .composer input::placeholder,
+html.dark .dashboard-theme:not(.light) .composer input::placeholder { color: #7A7A7A !important; opacity: 1 !important; }
+.dashboard-theme.dark select.inp,
+html.dark .dashboard-theme:not(.light) select.inp { color-scheme: dark; }
+.dashboard-theme.dark .stat .k,
+html.dark .dashboard-theme:not(.light) .stat .k { color: #7A7A7A !important; }
+.dashboard-theme.dark .addtile,
+html.dark .dashboard-theme:not(.light) .addtile { background: #1E1E1E !important; border-color: #2A2A2A !important; color: #9B9B9B !important; }
+.dashboard-theme.dark .arearow .rm:hover,
+html.dark .dashboard-theme:not(.light) .arearow .rm:hover,
+.dashboard-theme.dark .payrow .rm:hover,
+html.dark .dashboard-theme:not(.light) .payrow .rm:hover { background: #2A1818 !important; color: #E85D5D !important; }
+
+/* Inline unread border — dark */
+.dashboard-theme.dark li[style*="border-left"],
+html.dark .dashboard-theme:not(.light) li[style*="border-left"] { border-left-color: #EDEDED !important; }
+/* Mobile overlay stays dark scrim in dark mode */
+.dashboard-theme.dark [class*="bg-[#111]/20"],
+html.dark .dashboard-theme:not(.light) [class*="bg-[#111]/20"] { background-color: rgba(0,0,0,.45) !important; }
 
 /* Green accents in dark — brighter for contrast */
 .dashboard-theme.dark .btn.grn,
@@ -1767,8 +1896,8 @@ html.dark .dashboard-theme:not(.light) .hover\:bg-\[\#F7F7F5\]:hover { backgroun
   .dashboard-theme:not(.light):not(.dark) aside { background: #1A1A1A !important; border-color: #2A2A2A !important; }
   .dashboard-theme:not(.light):not(.dark) header { background: rgba(26,26,26,.85) !important; border-color: #2A2A2A !important; }
   .dashboard-theme:not(.light):not(.dark) .intoolbar { background: #1E1E1E !important; border-color: #2A2A2A !important; }
-  .dashboard-theme:not(.light):not(.dark) .bub.c { background: #1E1E1E !important; color: #EDEDED !important; border-color: #2A2A2A !important; }
-  .dashboard-theme:not(.light):not(.dark) .bub.a { background: #EDEDED !important; color: #0F0F0F !important; border-color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .bub.c { background: #242424 !important; color: #EDEDED !important; border-color: #2E2E2E !important; }
+  .dashboard-theme:not(.light):not(.dark) .bub.a { background: #12261C !important; color: #EDEDED !important; border-color: #1E4D30 !important; }
   .dashboard-theme:not(.light):not(.dark) .text-dark { color: #EDEDED !important; }
   .dashboard-theme:not(.light):not(.dark) .text-dark\/80 { color: #EDEDED !important; }
   .dashboard-theme:not(.light):not(.dark) .text-black { color: #EDEDED !important; }
@@ -1779,6 +1908,12 @@ html.dark .dashboard-theme:not(.light) .hover\:bg-\[\#F7F7F5\]:hover { backgroun
   .dashboard-theme:not(.light):not(.dark) .border-dark { border-color: #EDEDED !important; }
   .dashboard-theme:not(.light):not(.dark) .border-cborder { border-color: #2A2A2A !important; }
   .dashboard-theme:not(.light):not(.dark) .bg-white\/80 { background-color: rgba(26,26,26,.85) !important; }
+  .dashboard-theme:not(.light):not(.dark) #modalRoot .mpanel { background: #1E1E1E !important; border: 1px solid #2A2A2A !important; color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .phone .ph { background: #0F0F0F !important; color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .hintchips button { background: #1A1A1A !important; border-color: #2A2A2A !important; color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .who-tag { background: rgba(22,165,106,.18) !important; color: #16A56A !important; }
+  .dashboard-theme:not(.light):not(.dark) .inp::placeholder,
+  .dashboard-theme:not(.light):not(.dark) .composer input::placeholder { color: #7A7A7A !important; }
   .dashboard-theme:not(.light):not(.dark) .section-h h2,
   .dashboard-theme:not(.light):not(.dark) .pcard h3,
   .dashboard-theme:not(.light):not(.dark) .svc h4,

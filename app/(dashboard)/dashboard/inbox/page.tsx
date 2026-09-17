@@ -285,8 +285,8 @@ export default function InboxPage() {
         <div className="hidden md:flex items-center gap-2 flex-wrap justify-end">
           {wa ? (
             wa.connected && !wa.paused ? (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-[#E9E9E7] text-[11px] font-medium text-[#111]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> WhatsApp connected
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E3F4E9] border border-[#BCE5CB] text-[11px] font-bold text-[#0E7A47]">
+                <span className="relative flex w-2 h-2"><span className="absolute inline-flex h-full w-full rounded-full bg-[#149A5B] opacity-60 animate-ping" /><span className="relative inline-flex w-2 h-2 rounded-full bg-[#149A5B]" /></span> LIVE
               </span>
             ) : (
               <Link href="/settings" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F7F7F5] border border-[#E9E9E7] text-[11px] font-medium text-[#6B6B6B]" title="Open Settings to connect">
