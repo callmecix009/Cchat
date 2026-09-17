@@ -299,10 +299,32 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
       {/* sidebar — Notion light, foldable to icons */}
       <aside className={`${navCollapsed ? "md:w-[64px]" : "md:w-[232px]"} w-[232px] flex-none flex flex-col bg-white border-r border-[#E9E9E7] fixed inset-y-0 left-0 z-[999] transition-all duration-200 md:static md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
-        <Link href="/" className={`flex items-center gap-2.5 px-4 pt-[14px] pb-3.5 text-[#111] font-disp font-bold text-[16px] ${navCollapsed ? "md:justify-center md:px-0" : ""}`}>
-          <CchatLogo size={32} decorative className="shrink-0" />
-          <span className={navCollapsed ? "md:hidden" : ""}>C-chat</span>
-        </Link>
+        <div className={`flex items-center gap-2 px-2.5 pt-3 pb-2 ${navCollapsed ? "md:flex-col md:items-center md:justify-center md:gap-3" : "md:justify-between"}`}>
+          <Link href="/" className={`flex items-center gap-2.5 px-1.5 py-1.5 text-[#111] font-disp font-bold text-[16px] ${navCollapsed ? "md:justify-center" : ""}`}>
+            <CchatLogo size={32} decorative className="shrink-0" />
+            <span className={navCollapsed ? "md:hidden" : ""}>C-chat</span>
+          </Link>
+          <button
+            onClick={toggleNavCollapsed}
+            aria-label={navCollapsed ? "Expand menu" : "Fold menu to icons"}
+            title={navCollapsed ? "Expand menu" : "Fold to icons"}
+            className="hidden md:grid place-items-center w-8 h-8 rounded-[8px] border border-[#E9E9E7] bg-white text-[#6B6B6B] hover:text-[#111] hover:border-[#111] transition-colors shrink-0"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`transition-transform duration-200 ${navCollapsed ? "rotate-180" : ""}`}
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+        </div>
         <nav className="flex-1 overflow-auto px-2.5 py-2 space-y-0.5">
           {NAV.map((n) => (
             <Link
@@ -347,7 +369,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                   </div>
                   <div className="text-[#9B9B9B] mt-2 px-1 leading-relaxed">
                     {info.tone === "none"
-                      ? "12,000 TSh/mo · 3-day free trial"
+                      ? "15,000 TSh/mo · 3-day free trial"
                       : info.tone === "trial"
                         ? "Full access while you try C-chat"
                         : info.tone === "extra"
@@ -359,28 +381,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             })()}
           </div>
         )}
-        <div className={`hidden md:flex p-2.5 ${navCollapsed ? "justify-center" : "justify-end"}`}>
-          <button
-            onClick={toggleNavCollapsed}
-            aria-label={navCollapsed ? "Expand menu" : "Fold menu to icons"}
-            title={navCollapsed ? "Expand menu" : "Fold to icons"}
-            className="w-8 h-8 grid place-items-center rounded-[8px] border border-[#E9E9E7] bg-white text-[#6B6B6B] hover:text-[#111] hover:border-[#111] transition-colors"
-          >
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className={`transition-transform duration-200 ${navCollapsed ? "rotate-180" : ""}`}
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-        </div>
       </aside>
 
       {/* main */}
