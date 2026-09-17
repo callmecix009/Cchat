@@ -5,6 +5,8 @@ import { useUser } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
 import { Icon } from "@/components/icons";
 import { useTheme } from "@/components/theme-provider";
+import LogoCropDialog from "@/components/logo-crop-dialog";
+import { PremiumCrown } from "@/components/premium-indicator";
 
 function Polsec({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
@@ -69,6 +71,8 @@ export default function SettingsPage() {
   const [logo, setLogo] = useState<string | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [cropMime, setCropMime] = useState<string>("image/png");
   const [connected, setConnected] = useState(false);
   const [waConnected, setWaConnected] = useState(false);
   const [waPaused, setWaPaused] = useState(false);
@@ -132,40 +136,8 @@ export default function SettingsPage() {
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
-      // Preserve original if it's already reasonably sized (<= 1024 and <= 2MB) to avoid quality loss
-      const img = new Image();
-      img.onload = () => {
-        const maxDimension = 1024;
-        const needsResize = Math.max(img.width, img.height) > maxDimension;
-        if (!needsResize) {
-          // Keep original data URL as-is — no canvas recompression, preserves sharpness and aspect ratio
-          setLogo(result);
-          return;
-        }
-        const scale = maxDimension / Math.max(img.width, img.height);
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.max(1, Math.round(img.width * scale));
-        canvas.height = Math.max(1, Math.round(img.height * scale));
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          setLogo(result);
-          return;
-        }
-        // Use high-quality smoothing
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        // Preserve original format where possible, use high quality
-        const mime = file.type === "image/jpeg" ? "image/jpeg" : file.type === "image/webp" ? "image/webp" : "image/png";
-        const quality = mime === "image/png" ? undefined : 0.92;
-        try {
-          setLogo(canvas.toDataURL(mime as any, quality as any));
-        } catch {
-          setLogo(result);
-        }
-      };
-      img.onerror = () => setLogoError("Couldn't read that image. Try another file.");
-      img.src = result;
+      setCropSrc(result);
+      setCropMime(file.type);
     };
     reader.onerror = () => setLogoError("Couldn't read that file. Try again.");
     reader.readAsDataURL(file);
@@ -283,10 +255,10 @@ export default function SettingsPage() {
             <Polsec icon={<Icon name="store" size={17} />} title="Business Profile">
               <div className="flex gap-4 items-start mb-4 flex-wrap">
                 {logo ? (
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden ring-1 ring-cborder flex-none bg-white flex items-center justify-center p-1.5">
+                  <button type="button" onClick={() => { setCropSrc(logo); setCropMime(logo.startsWith("data:image/png") ? "image/png" : logo.startsWith("data:image/webp") ? "image/webp" : "image/jpeg"); }} className="w-16 h-16 rounded-2xl overflow-hidden ring-1 ring-cborder flex-none bg-white flex items-center justify-center p-0.5 hover:ring-[#111] transition-all" title="Adjust crop">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={logo} alt={biz.name || "Business logo"} className="w-full h-full object-contain" />
-                  </div>
+                    <img src={logo} alt={biz.name || "Business logo"} className="w-full h-full object-cover rounded-[14px]" />
+                  </button>
                 ) : (
                   <div className="w-16 h-16 rounded-2xl bg-dark text-lime2 flex items-center justify-center font-extrabold font-disp text-[22px] flex-none">
                     {biz.name.trim() ? initials(biz.name) : "?"}
@@ -298,18 +270,26 @@ export default function SettingsPage() {
                       onClick={() => logoInputRef.current?.click()}
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[10px] border border-[#E9E9E7] bg-white text-[13px] font-semibold text-dark cursor-pointer hover:border-[#111] transition-colors"
                     >
-                      <Icon name="edit" size={13} /> Upload logo
+                      <Icon name="edit" size={13} /> {logo ? "Change logo" : "Upload logo"}
                     </button>
                     {logo && (
-                      <button
-                        onClick={() => { setLogo(null); setLogoError(null); }}
-                        className="inline-flex items-center px-3.5 py-2 rounded-[10px] border border-[#E3C7C7] bg-white text-[13px] font-semibold text-red-500 hover:bg-red-50 transition-colors"
-                      >
-                        Remove
-                      </button>
+                      <>
+                        <button
+                          onClick={() => { setCropSrc(logo); setCropMime(logo.startsWith("data:image/png") ? "image/png" : logo.startsWith("data:image/webp") ? "image/webp" : "image/jpeg"); }}
+                          className="inline-flex items-center px-3.5 py-2 rounded-[10px] border border-[#E9E9E7] bg-white text-[13px] font-semibold text-dark hover:border-[#111] hover:bg-[#F7F7F5] transition-colors"
+                        >
+                          Adjust crop
+                        </button>
+                        <button
+                          onClick={() => { setLogo(null); setLogoError(null); }}
+                          className="inline-flex items-center px-3.5 py-2 rounded-[10px] border border-[#E3C7C7] bg-white text-[13px] font-semibold text-red-500 hover:bg-red-50 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </>
                     )}
                   </div>
-                  <div className="text-[11.5px] text-muted mt-1.5">PNG, JPG or WEBP · max 2 MB · shown across your dashboard</div>
+                  <div className="text-[11.5px] text-muted mt-1.5">PNG, JPG or WEBP · max 2 MB · drag & zoom in crop editor · shown across your dashboard</div>
                   {logoError && <div className="text-[12px] font-semibold text-red-500 mt-1.5">{logoError}</div>}
                   <input
                     ref={logoInputRef}
@@ -350,7 +330,15 @@ export default function SettingsPage() {
               </div>
               <div className="flex gap-2.5 items-center border-t border-dashed border-cborder pt-3.5">
                 <div className="flex-1">
-                  <b className="text-[14px]">WhatsApp connection</b>
+                  <div className="flex items-center gap-2">
+                    <b className="text-[14px]">WhatsApp connection</b>
+                    {waConnected && !waPaused && (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#E3F4E9] border border-[#BCE5CB] text-[10.5px] font-bold text-[#0E7A47]"><span className="relative flex w-1.5 h-1.5"><span className="absolute inline-flex h-full w-full rounded-full bg-[#149A5B] opacity-60 animate-ping" /><span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-[#149A5B]" /></span> LIVE</span>
+                    )}
+                    {waConnected && waPaused && (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#F7F7F5] border border-[#E9E9E7] text-[10.5px] font-medium text-[#6B6B6B]"><span className="w-1.5 h-1.5 rounded-full bg-[#9B9B9B]" /> Paused</span>
+                    )}
+                  </div>
                   <div className="text-[12.5px] text-muted">
                     {waConnected && !waPaused
                       ? waNumber
@@ -443,9 +431,9 @@ export default function SettingsPage() {
                     <>
                       <div className="flex justify-between items-start gap-3 flex-wrap">
                         <div>
-                          <div className="font-disp text-[22px] font-extrabold text-dark">{isYearly ? "Yearly" : "Monthly"} <span className="text-[14px] text-muted font-normal">{isYearly ? "TZS 115,200 / year" : "TZS 12,000 / month"}</span></div>
+                          <div className="font-disp text-[22px] font-extrabold text-dark flex items-center gap-2">{isYearly ? "Yearly" : "Monthly"} <span className="inline-flex"><span className="w-7 h-7 rounded-full bg-[#111] text-white grid place-items-center"><span className="scale-[0.85]"><PremiumCrown size={16} /></span></span></span> <span className="text-[14px] text-muted font-normal">{isYearly ? "TZS 115,200 / year" : "TZS 12,000 / month"}</span></div>
                           <span className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-[#111] bg-white border border-[#E9E9E7] rounded-full px-2.5 py-1 mt-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> Active
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#111]" /> Active <PremiumCrown size={12} />
                           </span>
                         </div>
                         {exp && (
@@ -509,6 +497,18 @@ export default function SettingsPage() {
             </Polsec>
           </div>
         </div>
+      )}
+      {cropSrc && (
+        <LogoCropDialog
+          imageSrc={cropSrc}
+          mime={cropMime}
+          onClose={() => setCropSrc(null)}
+          onConfirm={(cropped) => {
+            setLogo(cropped);
+            setCropSrc(null);
+            setLogoError(null);
+          }}
+        />
       )}
     </div>
   );

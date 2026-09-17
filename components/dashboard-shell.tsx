@@ -384,7 +384,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       </aside>
 
       {/* main */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#FCFCF9]">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#FCFCF9] transition-all duration-200">
         {isTrialing && trialEndsAt && (
           <div className="flex-none bg-white border-b border-[#E9E9E7] px-3 sm:px-5 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 text-[13px] sm:text-sm leading-[1.4]">
             <span className="flex items-center gap-2 font-medium text-[#111] min-w-0">
@@ -406,9 +406,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </button>
           <Link href="/settings" className="flex items-center gap-2.5 min-w-0 group">
             {logo ? (
-              <span className="w-8 h-8 rounded-[8px] overflow-hidden flex-none border border-[#E9E9E7] bg-white flex items-center justify-center p-1">
+              <span className="w-8 h-8 rounded-[8px] overflow-hidden flex-none border border-[#E9E9E7] bg-white flex items-center justify-center p-0.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={logo} alt={businessName || "Business logo"} className="w-full h-full object-contain" />
+                <img src={logo} alt={businessName || "Business logo"} className="w-full h-full object-cover rounded-[6px]" />
               </span>
             ) : (
               <span className="w-8 h-8 rounded-[8px] bg-[#F1F1EF] border border-[#E9E9E7] text-[#6B6B6B] flex items-center justify-center font-semibold text-[12px] flex-none">
@@ -425,12 +425,12 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           <div className="ml-auto flex items-center gap-1.5 sm:gap-3 min-w-0 shrink-0">
             {waConnected && !waPaused ? (
               <>
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white text-[#111] border border-[#E9E9E7] whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#111]" />
-                  WhatsApp Connected
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#E3F4E9] text-[#0E7A47] border border-[#BCE5CB] whitespace-nowrap">
+                  <span className="relative flex w-2 h-2"><span className="absolute inline-flex h-full w-full rounded-full bg-[#149A5B] opacity-60 animate-ping" /><span className="relative inline-flex w-2 h-2 rounded-full bg-[#149A5B]" /></span>
+                  LIVE
                 </span>
-                <span className="sm:hidden inline-flex items-center justify-center w-7 h-7 rounded-full bg-white text-[#111] border border-[#E9E9E7]">
-                  <span className="w-2 h-2 rounded-full bg-[#111]" />
+                <span className="sm:hidden inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#E3F4E9] text-[#0E7A47] border border-[#BCE5CB]">
+                  <span className="relative flex w-2.5 h-2.5"><span className="absolute inline-flex h-full w-full rounded-full bg-[#149A5B] opacity-60 animate-ping" /><span className="relative inline-flex w-2.5 h-2.5 rounded-full bg-[#149A5B]" /></span>
                 </span>
               </>
             ) : waConnected && waPaused ? (

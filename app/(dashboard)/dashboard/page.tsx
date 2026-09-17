@@ -334,7 +334,7 @@ export default async function DashboardPage() {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="mx-auto max-w-[1120px]">
+    <div className="mx-auto max-w-[1280px] w-full transition-all duration-200">
       <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
         <div>
           <h1 className="text-[24px] font-disp font-semibold tracking-tight text-[#111]">
@@ -390,9 +390,9 @@ export default async function DashboardPage() {
           <div className="bg-white border border-[#E9E9E7] rounded-[12px] p-6 flex flex-col justify-between gap-4">
             <div className="flex items-center gap-3">
               {businessLogo ? (
-                <span className="w-10 h-10 rounded-[10px] overflow-hidden flex-none border border-[#E9E9E7] bg-white p-1 flex items-center justify-center">
+                <span className="w-10 h-10 rounded-[10px] overflow-hidden flex-none border border-[#E9E9E7] bg-white p-0.5 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={businessLogo} alt={displayName} className="w-full h-full object-contain" />
+                  <img src={businessLogo} alt={displayName} className="w-full h-full object-cover rounded-[8px]" />
                 </span>
               ) : (
                 <span className="w-10 h-10 rounded-[10px] bg-[#F7F7F5] border border-[#E9E9E7] text-[#6B6B6B] flex items-center justify-center font-semibold text-[14px] flex-none">
@@ -417,54 +417,68 @@ export default async function DashboardPage() {
       )}
 
       {/* analytics — Notion breathing room */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
         <StatCards items={stats} />
+      </div>
 
-        <VolumeChart data={volumeData} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
+        <div className="lg:col-span-2 min-w-0">
+          <VolumeChart data={volumeData} />
+        </div>
+        <div className="min-w-0">
+          <HandlingBars data={handlingData} />
+        </div>
+      </div>
 
-        <HandlingBars data={handlingData} />
-
-        <CollapsibleCard
-          id="stock"
-          title="Running out"
-          desc={`${threshold} or less left.`}
-          badge={<Badge variant={lowStock.length ? "amber" : "green"}>{lowStock.length} items</Badge>}
-        >
-          {!catalogProducts.length ? (
-            <div className="py-10 text-center text-[#6B6B6B] text-[13px] px-5">
-              No goods yet — add products and the AI tracks stock for you.
-            </div>
-          ) : lowStock.length === 0 ? (
-            <div className="py-10 text-center text-[13px] text-[#6B6B6B]">Everything is healthy.</div>
-          ) : (
-            <ul className="flex flex-col divide-y divide-[#F1F1EF]">
-              {lowStock.slice(0, 6).map((p) => (
-                <ListRow
-                  key={p.id}
-                  dot={
-                    <ProductThumb image={p.image} emoji={p.emoji} name={p.name} cl={p.cl} size={32} radius={9} />
-                  }
-                  dotColor="transparent"
-                  title={p.name}
-                  sub={p.stock === 0 ? "Finished" : `${p.stock} left`}
-                  right={
-                    p.stock === 0 ? (
+      <CollapsibleCard
+        id="stock"
+        title="Running out"
+        desc={`${threshold} or less left — AI will warn you automatically.`}
+        badge={<Badge variant={lowStock.length ? "amber" : "green"}>{lowStock.length} items</Badge>}
+      >
+        {!catalogProducts.length ? (
+          <div className="py-10 text-center text-[#6B6B6B] text-[13px] px-5">
+            No goods yet — add products and the AI tracks stock for you.
+          </div>
+        ) : lowStock.length === 0 ? (
+          <div className="py-10 text-center text-[13px] text-[#6B6B6B]">Everything is healthy.</div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-3 sm:p-4 bg-[#FCFCF9] dark:bg-[#0F0F0F]">
+            {lowStock.slice(0, 8).map((p) => (
+              <div
+                key={p.id}
+                className="group flex gap-3 p-3 rounded-[12px] bg-white dark:bg-[#1E1E1E] border border-[#E9E9E7] dark:border-[#2A2A2A] hover:border-[#111] dark:hover:border-[#EDEDED] hover:shadow-[0_2px_0_#111] dark:hover:shadow-none transition-all"
+              >
+                <div className="shrink-0">
+                  <ProductThumb image={p.image} emoji={p.emoji} name={p.name} cl={p.cl} size={44} radius={10} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-[13.5px] leading-tight text-dark line-clamp-1 truncate">{p.name}</div>
+                  <div className="text-[11.5px] font-medium mt-0.5 flex items-center gap-1.5">
+                    <span className={`inline-flex w-1.5 h-1.5 rounded-full ${p.stock === 0 ? "bg-[#C74343]" : "bg-[#B97708]"}`} />
+                    <span className={`${p.stock === 0 ? "text-[#C74343] dark:text-[#E85D5D]" : "text-[#B97708] dark:text-[#E8A222]"}`}>
+                      {p.stock === 0 ? "Finished" : `${p.stock} left`}
+                    </span>
+                    <span className="text-muted">· {p.cat || "General"}</span>
+                  </div>
+                  <div className="mt-1.5">
+                    {p.stock === 0 ? (
                       <Badge variant="red">Out</Badge>
                     ) : (
                       <Badge variant="amber">Low</Badge>
-                    )
-                  }
-                />
-              ))}
-            </ul>
-          )}
-          <div className="flex justify-center border-t border-[#E9E9E7] py-2.5">
-            <Link href="/dashboard/products" className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#111] inline-flex items-center gap-1">
-              Add goods →
-            </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </CollapsibleCard>
-      </div>
+        )}
+        <div className="flex justify-center border-t border-[#E9E9E7] dark:border-[#2A2A2A] py-2.5 bg-white dark:bg-[#1E1E1E]">
+          <Link href="/dashboard/products" className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#111] dark:hover:text-[#EDEDED] inline-flex items-center gap-1">
+            Manage stock →
+          </Link>
+        </div>
+      </CollapsibleCard>
 
       <CollapsibleCard
         id="shop"

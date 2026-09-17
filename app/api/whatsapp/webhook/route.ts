@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { conversations, messages, whatsappConnections } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { normalizeWhatsAppNumber, verifyMetaSignature, webhookVerifyToken } from '@/lib/whatsapp';
 import { checkRateLimit, getClientIp, rateLimitedResponse, RL_WEBHOOK } from '@/lib/rate-limit';
 
@@ -66,14 +66,50 @@ export async function POST(req: NextRequest) {
           if (!from || !text) continue;
           const ts = Number(wa.timestamp || 0) * 1000;
 
-          const convoId = 'wa_' + normalizeWhatsAppNumber(from);
-          const existing = await db
+          const normalized = normalizeWhatsAppNumber(from);
+          const convoId = `${conn[0].userId}_wa_${normalized}`;
+          let existing = await db
             .select()
             .from(conversations)
-            .where(eq(conversations.id, convoId))
+            .where(and(eq(conversations.id, convoId), eq(conversations.userId, conn[0].userId)))
             .limit(1);
 
           const contactName = value.contacts?.[0]?.profile?.name ?? null;
+
+          if (!existing.length) {
+            const legacyId = `wa_${normalized}`;
+            const legacyExisting = await db
+              .select()
+              .from(conversations)
+              .where(and(eq(conversations.id, legacyId), eq(conversations.userId, conn[0].userId)))
+              .limit(1);
+            if (legacyExisting.length) {
+              try {
+                await db
+                  .insert(conversations)
+                  .values({
+                    id: convoId,
+                    userId: conn[0].userId,
+                    contactName: legacyExisting[0].contactName || contactName,
+                    contactPhone: legacyExisting[0].contactPhone || from,
+                    status: 'ai',
+                  })
+                  .onConflictDoNothing();
+              } catch {}
+              await db
+                .update(messages)
+                .set({ conversationId: convoId } as any)
+                .where(eq(messages.conversationId, legacyId));
+              await db
+                .delete(conversations)
+                .where(and(eq(conversations.id, legacyId), eq(conversations.userId, conn[0].userId)));
+              existing = await db
+                .select()
+                .from(conversations)
+                .where(and(eq(conversations.id, convoId), eq(conversations.userId, conn[0].userId)))
+                .limit(1);
+            }
+          }
 
           if (existing.length) {
             await db
@@ -83,7 +119,7 @@ export async function POST(req: NextRequest) {
                 contactName: existing[0].contactName || contactName,
                 createdAt: new Date(),
               })
-              .where(eq(conversations.id, convoId));
+              .where(and(eq(conversations.id, convoId), eq(conversations.userId, conn[0].userId)));
           } else {
             await db.insert(conversations).values({
               id: convoId,
