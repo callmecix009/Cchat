@@ -7,7 +7,7 @@ import { useUser, UserButton } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
 import CchatLogo from "@/components/branding/CchatLogo";
 import { Icon } from "@/components/icons";
-import { GoldCrown, planBadgeInfo, type PlanState } from "@/components/premium";
+import { planBadgeInfo, type PlanState } from "@/components/premium";
 
 
 const NAV = [
@@ -363,8 +363,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               return (
                 <Link href="/billing" className="block group">
                   <div className={`flex items-center gap-2 px-3 py-2 rounded-[8px] font-semibold transition-colors ${tone}`}>
-                    {isTrial ? <Icon name="clock" size={14} /> : info.crown ? <GoldCrown size={14} /> : null}
-                    <span className="text-[13px]">{info.label}</span>
+                    {isTrial ? <Icon name="clock" size={14} /> : null}
+                    <span className="text-[13px]">{info.crown ? "Premium" : info.label}</span>
                     <span className="ml-auto opacity-40 text-[#9B9B9B]">›</span>
                   </div>
                   <div className="text-[#9B9B9B] mt-2 px-1 leading-relaxed">

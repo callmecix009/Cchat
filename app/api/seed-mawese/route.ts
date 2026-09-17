@@ -8,21 +8,21 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // Seed massive demo data for mawesemakelele@gmail.com + fake WhatsApp
-// Protected by secret: set SEED_SECRET env or use default cchat-seed-2026
-// Call: POST /api/seed-mawese with { email: "mawesemakelele@gmail.com", secret: "cchat-seed-2026" }
-// Or GET /api/seed-mawese?email=mawesemakelele@gmail.com&secret=cchat-seed-2026
+// Protected by secret: set SEED_SECRET env (required, fail-closed if absent).
+// Call: POST /api/seed-mawese with { email: "mawesemakelele@gmail.com", secret: "<SEED_SECRET>" }
+// Header: x-seed-secret: <SEED_SECRET>
 
 function isAuthorized(req: NextRequest, bodySecret?: string) {
-  const expected = process.env.SEED_SECRET || 'cchat-seed-2026';
-  const urlSecret = req.nextUrl.searchParams.get('secret');
+  const expected = process.env.SEED_SECRET;
+  if (!expected) {
+    return false;
+  }
   const headerSecret = req.headers.get('x-seed-secret');
-  const s = bodySecret || urlSecret || headerSecret;
+  const s = bodySecret || headerSecret;
+  if (!s) return false;
   return s === expected;
 }
 
-export async function GET(req: NextRequest) {
-  return handle(req);
-}
 export async function POST(req: NextRequest) {
   let bodySecret: string | undefined;
   try {
