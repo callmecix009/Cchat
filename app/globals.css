@@ -97,6 +97,60 @@ html.dark .dashboard-theme:not(.light) {
 .dashboard-theme.light {
   color-scheme: light;
 }
+/* Light-mode black grid — onboarding-style card frame, app only (not landing notion-frame) */
+.dashboard-theme.light .card,
+.dashboard-theme.light .stat,
+.dashboard-theme.light .pcard,
+.dashboard-theme.light .svc,
+.dashboard-theme.light .polsec,
+.dashboard-theme.light .sidecard,
+.dashboard-theme.light .inboxgrid,
+.dashboard-theme.light .intoolbar,
+.dashboard-theme.light .phone,
+.dashboard-theme.light .ptable,
+.dashboard-theme.light .arearow,
+.dashboard-theme.light .payrow,
+.dashboard-theme.light .stockalert {
+  border-color: #111 !important;
+  border-width: 1.5px !important;
+  box-shadow: 0 2px 0 #111 !important;
+}
+.dashboard-theme.light .btn.ghost,
+.dashboard-theme.light .chip,
+.dashboard-theme.light .inp,
+.dashboard-theme.light select.inp,
+.dashboard-theme.light textarea.inp {
+  border-width: 1.5px !important;
+  border-color: #111 !important;
+}
+/* System light fallback — when theme is system and OS is light */
+@media (prefers-color-scheme: light) {
+  .dashboard-theme:not(.light):not(.dark) .card,
+  .dashboard-theme:not(.light):not(.dark) .stat,
+  .dashboard-theme:not(.light):not(.dark) .pcard,
+  .dashboard-theme:not(.light):not(.dark) .svc,
+  .dashboard-theme:not(.light):not(.dark) .polsec,
+  .dashboard-theme:not(.light):not(.dark) .sidecard,
+  .dashboard-theme:not(.light):not(.dark) .inboxgrid,
+  .dashboard-theme:not(.light):not(.dark) .intoolbar,
+  .dashboard-theme:not(.light):not(.dark) .phone,
+  .dashboard-theme:not(.light):not(.dark) .ptable,
+  .dashboard-theme:not(.light):not(.dark) .arearow,
+  .dashboard-theme:not(.light):not(.dark) .payrow,
+  .dashboard-theme:not(.light):not(.dark) .stockalert {
+    border-color: #111 !important;
+    border-width: 1.5px !important;
+    box-shadow: 0 2px 0 #111 !important;
+  }
+  .dashboard-theme:not(.light):not(.dark) .btn.ghost,
+  .dashboard-theme:not(.light):not(.dark) .chip,
+  .dashboard-theme:not(.light):not(.dark) .inp,
+  .dashboard-theme:not(.light):not(.dark) select.inp,
+  .dashboard-theme:not(.light):not(.dark) textarea.inp {
+    border-width: 1.5px !important;
+    border-color: #111 !important;
+  }
+}
 /* System preference fallback — when user is on "system" and OS is dark, dashboard goes dark even before JS hydrates */
 @media (prefers-color-scheme: dark) {
   .dashboard-theme:not(.light):not(.dark) {
@@ -1449,6 +1503,16 @@ html.dark .dashboard-theme:not(.light) [class*="text-[#111]"] { color: #EDEDED !
 html.dark .dashboard-theme:not(.light) [class*="text-[#6B6B6B]"] { color: #9B9B9B !important; }
 .dashboard-theme.dark [class*="text-[#9B9B9B]"],
 html.dark .dashboard-theme:not(.light) [class*="text-[#9B9B9B]"] { color: #7A7A7A !important; }
+.dashboard-theme.dark [class*="text-[#2B2B2B]"],
+html.dark .dashboard-theme:not(.light) [class*="text-[#2B2B2B]"] { color: #E0E0E0 !important; }
+.dashboard-theme.dark [class*="text-[#5D7064]"],
+html.dark .dashboard-theme:not(.light) [class*="text-[#5D7064]"] { color: #A8B8A8 !important; }
+.dashboard-theme.dark [class*="text-[#4A6154]"],
+html.dark .dashboard-theme:not(.light) [class*="text-[#4A6154]"] { color: #B0C0B0 !important; }
+.dashboard-theme.dark [class*="text-[#B9CDBF]"],
+html.dark .dashboard-theme:not(.light) [class*="text-[#B9CDBF]"] { color: #8FAA99 !important; }
+.dashboard-theme.dark [class*="text-[#8FAA99]"],
+html.dark .dashboard-theme:not(.light) [class*="text-[#8FAA99]"] { color: #A8B8A8 !important; }
 .dashboard-theme.dark [class*="border-[#E9E9E7]"],
 html.dark .dashboard-theme:not(.light) [class*="border-[#E9E9E7]"] { border-color: #2A2A2A !important; }
 .dashboard-theme.dark [class*="border-[#F1F1EF]"],
@@ -1661,6 +1725,11 @@ html.dark .dashboard-theme:not(.light) .hover\:bg-\[\#F7F7F5\]:hover { backgroun
   .dashboard-theme:not(.light):not(.dark) [class*="bg-[#111]"] { background-color: #EDEDED !important; color: #0F0F0F !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="text-[#111]"] { color: #EDEDED !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="text-[#6B6B6B]"] { color: #9B9B9B !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-[#2B2B2B]"] { color: #E0E0E0 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-[#5D7064]"] { color: #A8B8A8 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-[#4A6154]"] { color: #B0C0B0 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-[#B9CDBF]"] { color: #8FAA99 !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-[#8FAA99]"] { color: #A8B8A8 !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="border-[#E9E9E7]"] { border-color: #2A2A2A !important; }
   .dashboard-theme:not(.light):not(.dark) .card { background: #1E1E1E !important; border-color: #2A2A2A !important; }
   .dashboard-theme:not(.light):not(.dark) .pcard { background: #1E1E1E !important; border-color: #2A2A2A !important; }

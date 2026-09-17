@@ -283,7 +283,7 @@ function PlanCard({
         <span
           className={`absolute -top-[1px] right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-b-[8px] text-[10.5px] font-extrabold uppercase tracking-wider bg-amb-bg text-amber-600`}
         >
-          <Icon name="award" size={12} /> {badge}
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4l4 -6" /></svg> {badge}
         </span>
       )}
       <div className={`p-8 border-b ${highlight ? "border-[#149A5B]" : "border-[#F7F7F5]"} flex flex-col flex-1`}>
