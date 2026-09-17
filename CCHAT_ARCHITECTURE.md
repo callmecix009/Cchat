@@ -192,7 +192,7 @@ Key relationships (`lib/db/schema.ts`):
 - **Unread:** Per-conversation `unreadCount`; list left-border `2px solid #111` when `>0` (`inbox/page.tsx:360`) → dark ` #EDEDED` (`app/globals.css:1772`). Opening triggers `POST /api/inbox/read` (`:68-79`) optimistic `unreadCount=0`.
 - **Selection:** `openId` state + `mobile list/detail` toggle (`inbox/page.tsx:34,52-58`), `transcriptRef` auto-scroll.
 - **Sending:** `sendReply` (`:167-205`) `POST /api/inbox/send {conversationId,text,contactName,contactPhone}` → creates `messages` (`role me`), sets `status waiting`, `takeover true`. If WhatsApp connected, `lib/whatsapp.ts:129-154` `sendWhatsAppText` via Graph API. Errors `WHATSAPP_NOT_CONNECTED|PAUSED` surface `inote fail` with link to `/settings` (`:625-631`).
-- **Real channels:** WhatsApp webhook `POST /api/whatsapp/webhook` creates `wa_<phone>` conversation + `customer` messages (`lib/whatsapp.ts:48-95`). Others TBD.
+- **Real channels:** WhatsApp webhook `POST /api/whatsapp/webhook` creates tenant-scoped `` `${userId}_wa_<phone>` `` conversation + `customer` messages (`app/api/whatsapp/webhook/route.ts:69-104`). Others TBD.
 
 ---
 
@@ -280,7 +280,7 @@ Future: Pesapal will set `active` after verified callback; currently `subscribe`
 - **Connect:** `app/(dashboard)/settings/page.tsx:198-251` loads `GET /api/whatsapp/config` (`app/api/whatsapp/config/route.ts:28` returns `{appId,configId}` or `503 NOT_CONFIGURED`), loads `https://www.facebook.com/js/whatsapp_business_embedded_signup.js`, `WhatsAppBusinessEmbeddedSignup.init({clientId,configId,onSuccess:authorizationCode → POST /api/whatsapp/connect})`. `POST /api/whatsapp/connect/route.ts:108` `exchangeAuthCode(code)` → OAuth `oauth/access_token` → `fb_exchange_token` long token → `debug_token` fallback for `wabaId` → `GET /{wabaId}/phone_numbers` → upsert `whatsapp_connections {userId, accessToken, wabaId, phoneNumberId, displayPhoneNumber, businessName, status:connected}`.
 - **Status UI:** Green `LIVE` with pulse dot `bg-[#149A5B] animate-ping` when `whatsappConnected && !waPaused` (`components/dashboard-shell.tsx:426-434` header, `app/(dashboard)/dashboard/inbox/page.tsx:287-290`, `app/(dashboard)/settings/page.tsx:334-337` chip). Grey `Paused` / `Connect WhatsApp` otherwise. Uses `settings.whatsappConnected` from `fetch /api/settings` (`dashboard-shell.tsx:68-87`).
 - **Disconnect:** `POST /api/whatsapp/disconnect/route.ts:40` delete where `userId`.
-- **Webhook:** `GET /api/whatsapp/webhook/route.ts:14-27` verifies `hub.mode=subscribe & hub.verify_token === META_WEBHOOK_VERIFY_TOKEN → challenge`; `POST :29-113` verifies `x-hub-signature-256` via `verifyMetaSignature` (`lib/whatsapp.ts:156-165` timingSafeEqual), loops `entry.changes`, looks up `whatsappConnections where phoneNumberId`, creates `wa_<normalizedPhone>` conversation + `messages role customer`.
+- **Webhook:** `GET /api/whatsapp/webhook/route.ts:14-27` verifies `hub.mode=subscribe & hub.verify_token === META_WEBHOOK_VERIFY_TOKEN → challenge`; `POST :29-113` verifies `x-hub-signature-256` via `verifyMetaSignature` (`lib/whatsapp.ts:156-165` timingSafeEqual), loops `entry.changes`, looks up `whatsappConnections where phoneNumberId`, creates tenant-scoped `` `${userId}_wa_<normalizedPhone>` `` conversation (`conn[0].userId` scope) with lookups/updates filtered by both `id` and `userId` (`route.ts:69-86`), then inserts `messages` with that `conversationId`.
 - **Sending:** `sendWhatsAppText(accessToken, phoneNumberId, to, text)` (`lib/whatsapp.ts:129-154`) `POST /{phoneNumberId}/messages {messaging_product:whatsapp, to, type:text, text:{body}}` called from `app/api/inbox/send/route.ts`.
 - **Planned not yet:** template messages, media, delivery receipts, status `connecting|pending|error` (currently only `connected`/`paused`), multi-number support.
 
@@ -293,7 +293,7 @@ Drizzle + Postgres (`lib/db/schema.ts:1-142`, `drizzle.config.ts:10-14` `DIRECT_
 | Table | Purpose | Key fields | Notes |
 |---|---|---|---|
 | `users` | Clerk-synced accounts | `id, clerkId unique, email, plan free, subscriptionStatus inactive, trialEndsAt, onboarded, isDemoOwner, avatar, onboardingData jsonb, catalog jsonb legacy, messagesUsed/Limit 0/12000` | `ensureUser.ts` creates |
-| `conversations` | Chat threads | `id, userId FK idx, contactName/Phone, status active/ai/waiting/closed, outcome sold/no, lastReadAt` | `wa_<phone>` for WA |
+| `conversations` | Chat threads | `id, userId FK idx, contactName/Phone, status active/ai/waiting/closed, outcome sold/no, lastReadAt` | `` `${userId}_wa_<phone>` `` tenant-scoped for WA |
 | `messages` | Transcript | `id, conversationId FK idx, role c/ai/owner/me/sys, content, aiHandled, createdAt` | `aiHandled` for handling bars |
 | `commands` | Legacy triggers | `id, userId, trigger, response` | Unused in UI |
 | `settings` | Business + logo + AI | `id, userId unique, business jsonb, logo text base64, aiConfig jsonb` | `logo` 800k limit |
@@ -325,7 +325,7 @@ Migrations: `drizzle/meta/_journal.json` version 7, `0001_volatile_shadowcat.sql
 | `/api/whatsapp/config` | GET | Clerk | Embed IDs | → `{appId,configId}` or `503 NOT_CONFIGURED` | None |
 | `/api/whatsapp/connect` | POST | Clerk IP10/min user5/min | Exchange code | `{authorizationCode}` | `exchangeAuthCode` → upsert `whatsapp_connections` |
 | `/api/whatsapp/disconnect` | POST | Clerk | Unlink | — | Delete `whatsapp_connections` |
-| `/api/whatsapp/webhook` | GET/POST | `META_WEBHOOK_VERIFY_TOKEN` + HMAC `x-hub-signature-256` | WA ingest | `GET ?hub.challenge / POST entry.changes[].value.messages[]` | Creates `wa_<phone>` convo + `messages customer` |
+| `/api/whatsapp/webhook` | GET/POST | `META_WEBHOOK_VERIFY_TOKEN` + HMAC `x-hub-signature-256` + `verifyMetaSignature` | WA ingest | `GET ?hub.challenge / POST entry.changes[].value.messages[]` | Creates tenant-scoped `` `${userId}_wa_<phone>` `` convo (filtered by `id`+`userId`) + `messages customer` |
 | `/api/webhooks/clerk` | POST | Svix HMAC `CLERK_WEBHOOK_SECRET` | User sync | `user.created/updated/deleted` | Insert/update/delete `users` |
 | `/api/seed-mawese` | POST | `SEED_SECRET=cchat-seed-2026` | Demo seed | — | `ensureDemoSeeded` |
 
@@ -352,7 +352,7 @@ Rate limits via `lib/rate-limit.ts:106-126` (`RL_CHAT`, `RL_INBOX_SEND`, `RL_ONB
 ## 18. Security
 
 - **Auth:** Clerk session JWT, `proxy.ts:72 auth()`, `await auth().protect` for non-public routes; `app/api/*` return `401 {error}` not redirect for API.
-- **Authorization / isolation:** All DB queries add `where userId = userRow.id` after `ensureUserRow(clerkId)` (`workspace.ts:141`, `dashboard/page.tsx:160-178`). No cross-user IDOR bypass.
+- **Authorization / isolation:** All DB queries add `where userId = userRow.id` after `ensureUserRow(clerkId)` (`workspace.ts:141`, `dashboard/page.tsx:160-178`).
 - **Validation:** `settings` logo/avatar regex `^data:image\/(png|jpeg|webp);base64,...` + 800k (`app/api/settings/route.ts:99-110`); `product-image.ts:9-17` 4 MB; `chat` trims to 20 msgs ×2000 chars (`app/api/chat/route.ts:41-44`); `onboarding` validates answers via `ONB_STEPS`.
 - **Secrets:** `DEEPSEEK_API_KEY`, `CLERK_SECRET_KEY`, `META_*`, `PESAPAL_*` server-only. `ThemeScript` inline anti-flash has no secrets. `.env.local` gitignored except `!.env.example` (` .gitignore:35`).
 - **Webhook verify:** Clerk Svix `whsec_` decode + 5 min window (`app/api/webhooks/clerk/route.ts:37-50` fail-closed in prod `:14-15`); Meta `verifyMetaSignature` `createHmac sha256 timingSafeEqual` (`lib/whatsapp.ts:156-165`).
@@ -417,7 +417,7 @@ Sign in → /api/billing status expired (trialEndsAt < now) → DashboardShell c
 **Customer Message (Connected)**
 
 ```
-WhatsApp → Graph webhook POST /api/whatsapp/webhook (HMAC) → lookup whatsapp_connections by phoneNumberId → upsert conversations id=wa_<phone>, status ai → insert messages role customer → dashboard-shell poll shows toast “New message from X” (45s) → Inbox unreadCount +1 → Inbox open → AI drafts? (manual send via /api/chat)
+WhatsApp → Graph webhook POST /api/whatsapp/webhook (HMAC verifyMetaSignature) → lookup whatsapp_connections by phoneNumberId → upsert tenant-scoped conversations id=`${userId}_wa_<phone>` (lookup/update filtered by id+userId) status ai → insert messages with scoped conversationId → dashboard-shell poll shows toast “New message from X” (45s) → Inbox unreadCount +1 → Inbox open → AI drafts? (manual send via /api/chat)
 ```
 
 **Product Purchase (Owner logs)**
