@@ -1,68 +1,64 @@
 # C-chat — Session Handoff (for next AI session)
 
-> Read this first. Repo has open PR `feat/notion-landing` → `main`. Last verified: 2026-09-14 (build 27 routes ok).
+> Read this first. Repo has open work on `feat/green-dark-demo-v2` → `main`. Last verified: 2026-09-17 (build 28 routes ok, tsc clean). Operational mode: build (was plan, now build).
+
+## 0. RESUME MARKER — "im back" = this topic
+- If user says **"im back"**, they mean: continue **Mwongozo SEO + legal + pricing + icons + dark mode + fold button** thread. Current branch `feat/green-dark-demo-v2` @ `1abca0c` (pushed, 7 commits ahead of `0c09f0f` baseline). Do NOT invent credentials.
 
 ## 1. Project snapshot
 - **What:** C-chat — AI WhatsApp agent for Tanzanian small business (Swahili/English). Next.js 16 App Router (webpack), React 19.2.8, Tailwind 4, Clerk auth, Supabase Postgres + Drizzle, DeepSeek (OpenAI-compatible), Pesapal (stub), Meta WhatsApp (Embedded Signup stub).
 - **Prod:** `https://cchat.site` (Vercel, auto-deploys `main`). No `vercel.json`.
-- **Repo:** `https://github.com/callmecix009/Cchat.git`, `origin/main` = `0f8c7a1`, PR branch `origin/feat/notion-landing` = `19d23cb` (5 commits ahead, PR #6 https://github.com/callmecix009/Cchat/pull/6).
-- **Local:** `C:\Users\ABLEGOD\OneDrive\Desktop\cchat-app`, branch `feat/notion-landing`, `git status` clean, working tree on `19d23cb`.
+- **Repo:** `https://github.com/callmecix009/Cchat.git`, `origin/main` = `0f8c7a1`, active `origin/feat/green-dark-demo-v2` = `1abca0c` (pushed). Other branch `origin/feat/notion-landing` = `19d23cb` (stale, 5 commits ahead of main but behind green-dark-demo-v2).
+- **Local:** `C:\Users\ABLEGOD\OneDrive\Desktop\cchat-app`, branch `feat/green-dark-demo-v2`, working tree clean, `git status` clean.
 
 ## 2. Where we left off (chronological, newest last)
-1. `66447ce` Clerk deprecated props + React hook #310 fix.
-2. `15bc226` Installed `ui-ux-pro-max-cli@2.15` (`uipro init --ai opencode`), created `design-system/c-chat/MASTER.md` (B2B Service + AI/Chatbot hybrid).
-3. `934f738` Removed `Account & Security` (`UserProfile`) from `app/(dashboard)/settings/page.tsx` — Clerk `UserButton` avatar menu already covers it.
-4. `c9e8d26` Hero polish + tab logo = app logo + font consolidation (Bricolage via `next/font`).
-5. `4842c2e` **AI Assistant = general chatbot** (`lib/ai-service.ts` `mode: "business"|"general"`; `/api/chat` accepts `mode`; agent page Assistant tab sends `mode:"general"`).
-6. `9f642e0` + `daa0c50` Added `app/sitemap.ts` + `app/robots.ts`.
-7. `86976a1` **Fixed "site could not be read"**: added `/sitemap`, `/robots`, `/icon`, `/apple-icon`, `/favicon.ico` to `proxy.ts isPublicRoute` + `xml|txt` to matcher exclusion; removed `/onboarding` from sitemap.
-8. `ceed557` → `99ea0d5` Tab logo: trimmed `public/images/c-chat-logo.png` (1536×1024), transparent bg, tight padding, kept original lime/pine colours (user rejected greyscale).
-9. `0f8c7a1` chore: session handoff + ignore `.opencode/` (skills reinstallable).
-10. `2a634a7` **feat(landing): notion-inspired redesign with 6 images** — Notion audit (white #FFF / #FCFCF9, border #E9E9E7, centered hero 64px pile `public/images/landing/hero.webp` + 2 notion-pin floats, marquee trust, 3 stacked stories capture/find/automate, testimonial, shadows `0 8px 32px rgba(0,0,0,.06)`, reveal 16px 0.55s). Kept `app/page.tsx:1` FAQ/pricing structure as requested. Images webp via sharp 82 in `public/images/landing/*` (hero 47k, capture 26k, find 24k, desktop 30k, testimonial 106k, trust 40k); `.gitignore` now ignores `images2.0/` raw jfifs.
-11. `2b53c38` **feat(app): notion light system** — propagated light tokens app-wide: `app/globals.css:3` `--line #E9E9E7 --background #FCFCF9 --foreground #111 --sh` flat, `btn` pri/dark `#111` flat, ghost `white/#E9E9E7`, `card` `12px` no shadow, `badge` neutral `#F7F7F5/#F1F1EF`, `components/dashboard-shell.tsx:328` light sidebar white + 56px blur header, `lib/brand.ts` `dark #111 surface #FCFCF9 border #E9E9E7`, sweep `#E4EDE5/#D2DCD1 → #E9E9E7` across billing/dashboard/ai/settings/onboarding/plan-selection/charts.
-12. `fa3357d` **feat(app): redesign Dashboard, Inbox, Chatbot, Services — notion + intercom/crisp** — Services gap24 cards white 24px, Dashboard dark setup cards → white `ProgressRing #111`, Inbox neutral badges + single unread left border `2px #111` avatar 32px neutral, Agent `max-w 1120` phone #111 flat.
-13. `ca22b1f` **feat(dashboard): reduce green inside app — black minimal dashboard** — charts `#149A5B → #111`, outcomeSlices `sold #111 waiting #9B9B9B`, delta neutral, shell WA dot #111, billing/settings green buttons → `#111` (landing green kept: hero `bg-[#149A5B]` + pricing free trial explicit green `app/page.tsx:645`).
-14. `19d23cb` **fix(ui): cleanup onboarding + plan-selection + trial icon — light premium** — onboarding `app/onboarding/page.tsx:304` gradient `#071510→#0C2417` → `bg-[#FCFCF9]` white card border #E9E9E7, progress #111, buttons #111; plan-selection `app/plan-selection/page.tsx:185` gradient → same white + black primary CTA; trial icon `GoldCrown` (broken/amber) → `Icon name="clock"` (`components/icons.tsx:81`) in `dashboard-shell.tsx:368` sidebar, `billing/page.tsx:104` 52px badge, `settings/page.tsx:437` trial pill — premium gold kept for paid.
+1. `0f8c7a1` chore: session handoff baseline (notion light, 27 routes)
+2. `58f83de` **feat: react-icons full replace + brand icons, fix inbox unread count** — installed `react-icons@5.7.0`, `components/icons.tsx:1` now `fi/lu/fa6/si` MAP (grid→FiGrid, bot→LuBot etc, whatsapp→FaWhatsapp, visa etc), `components/dashboard-shell.tsx:25` ICONS deduped → `<Icon>`, landing/onboarding/ai/settings inline SVGs removed, brand chips in trust strip, `app/api/inbox/route.ts:100` added server-side `COUNT(*) where role='customer' and created_at > last_read_at` to fix bounded 120 preview undercount, `t s c` clean, `products.image` exists true (DB verified via pooler 6543/5432, drizzle-kit push applied)
+3. `57abbba` **fix(a11y): onboarding remove-row aria-label** — `app/onboarding/page.tsx:313` `aria-label="Remove product"` and `:339` `Remove service`
+4. `8f5e970` **feat(seo): Mwongozo Kamili public guide** — new `app/jinsi-ya-kufanya-biashara-mtandaoni-tanzania/page.tsx` (full Swahili 7 Sura, metadata canonical, openGraph, FAQ JSON-LD, Article JSON-LD), `proxy.ts:8` added public route, `app/sitemap.ts:13` added `.../jinsi...` priority 0.9 weekly, landing teaser `app/page.tsx:603` `id="mwongozo"` 6 cards href `#sura-1..6`, footer link, build 28 routes
+5. `f4b1aac` **feat: rewrite Mwongozo docs, remove emoji, organize legal, fix Save20% icon, update pricing** — rewrote guide to professional SaaS docs (Overview/How it works/Step 1-3/Important/Need help), removed all decorative emoji (🔥 etc), added `id="sheria"` with 3 legal articles `id="terms"/"privacy"/"acceptable-use"` (condensed then expanded), made `app/privacy|terms|acceptable-use/page.tsx:1` redirect to `...#privacy` etc (central source), updated all footer nav `app/page.tsx:702` and `app/plan-selection/page.tsx:230` to `#privacy/#terms/#acceptable-use/#sheria` + `Mwongozo` link, fixed `Save 20%` `CrownIcon` → `Icon award` (`components/icons.tsx:52` `FiAward`), updated pricing `12,000→15,000` monthly, `115,200→144,000` yearly (15k*12*0.8), footnote `9,600→12,000`, `app/(dashboard)/billing/page.tsx:186` `15,000`/`144,000`, `components/dashboard-shell.tsx:350` `15,000`, `lib/db/schema.ts` messagesLimit 12000 NOT changed (not price)
+6. `eadda59` **fix: restore sura anchors, expand Terms 8-16, clarify AI** — added `span id="sura-1"..sura-6` before each `section id="kuanza" etc` in guide (`app/jinsi...:216`), updated AI clause `hakiki kabla → fuatilia ... hakiki au sahihisha inapohitajika` (`app/jinsi...:474`), expanded Terms `8–16` to full provisions 8 Intellectual Property →16 Contact (`app/jinsi...:451`)
+7. `5956084` **fix: Tabler crown for Save 20%** — replaced `Icon award` with exact SVG `M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4l4 -6` in `app/page.tsx:572` and `app/(dashboard)/billing/page.tsx:286` per user supplied code
+8. `1abca0c` **feat: move fold toggle to top, light black-grid, dark unreadable** — moved `toggleNavCollapsed` from bottom `hidden md:flex p-2.5 justify-end` (`dashboard-shell.tsx:362`) to header `flex items-center px-2.5 pt-3` next to logo (`dashboard-shell.tsx:302`), with `md:flex-col` when collapsed; added light-mode black-grid `app/globals.css:97` for `.stat/.card/.svc/.polsec` etc `border 1.5px #111 shadow 0 2px 0 #111` (white-mode only, not landing, not dark); added dark overrides `text-[#2B2B2B] #E0E0E0` etc (`app/globals.css:1446`), fixed `dashboard-shell.tsx:350` pricing display; build 28/28 ok
 
 ## 3. Key decisions / gotchas
-- **Design system:** Landing is source of truth for Notion — `white #FFF` page, `bg-[#FCFCF9]` sections, `border #E9E9E7`, `shadow 0 8px 32px rgba(0,0,0,.06)`, `radius 16/12/8`, reveal `16px 0.55s cubic(.2,.7,.3,1)` `threshold 0.15` (`components/reveal.tsx:19`). App shell now matches: sidebar `white border #E9E9E7` (was `#0C2417`), header `h-14 bg-white/80 blur #E9E9E7`. Keep `.notion-frame/.notion-pin/.notion-nav/.marquee` in `app/globals.css:1201`.
-- **Green policy:** Green `#149A5B` kept only for landing hero/pricing free trial tiny accents (`app/page.tsx:239` `bg-[#149A5B]`) and focus ring `rgba(20,154,91,.14)`. Inside app (`app/(dashboard)/**`) green replaced with `#111` black minimal — see `ca22b1f`. Do not reintroduce `bg-grn` inside dashboard.
-- **Clerk:** Use `fallbackRedirectUrl` (NOT `afterSignInUrl`). `app/layout.tsx:58` has `signInFallbackRedirectUrl="/dashboard" signUpFallbackRedirectUrl="/onboarding"`. Env uses `NEXT_PUBLIC_CLERK_SIGN_IN/UP_FALLBACK_REDIRECT_URL`.
-- **Hook #310:** `components/dashboard-shell.tsx` hooks must stay above `if (!accessChecked && !settings)` early return. Do not reintroduce hooks after returns.
-- **Rate limit:** `lib/rate-limit.ts` in-memory fixed-window, `getClientIp` trusted `req.ip` only, hard cap 5000 keys. Webhook `whsec_` base64-decoded.
-- **Favicon:** Keep colours + transparent + tight. Regeneration scripts were temp files in `%LOCALAPPDATA%\Temp\opencode\gen_icons*.js` (not committed).
-- **Sitemap:** 7 public URLs only: `/`, `/privacy`, `/terms`, `/acceptable-use`, `/sign-in`, `/sign-up`, `/plan-selection`. Private `/dashboard/*`, `/settings`, `/billing`, `/api/*`, `/onboarding` excluded + disallowed in robots. Submit `https://cchat.site/sitemap.xml` in GSC.
-- **`.opencode/`:** gitignored. Reinstall `npm install -g ui-ux-pro-max-cli` then `uipro init --ai opencode`. Tokens live in `design-system/c-chat/MASTER.md` + `app/globals.css` + `lib/brand.ts`.
-- **Build quirk:** `@next/swc-win32-x64-msvc.node is not a valid Win32 application` warnings are harmless (falls back to WASM). Build still succeeds (~27 routes). Use `npm run build -- --webpack` or `npx tsc --noEmit --skipLibCheck`.
+- **Design system:** Notion light source: `white #FFF` page, `bg-[#FCFCF9]` sections, `border #E9E9E7`, `shadow 0 8px 32px rgba(0,0,0,.06)`, `radius 16/12/8`. App shell now light `white border #E9E9E7`. Keep `.notion-frame/.notion-pin/.notion-nav/.marquee` in `app/globals.css:1280`. Green `#149A5B` only for landing hero/free trial accents.
+- **Icons:** `components/icons.tsx:52` is source of truth — `fi` Feather + `lu` Lucide + `fa6/si` brands, `award: FiAward`, `crown` tabler SVG used directly for Save 20% (not via Icon). Do not reintroduce `bg-grn` inside dashboard.
+- **Pricing single source:** 15,000/mo, 144,000/year (20% off 180,000). Check `app/page.tsx:14` FAQ, `app/page.tsx:158` hero, `app/page.tsx:562` premium, `app/page.tsx:577` extra, `app/plan-selection/page.tsx:33,51`, `app/(dashboard)/billing/page.tsx:186,198,205`, `app/jinsi...:415` CTA. Messages limit 12,000 stays (not price).
+- **Legal:** Central under `Mwongozo wa Biashara Mtandao` `app/jinsi...#sheria` with `#terms/#privacy/#acceptable-use`. Standalone `app/privacy|terms|acceptable-use/page.tsx` now redirect. Footer links point to `...#privacy` etc. Do not recreate separate complicated legal pages.
+- **Onboarding black grid:** `app/onboarding/page.tsx:288` `border-[1.5px] border-[#111] shadow-[0_2px_0_#111]` — now applied to app cards via `app/globals.css` light overrides only. Dark mode uses `#2A2A2A` borders.
+- **Dark mode:** Scoped to `.dashboard-theme.dark` / `html.dark` / `@media (prefers-color-scheme: dark)`. Added overrides for `text-[#2B2B2B]`, `text-[#5D7064]` etc. Test with `useTheme` `light|dark|system` in `components/theme-provider.tsx:111`. Landing stays light.
+- **Foldable nav:** `components/dashboard-shell.tsx:302` header now contains toggle, bottom toggle removed. `navCollapsed` persisted via `cchat-nav-collapsed` localStorage. Sidebar `md:w-[64px]` icons-only.
+- **DB:** `DATABASE_URL` pooler 6543 `?pgbouncer=true`, `DIRECT_URL` pooler 5432, both `postgres.udgrgccsffjdkpbwrfvg@aws-1-eu-west-1.pooler.supabase.com`, password `qxFH3jy2NNDLurAh` (no encoding needed). `drizzle-kit push` applied, `products.image` exists true. Vercel env must match if password reset.
+- **Build quirk:** `@next/swc-win32-x64-msvc.node is not a valid Win32 application` warnings harmless, WASM fallback. Build 28 routes, `ƒ Proxy`.
 
 ## 4. SEO / Search Console status
-- Live (after Vercel deploys `main`): `https://cchat.site/sitemap.xml` (7 URLs), `https://cchat.site/robots.txt` (`Sitemap:` present).
-- GSC steps for user: verify property (Domain TXT preferred), Sitemaps → submit `sitemap.xml`, URL Inspection → Request Indexing for `/` + legal pages, monitor 3–10 days. `site:cchat.site` expected 4h–48h after request; branded `cchat` 1–4 weeks.
-- Missing (not blocking indexing, do next after PR merge): `metadataBase`, `alternates.canonical`, `openGraph`, `twitter`, `robots index/follow`, `verification.google`, `viewport` export in `app/layout.tsx:24`; `robots:{index:false}` on `(dashboard)` layout; `app/opengraph-image.tsx` + `app/manifest.ts`; `www → non-www` redirect; convert remaining `hero-robot.jpg` usage already replaced by landing webp but keep fallback.
+- Live (after merge to `main`): `https://cchat.site/sitemap.xml` will include `.../jinsi-ya-kufanya-biashara-mtandaoni-tanzania` (priority 0.9 weekly) plus `/privacy /terms /acceptable-use` (redirect to `#terms` etc). `https://cchat.site/robots.txt` has `Sitemap:`.
+- Guide is `○` static, public via `proxy.ts isPublicRoute`, `robots allow`. `metadata canonical` set.
+- GSC steps: verify property, Sitemaps → submit `sitemap.xml`, URL Inspection → Request Indexing for `/` + guide, monitor 3–10 days. `site:cchat.site` 4h–48h.
 
 ## 5. Env vars (Vercel Production + Preview, encrypted)
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up`, `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard`, `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/dashboard`
-- `DATABASE_URL` (Supabase pooler 6543 + `?pgbouncer=true`, `#` as `%23`), `DIRECT_URL` (5432), `CLERK_WEBHOOK_SECRET` (fail-closed in prod), `DEEPSEEK_API_KEY`, `PESAPAL_*`, `META_*` (empty until configured).
-- `.env.local` is gitignored and contains live secrets — never commit. `git log -p -S sk_test` = 0 hits (clean).
+- `DATABASE_URL` (pooler 6543 `?pgbouncer=true`), `DIRECT_URL` (pooler 5432), `CLERK_WEBHOOK_SECRET`, `DEEPSEEK_API_KEY`, `PESAPAL_*`, `META_*` (empty until configured).
+- `.env.local` gitignored, live secrets never commit.
 
 ## 6. How to run / verify
-- `npm run dev` / `npm run build -- --webpack` (build log pattern: `✓ Compiled`, `27 static pages`, `ƒ Proxy`). Use `npx tsc --noEmit --skipLibCheck` for quick type check (Windows: `python` for skill search, not `python3`).
-- Quick check: `git status`, `git log --oneline -8`, `git branch -a -vv` (PR branch `feat/notion-landing` = `19d23cb` ahead of `main` `0f8c7a1`).
-- Skill search: `python .opencode/skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system` (Windows: `python`).
-- PR: https://github.com/callmecix009/Cchat/pull/6 — 5 commits, 25 files, 1075+ inserts. Merge via GitHub UI (Squash or Merge), then `git checkout main; git pull --ff-only; git branch -d feat/notion-landing; git push origin --delete feat/notion-landing` (optional cleanup). Vercel will auto-deploy `main` to `https://cchat.site`.
+- `npm run dev` / `npm run build -- --webpack` (expect `✓ Compiled`, `28 static pages`, `ƒ Proxy`). `npx tsc --noEmit --skipLibCheck`
+- Quick check: `git status`, `git log --oneline -8`, `git branch -a -vv` (current `feat/green-dark-demo-v2` `1abca0c` ahead of `main` `0f8c7a1`)
+- PR for this work is `feat/green-dark-demo-v2` → `main` (not yet created as PR #? existing PR #6 is `feat/notion-landing` stale). Create new PR for `feat/green-dark-demo-v2` when ready to merge. Vercel auto-deploys `main`.
+- Test public guide: `npm run dev` → `http://localhost:3000/jinsi-ya-kufanya-biashara-mtandaoni-tanzania` no login, landing `#mwongozo` cards link to `#sura-1..6` scroll correctly, dark toggle via Settings → Appearance → Dark (check unreadable words fixed, black-grid only in light)
 
 ## 7. Open TODOs for next session (priority order)
-1. **Merge PR #6** — user liked design, approved session switch. After merge, verify `https://cchat.site` renders new landing + light app (hard refresh, check onboarding white, plan-selection white, dashboard black minimal, inbox neutral, agent phone #111, services cards).
-2. **Post-merge polish (optional, low priority):** `app/layout.tsx` SEO `metadataBase`/`openGraph`/`twitter`/`verification`/`viewport`; `(dashboard)` `robots noindex`; `app/manifest.ts`; convert any remaining `#E4EDE5` stray (now zero) — already swept.
-3. **Deep redesigns if user wants more:** Chatbot streaming, Inbox right customer sidebar (Intercom/Crisp 3-col with `lib/demo.ts` contact meta), Dashboard analytics drill-down — currently light foundation done, deeper layout needs new data props (ask for reference before building).
-4. Decide: delete `feat/ui-ux-pro-max` branch (currently identical to `main` at `0f8c7a1`) to leave single-`main` workflow.
-5. GSC: verify + submit sitemap + request indexing (user-side).
+1. **Merge PR `feat/green-dark-demo-v2`** — create PR `feat/green-dark-demo-v2` → `main` (or update existing), merge via GitHub UI (Squash), then `git checkout main; git pull --ff-only; git branch -d feat/green-dark-demo-v2; git push origin --delete feat/green-dark-demo-v2` optional. Verify `https://cchat.site` renders landing mwongozo section, guide public, pricing 15k/144k, Save 20% crown tabler, fold toggle top, black-grid light only, dark readable.
+2. **Post-merge polish (low priority):** `app/layout.tsx` SEO `metadataBase`/`openGraph`/`twitter`/`verification`/`viewport`; `(dashboard)` `robots noindex`; `app/manifest.ts`; clean any remaining `#E4EDE5` stray.
+3. **If user wants more onboarding black-grid everywhere:** The light black-grid currently covers `.card/.stat/.svc/.polsec/.sidecard/.inboxgrid/.intoolbar/.phone/.ptable`. If user wants it on *every* app code, extend to `.collapsible-card`, `.rulecard`, `.sale*` etc in `app/globals.css`.
+4. **Decide branch cleanup:** Delete `feat/notion-landing` (`c2314c3`) and `feat/ui-ux-pro-max` (`0f8c7a1`) after merge to leave single-`main`.
+5. **GSC:** submit updated `sitemap.xml` + Request Indexing for guide URL.
 
 ## 8. Commands cheat-sheet
-- `git checkout main; git pull --ff-only; git log --oneline -5`
-- `git checkout feat/notion-landing; git log --oneline -5; git diff origin/main --stat`
+- `git checkout feat/green-dark-demo-v2; git log --oneline -8; git status --short`
+- `git diff origin/main --stat`
 - `npm run build -- --webpack > $env:LOCALAPPDATA\Temp\opencode\build.log 2>&1` (then `Get-Content ... -Tail 80`)
 - `npx tsc --noEmit --skipLibCheck`
-- `git push origin feat/notion-landing` (already pushed)
-- `gh pr view 6 --web` (if `gh` installed) or open https://github.com/callmecix009/Cchat/pull/6
-
+- `git push origin feat/green-dark-demo-v2` (already pushed `1abca0c`)
+- `gh pr create --base main --head feat/green-dark-demo-v2 --title "feat: mwongozo docs + pricing 15k + icons + dark + fold"` (if `gh` installed)
