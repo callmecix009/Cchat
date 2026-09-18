@@ -30,9 +30,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pk = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  // Missing publishable key is the #1 cause of "This page couldn't load" on
-  // /sign-in and /sign-up — Clerk's <SignIn/> requires ClerkProvider.
-  // We render a clear config error instead of a cryptic 500.
   if (!pk) {
     return (
       <html lang="en" className={`${bricolage.variable} ${instrumentSans.variable} ${splineMono.variable} h-full antialiased`} suppressHydrationWarning>
@@ -59,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeScript />
       </head>
       <body className="min-h-full flex flex-col font-body bg-surface text-dark">
-        <ClerkProvider signInFallbackRedirectUrl="/dashboard" signUpFallbackRedirectUrl="/onboarding">{children}</ClerkProvider>
+        <ClerkProvider signInFallbackRedirectUrl="/en/dashboard" signUpFallbackRedirectUrl="/en/onboarding">{children}</ClerkProvider>
       </body>
     </html>
   );

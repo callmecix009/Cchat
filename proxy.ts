@@ -2,6 +2,17 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { checkRateLimit, getClientIp, rateLimitHeaders, RL_AUTH_IP } from '@/lib/rate-limit';
 
+const locales = ['en', 'sw'] as const;
+
+function getLocaleFromPath(pathname: string): { locale: string; pathnameWithoutLocale: string } {
+  const segments = pathname.split('/').filter(Boolean);
+  const firstSegment = segments[0];
+  if (firstSegment && ['en', 'sw'].includes(firstSegment)) {
+    return { locale: firstSegment, pathnameWithoutLocale: '/' + segments.slice(1).join('/') };
+  }
+  return { locale: 'en', pathnameWithoutLocale: pathname };
+}
+
 const isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
@@ -23,29 +34,69 @@ const isPublicRoute = createRouteMatcher([
 const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
 const isApiRoute = createRouteMatcher(['/api(.*)']);
 
+function isPublicRouteWithLocale(pathname: string): boolean {
+  const { pathnameWithoutLocale } = getLocaleFromPath(pathname);
+  return (
+    pathnameWithoutLocale === '/' ||
+    pathnameWithoutLocale.startsWith('/sign-in') ||
+    pathnameWithoutLocale.startsWith('/sign-up') ||
+    pathnameWithoutLocale.startsWith('/privacy') ||
+    pathnameWithoutLocale.startsWith('/terms') ||
+    pathnameWithoutLocale.startsWith('/acceptable-use') ||
+    pathnameWithoutLocale.startsWith('/jinsi-ya-kufanya-biashara-mtandaoni-tanzania') ||
+    pathnameWithoutLocale.startsWith('/sitemap') ||
+    pathnameWithoutLocale.startsWith('/robots') ||
+    pathnameWithoutLocale.startsWith('/icon') ||
+    pathnameWithoutLocale.startsWith('/apple-icon') ||
+    pathnameWithoutLocale === '/favicon.ico' ||
+    pathnameWithoutLocale.startsWith('/api/webhooks') ||
+    pathnameWithoutLocale.startsWith('/api/webhook') ||
+    pathnameWithoutLocale.startsWith('/api/whatsapp/webhook')
+  );
+}
+
+function isAuthRouteWithLocale(pathname: string): boolean {
+  const { pathnameWithoutLocale } = getLocaleFromPath(pathname);
+  return pathnameWithoutLocale.startsWith('/sign-in') || pathnameWithoutLocale.startsWith('/sign-up');
+}
+
+function isApiRouteWithLocale(pathname: string): boolean {
+  const { pathnameWithoutLocale } = getLocaleFromPath(pathname);
+  return pathnameWithoutLocale.startsWith('/api');
+}
+
 export default clerkMiddleware(async (auth, request) => {
+  // Extract locale from path
+  const { locale, pathnameWithoutLocale } = getLocaleFromPath(request.nextUrl.pathname);
+
+  // Handle root redirect
+  if (request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/en', request.url));
+  }
+
+  // Add locale prefix if missing
+  if (!request.nextUrl.pathname.startsWith('/en') && !request.nextUrl.pathname.startsWith('/sw')) {
+    return NextResponse.redirect(new URL(`/${locale}${request.nextUrl.pathname}${request.nextUrl.search}`, request.url));
+  }
+
   // Rate-limit sign-in / sign-up pages by trusted IP only.
-  // If no trusted IP (e.g. local dev without proxy), skip IP limiting — user-based limits still apply elsewhere.
   if (isAuthRoute(request)) {
     const ip = getClientIp(request);
     if (ip) {
-      const rl = checkRateLimit({ key: `auth:${ip}`, limit: RL_AUTH_IP.limit, windowMs: RL_AUTH_IP.windowMs });
+      const rl = checkRateLimit({ key: `auth:${ip}`, limit: 10, windowMs: 60_000 });
       if (!rl.success) {
-        const headers = rateLimitHeaders(rl);
+        const headers = { 'Retry-After': String(Math.ceil(rl.reset / 1000)) };
         const isJson = request.headers.get('accept')?.includes('application/json');
-        if (isJson) return NextResponse.json({ error: 'Too Many Requests' }, { status: 429, headers });
+        if (isJson) return NextResponse.json({ error: 'Too Many Requests' }, { status: 429, headers: { 'Retry-After': String(Math.ceil(rl.reset / 1000)) } });
         return new NextResponse('<h1>429 Too Many Requests</h1><p>Please wait a moment and retry.</p>', {
           status: 429,
-          headers: { 'Content-Type': 'text/html; charset=utf-8', ...headers },
+          headers: { 'Content-Type': 'text/html; charset=utf-8', 'Retry-After': String(Math.ceil(rl.reset / 1000)) },
         });
       }
     }
   }
 
-  // CORS preflight: let API OPTIONS pass through immediately so browsers
-  // don't see a 404/redirect. Same-origin fetches don't need this, but it
-  // prevents "CORS preflight failed" when preview deployments or external
-  // tools call /api/* from another origin.
+  // CORS preflight
   if (request.method === 'OPTIONS' && request.nextUrl.pathname.startsWith('/api/')) {
     return new NextResponse(null, {
       status: 204,
@@ -83,9 +134,6 @@ export default clerkMiddleware(async (auth, request) => {
 
     if (!isPublicRoute(request)) {
       if (!userId) {
-        // For API routes return JSON 401 so client fetch gets parsable
-        // JSON instead of an HTML redirect (which causes "Unexpected token <"
-        // and surfaces as "page could not load").
         if (isApiRoute(request)) {
           return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -93,21 +141,17 @@ export default clerkMiddleware(async (auth, request) => {
       }
     }
   } catch (err: any) {
-    // Stale session cookie (rotated keys, expired JWT, etc.) — clear it and
-    // redirect to sign-in instead of crashing the entire site with a 500.
     const isKeyError =
       err?.reason === 'jwk-kid-mismatch' ||
       err?.message?.includes('signing key') ||
       err?.message?.includes('Handshake');
 
-    // API routes must always return JSON, never an HTML redirect, so the
-    // client can handle 401 gracefully.
     if (isApiRoute(request)) {
       const status = err?.status === 401 || err?.message?.includes('Unauth') ? 401 : 500;
-      return NextResponse.json({ error: isKeyError ? 'Session expired' : 'Unauthorized' }, { status: isKeyError ? 401 : status });
+      return NextResponse.json({ error: 'Unauthorized' }, { status });
     }
 
-    if (isKeyError || isPublicRoute(request)) {
+    if (isPublicRoute(request)) {
       const res = NextResponse.redirect(new URL('/sign-in', request.url));
       res.cookies.delete('__session');
       res.cookies.delete('__client');
