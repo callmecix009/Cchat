@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import {
   users,
@@ -69,7 +70,7 @@ function buildVolume(msgs: FlatMsg[], days: number): VolumePoint[] {
   }
   return out;
 }
-function buildHandling(msgs: FlatMsg[], days: number): HandlingBar[] {
+function buildHandling(msgs: FlatMsg[], days: number, dateLocale: string): HandlingBar[] {
   const out: HandlingBar[] = [];
   const today = dayKey(new Date());
   for (let i = days - 1; i >= 0; i--) {
@@ -79,7 +80,7 @@ function buildHandling(msgs: FlatMsg[], days: number): HandlingBar[] {
     next.setDate(d.getDate() + 1);
     const replies = msgs.filter((m) => !m.fromCustomer && m.t >= d && m.t < next);
     out.push({
-      day: d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+      day: d.toLocaleDateString(dateLocale, { day: "numeric", month: "short" }),
       ai: replies.filter((m) => m.aiSent).length,
       owner: replies.filter((m) => !m.aiSent).length,
     });
@@ -91,7 +92,7 @@ function pctDelta(cur: number, prev: number) {
   if (!prev) return { v: 100, has: true };
   return { v: ((cur - prev) / prev) * 100, has: true };
 }
-function ProgressRing({ pct }: { pct: number }) {
+function ProgressRing({ pct, readyLabel }: { pct: number; readyLabel: string }) {
   const r = 30;
   const c = 2 * Math.PI * r;
   const done = Math.round(c * (pct / 100));
@@ -103,7 +104,7 @@ function ProgressRing({ pct }: { pct: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="font-mono font-bold text-[var(--text-primary)] text-[17px] leading-none">{pct}%</span>
-        <span className="text-[8px] uppercase tracking-wider text-muted font-bold">ready</span>
+        <span className="text-[8px] uppercase tracking-wider text-muted font-bold">{readyLabel}</span>
       </div>
     </div>
   );
@@ -151,6 +152,10 @@ export default async function DashboardPage() {
       } catch (e) {
         console.error("Ensure product image column failed:", e);
       }
+      const salesCutoff = dayKey(new Date());
+      salesCutoff.setDate(salesCutoff.getDate() - 60);
+      // Sales are date-filtered (last 60 days) with no row limit so the
+      // 30d / previous-30d aggregates below see every sale in each window.
       const [convRows, saleRows, productRows, polRes, waRes, s] = await Promise.all([
         db.select({
           id: conversations.id,
@@ -161,9 +166,8 @@ export default async function DashboardPage() {
           createdAt: conversations.createdAt,
         }).from(conversations).where(eq(conversations.userId, row.id)),
         db.select().from(salesTable)
-          .where(eq(salesTable.userId, row.id))
-          .orderBy(desc(salesTable.createdAt))
-          .limit(60),
+          .where(and(eq(salesTable.userId, row.id), gte(salesTable.createdAt, salesCutoff)))
+          .orderBy(desc(salesTable.createdAt)),
         db.select().from(productsTable)
           .where(eq(productsTable.userId, row.id))
           .orderBy(productsTable.sortOrder),
@@ -234,14 +238,18 @@ export default async function DashboardPage() {
     console.error("Dashboard data error:", e);
   }
 
+  const t = await getTranslations("dashboard");
+  const activeLocale = await getLocale();
+  const dateLocale = activeLocale === "sw" ? "sw-TZ" : "en-GB";
+
   const onboardName = (data[1] as string) || "";
   const businessName = bizSettings?.name?.trim() || onboardName || "";
   const hasBusinessName = !!businessName;
-  const displayName = hasBusinessName ? businessName : "Set up your business";
+  const displayName = hasBusinessName ? businessName : t("setupBusiness");
   const description =
     bizSettings?.desc ||
     (data[2] as string) ||
-    (hasBusinessName ? "I reply to your customers day and night." : "Add your shop name in Settings to start.");
+    (hasBusinessName ? t("replyDayNight") : t("addShopNameStart"));
   const city = bizSettings?.city || (data[3] as string) || "";
   const phone = bizSettings?.phone || (data[43] as string) || row?.phone || "";
   const owner = bizSettings?.owner || name.split(" ")[0] || "Boss";
@@ -268,25 +276,25 @@ export default async function DashboardPage() {
   const revenue30 = salesRows30.reduce((s, x) => s + x.amount, 0);
   const revenuePrev30 = saleEvents.filter((s) => s.t >= d60 && s.t < d30).reduce((s, x) => s + x.amount, 0);
   const volumeData = buildVolume(flatMsgs, 61);
-  const handlingData = buildHandling(flatMsgs, 10);
+  const handlingData = buildHandling(flatMsgs, 10, dateLocale);
   const stats = [
-    { label: "Messages today", value: msgsToday.toLocaleString(), delta: pctDelta(msgsToday, msgsYesterday).v, hasDelta: pctDelta(msgsToday, msgsYesterday).has && (msgsYesterday > 0 || msgsToday > 0), footnote: "vs yesterday" },
-    { label: "Open chats", value: String(active), delta: pctDelta(convosThisWeek, convosPrevWeek).v, hasDelta: pctDelta(convosThisWeek, convosPrevWeek).has && (convosPrevWeek > 0 || convosThisWeek > 0), footnote: "new this week" },
-    { label: "Sold", value: String(soldN), delta: pctDelta(salesRows30.length, salesPrev30).v, hasDelta: pctDelta(salesRows30.length, salesPrev30).has && (salesPrev30 > 0 || salesRows30.length > 0), footnote: "sales last 30d" },
-    { label: "Money in (30 days)", value: TZS(revenue30), delta: pctDelta(revenue30, revenuePrev30).v, hasDelta: pctDelta(revenue30, revenuePrev30).has && (revenuePrev30 > 0 || revenue30 > 0), footnote: "from chats you marked sold" },
+    { label: t("stats.messagesToday"), value: msgsToday.toLocaleString(dateLocale), delta: pctDelta(msgsToday, msgsYesterday).v, hasDelta: pctDelta(msgsToday, msgsYesterday).has && (msgsYesterday > 0 || msgsToday > 0), footnote: t("stats.vsYesterday") },
+    { label: t("stats.openChats"), value: String(active), delta: pctDelta(convosThisWeek, convosPrevWeek).v, hasDelta: pctDelta(convosThisWeek, convosPrevWeek).has && (convosPrevWeek > 0 || convosThisWeek > 0), footnote: t("stats.newThisWeek") },
+    { label: t("stats.sold"), value: String(soldN), delta: pctDelta(salesRows30.length, salesPrev30).v, hasDelta: pctDelta(salesRows30.length, salesPrev30).has && (salesPrev30 > 0 || salesRows30.length > 0), footnote: t("stats.salesLast30d") },
+    { label: t("stats.moneyIn"), value: TZS(revenue30), delta: pctDelta(revenue30, revenuePrev30).v, hasDelta: pctDelta(revenue30, revenuePrev30).has && (revenuePrev30 > 0 || revenue30 > 0), footnote: t("stats.fromChatsMarkedSold") },
   ];
   const checklist = [
-    { label: "Answer questions about your shop", done: onboarded, href: "/onboarding", cta: onboarded ? "Edit" : "Start" },
-    { label: "Add your shop name", done: hasBusinessName, href: "/settings", cta: "Add" },
-    { label: "Add what you sell", done: catalogProducts.length > 0, href: "/dashboard/products", cta: "Add" },
-    { label: "Connect WhatsApp", done: !!wa, href: "/settings", cta: "Connect" },
+    { label: t("setup.answerQuestions"), done: onboarded, href: "/onboarding", cta: onboarded ? t("setup.edit") : t("setup.start") },
+    { label: t("setup.addShopName"), done: hasBusinessName, href: "/settings", cta: t("setup.add") },
+    { label: t("setup.addProducts"), done: catalogProducts.length > 0, href: "/dashboard/products", cta: t("setup.add") },
+    { label: t("setup.connectWhatsApp"), done: !!wa, href: "/settings", cta: t("setup.connect") },
   ];
   const doneCount = checklist.filter((c) => c.done).length;
   const progressPct = Math.round((doneCount / checklist.length) * 100);
   const fullySetUp = onboarded && !!wa;
   const lowStock = catalogProducts.filter((p) => p.stock <= threshold).sort((a, b) => a.stock - b.stock);
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 12 ? t("greeting") : hour < 18 ? t("greetingAfternoon") : t("greetingEvening");
 
   return (
     <div className="mx-auto max-w-[1280px] w-full transition-all duration-200">
@@ -296,11 +304,11 @@ export default async function DashboardPage() {
             {greeting}, {owner}
           </h1>
           <p className="text-[13px] text-muted mt-1">
-            {displayName} · {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
+            {displayName} · {new Date().toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" })}
           </p>
         </div>
         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--surface)] border border-[var(--border)] text-[12px] font-medium text-[var(--text-primary)]">
-          <span className="w-1.5 h-1.5 rounded-full bg-green" /> Updated just now
+          <span className="w-1.5 h-1.5 rounded-full bg-green" /> {t("updatedJustNow")}
         </span>
       </div>
       {!onboarded && (
@@ -310,21 +318,21 @@ export default async function DashboardPage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" /></svg>
             </span>
             <div>
-              <h3 className="font-disp text-[15px] font-semibold text-[var(--text-primary)]">Your helper isn&apos;t set up yet</h3>
-              <p className="text-[13px] text-muted mt-0.5">Answer 10 quick questions so it can sell and reply for you.</p>
+              <h3 className="font-disp text-[15px] font-semibold text-[var(--text-primary)]">{t("helperNotSetupTitle")}</h3>
+              <p className="text-[13px] text-muted mt-0.5">{t("helperNotSetupDesc")}</p>
             </div>
           </div>
           <Link href="/onboarding" className="inline-flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[var(--text-primary)] text-white font-medium text-[13px] hover:bg-black transition-colors">
-            Finish set-up
+            {t("finishSetup")}
           </Link>
         </div>
       )}
       {!fullySetUp && (
         <div className="grid gap-6 sm:grid-cols-2 mb-6">
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[12px] p-6">
-            <h3 className="font-disp font-semibold text-[var(--text-primary)] text-[14px] mb-4">Set-up list</h3>
+            <h3 className="font-disp font-semibold text-[var(--text-primary)] text-[14px] mb-4">{t("setup.title")}</h3>
             <div className="flex items-center gap-4">
-              <ProgressRing pct={progressPct} />
+              <ProgressRing pct={progressPct} readyLabel={t("setup.progress")} />
               <ul className="flex flex-col gap-1.5 min-w-0">
                 {checklist.map((c) => (
                   <li key={c.label}>
@@ -357,10 +365,10 @@ export default async function DashboardPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Link href="/dashboard/agent" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-green text-white font-medium text-[13px] hover:bg-green-dark transition-colors shadow-[0_2px_8px_rgba(20,154,91,.25)]">
-                Test replies
+                {t("testReplies")}
               </Link>
               <Link href="/dashboard/products" className="inline-flex items-center gap-2 px-3.5 py-2 rounded-[8px] bg-[var(--surface)] border border-[var(--border)] text-[var(--text-primary)] font-medium text-[13px] hover:bg-[var(--surface-2)] transition-colors">
-                Add goods
+                {t("addGoods")}
               </Link>
             </div>
           </div>
@@ -372,16 +380,16 @@ export default async function DashboardPage() {
         <HandlingBars data={handlingData} />
         <CollapsibleCard
           id="stock"
-          title="Running out"
-          desc={`${threshold} or less left — AI will warn you automatically.`}
-          badge={<Badge variant={lowStock.length ? "amber" : "green"}>{lowStock.length} items</Badge>}
+          title={t("runningOut.title")}
+          desc={`${threshold} ${t("runningOut.description")}`}
+          badge={<Badge variant={lowStock.length ? "amber" : "green"}>{t("runningOut.items", { count: lowStock.length })}</Badge>}
         >
           {!catalogProducts.length ? (
             <div className="py-10 text-center text-muted text-[13px] px-5">
-              No goods yet — add products and the AI tracks stock for you.
+              {t("runningOut.noProducts")}
             </div>
           ) : lowStock.length === 0 ? (
-            <div className="py-10 text-center text-[13px] text-muted">Everything is healthy.</div>
+            <div className="py-10 text-center text-[13px] text-muted">{t("runningOut.allHealthy")}</div>
           ) : (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-3 sm:p-4 bg-[var(--surface-2)]">
               {lowStock.slice(0, 8).map((p) => (
@@ -397,15 +405,15 @@ export default async function DashboardPage() {
                     <div className="text-[12px] font-medium mt-0.5 flex items-center gap-1.5">
                       <span className={`dot-lg ${p.stock === 0 ? "r" : "a"}`} />
                       <span className={`${p.stock === 0 ? "text-red" : "text-amber"}`}>
-                        {p.stock === 0 ? "Finished" : `${p.stock} left`}
+                        {p.stock === 0 ? t("runningOut.finished") : `${p.stock} ${t("runningOut.left")}`}
                       </span>
-                      <span className="text-muted">· {p.cat || "General"}</span>
+                      <span className="text-muted">· {p.cat || t("generalCategory")}</span>
                     </div>
                     <div className="mt-1.5">
                       {p.stock === 0 ? (
-                        <Badge variant="red">Out</Badge>
+                        <Badge variant="red">{t("runningOut.out")}</Badge>
                       ) : (
-                        <Badge variant="amber">Low</Badge>
+                        <Badge variant="amber">{t("runningOut.low")}</Badge>
                       )}
                     </div>
                   </div>
@@ -415,23 +423,23 @@ export default async function DashboardPage() {
           )}
           <div className="flex justify-center border-t border-[var(--border)] py-2.5 bg-[var(--surface)]">
             <Link href="/dashboard/products" className="text-[12px] font-medium text-muted hover:text-[var(--text-primary)] inline-flex items-center gap-1">
-              Manage stock →
+              {t("runningOut.manageStock")}
             </Link>
           </div>
         </CollapsibleCard>
       </div>
       <CollapsibleCard
         id="shop"
-        title="Your shop"
-        desc={`${city ? `${city} · ` : ""}${phone ? `${phone} · ` : ""}${wa ? `WhatsApp ${wa.displayPhoneNumber}` : "WhatsApp not connected"}`}
+        title={t("yourShop.title")}
+        desc={`${city ? `${city} · ` : ""}${phone ? `${phone} · ` : ""}${wa ? `WhatsApp ${wa.displayPhoneNumber}` : t("whatsappNotConnected")}`}
         className="mt-6"
       >
         <div className="flex gap-2 flex-wrap p-5">
           <Link href="/onboarding" className="inline-flex items-center px-3.5 py-2 rounded-[8px] bg-[var(--text-primary)] text-white font-medium text-[13px] hover:bg-black transition-colors">
-            {onboarded ? "Edit answers" : "Answer questions"}
+            {onboarded ? t("yourShop.editAnswers") : t("yourShop.answerQuestions")}
           </Link>
           <Link href="/settings" className="inline-flex items-center px-3.5 py-2 rounded-[8px] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] font-medium text-[13px] hover:bg-[var(--surface-2)] transition-colors">
-            {wa ? "Open settings" : "Connect WhatsApp"}
+            {wa ? t("yourShop.openSettings") : t("yourShop.connectWhatsApp")}
           </Link>
         </div>
       </CollapsibleCard>

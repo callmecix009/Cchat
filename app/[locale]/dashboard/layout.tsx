@@ -1,4 +1,4 @@
-﻿export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -9,7 +9,19 @@ import DashboardShell from "@/components/dashboard-shell";
 import { ThemeProvider } from "@/components/theme-provider";
 import { isSubscriptionBlocked } from "@/lib/subscription-guard";
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+interface Props {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}
+
+/**
+ * Localized dashboard layout — mirrors `app/(dashboard)/layout.tsx`
+ * (auth + shared subscription guard + DashboardShell).
+ * Redirect targets stay non-localized (`/sign-in`, `/plan-selection`)
+ * because those routes only exist outside `[locale]`.
+ */
+export default async function LocalizedDashboardLayout({ children, params }: Props) {
+  await params; // preserve locale handling; redirects stay non-localized (see above)
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
@@ -18,8 +30,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     if (row.length && isSubscriptionBlocked(row[0])) {
       redirect("/plan-selection");
     }
-  } catch (e: any) {
-    if (e?.digest?.startsWith?.("NEXT_REDIRECT")) throw e;
+  } catch (e: unknown) {
+    if ((e as { digest?: string })?.digest?.startsWith?.("NEXT_REDIRECT")) throw e;
     // On DB error, don't block - allow access to avoid lockout
   }
 

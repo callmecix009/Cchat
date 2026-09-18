@@ -157,6 +157,10 @@ export default async function DashboardPage() {
         console.error("Ensure product image column failed:", e);
       }
       // Run all independent queries in parallel
+      // Sales are date-filtered (last 60 days) with no row limit so the
+      // 30d / previous-30d aggregates below see every sale in each window.
+      const salesCutoff = dayKey(new Date());
+      salesCutoff.setDate(salesCutoff.getDate() - 60);
       const [convRows, saleRows, productRows, polRes, waRes, s] = await Promise.all([
         db.select({
           id: conversations.id,
@@ -167,9 +171,8 @@ export default async function DashboardPage() {
           createdAt: conversations.createdAt,
         }).from(conversations).where(eq(conversations.userId, row.id)),
         db.select().from(salesTable)
-          .where(eq(salesTable.userId, row.id))
-          .orderBy(desc(salesTable.createdAt))
-          .limit(60),
+          .where(and(eq(salesTable.userId, row.id), gte(salesTable.createdAt, salesCutoff)))
+          .orderBy(desc(salesTable.createdAt)),
         db.select().from(productsTable)
           .where(eq(productsTable.userId, row.id))
           .orderBy(productsTable.sortOrder),

@@ -1,38 +1,49 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { checkRateLimit, getClientIp, rateLimitHeaders, RL_AUTH_IP } from '@/lib/rate-limit';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 const locales = ['en', 'sw'] as const;
+const defaultLocale = locales[0];
 
 function getLocaleFromPath(pathname: string): { locale: string; pathnameWithoutLocale: string } {
   const segments = pathname.split('/').filter(Boolean);
   const firstSegment = segments[0];
-  if (firstSegment && ['en', 'sw'].includes(firstSegment)) {
+  if (firstSegment && (locales as readonly string[]).includes(firstSegment)) {
     return { locale: firstSegment, pathnameWithoutLocale: '/' + segments.slice(1).join('/') };
   }
-  return { locale: 'en', pathnameWithoutLocale: pathname };
+  return { locale: defaultLocale, pathnameWithoutLocale: pathname };
 }
 
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/privacy(.*)',
-  '/terms(.*)',
-  '/acceptable-use(.*)',
-  '/jinsi-ya-kufanya-biashara-mtandaoni-tanzania(.*)',
-  '/sitemap(.*)',
-  '/robots(.*)',
-  '/icon(.*)',
-  '/apple-icon(.*)',
-  '/favicon.ico',
-  '/api/webhooks(.*)',
-  '/api/webhook(.*)',
-  '/api/whatsapp/webhook(.*)',
-]);
+/** Paths that must never gain a locale prefix (APIs, Clerk, framework, assets). */
+function skipLocaleRedirect(pathname: string): boolean {
+  if (pathname.startsWith('/api') || pathname.startsWith('/trpc') || pathname.startsWith('/__clerk')) return true;
+  if (pathname.startsWith('/_next') || pathname.startsWith('/_vercel')) return true;
+  const last = pathname.split('/').pop() ?? '';
+  if (last.includes('.')) return true;
+  return (
+    pathname === '/favicon.ico' ||
+    pathname.startsWith('/robots') ||
+    pathname.startsWith('/sitemap') ||
+    pathname.startsWith('/icon') ||
+    pathname.startsWith('/apple-icon')
+  );
+}
 
-const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
-const isApiRoute = createRouteMatcher(['/api(.*)']);
+function hasLocalePrefix(pathname: string): boolean {
+  return (locales as readonly string[]).some(
+    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
+  );
+}
+
+/**
+ * Only these sections have localized routes (`app/[locale]/...`).
+ * Every other page (sign-in, settings, onboarding, billing, ...) is
+ * non-localized, so prefixing it would 404 — only add a locale
+ * prefix here.
+ */
+function isLocaleRoutedPath(pathname: string): boolean {
+  return pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+}
 
 function isPublicRouteWithLocale(pathname: string): boolean {
   const { pathnameWithoutLocale } = getLocaleFromPath(pathname);
@@ -66,38 +77,41 @@ function isApiRouteWithLocale(pathname: string): boolean {
 }
 
 export default clerkMiddleware(async (auth, request) => {
+  const pathname = request.nextUrl.pathname;
   // Extract locale from path
-  const { locale, pathnameWithoutLocale } = getLocaleFromPath(request.nextUrl.pathname);
+  const { locale, pathnameWithoutLocale } = getLocaleFromPath(pathname);
 
   // Handle root redirect
-  if (request.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL('/en', request.url));
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL(`/${defaultLocale}`, request.url));
   }
 
-  // Add locale prefix if missing
-  if (!request.nextUrl.pathname.startsWith('/en') && !request.nextUrl.pathname.startsWith('/sw')) {
-    return NextResponse.redirect(new URL(`/${locale}${request.nextUrl.pathname}${request.nextUrl.search}`, request.url));
+  // Add locale prefix only for sections that actually have localized
+  // routes (exact-segment match; skip non-page paths)
+  if (!hasLocalePrefix(pathname) && !skipLocaleRedirect(pathname) && isLocaleRoutedPath(pathname)) {
+    return NextResponse.redirect(new URL(`/${locale}${pathname}${request.nextUrl.search}`, request.url));
   }
 
   // Rate-limit sign-in / sign-up pages by trusted IP only.
-  if (isAuthRoute(request)) {
+  if (isAuthRouteWithLocale(pathname)) {
     const ip = getClientIp(request);
     if (ip) {
       const rl = checkRateLimit({ key: `auth:${ip}`, limit: 10, windowMs: 60_000 });
       if (!rl.success) {
-        const headers = { 'Retry-After': String(Math.ceil(rl.reset / 1000)) };
+        const retrySec = Math.max(1, Math.ceil((rl.reset - Date.now()) / 1000));
+        const retryHeaders = { 'Retry-After': String(retrySec) };
         const isJson = request.headers.get('accept')?.includes('application/json');
-        if (isJson) return NextResponse.json({ error: 'Too Many Requests' }, { status: 429, headers: { 'Retry-After': String(Math.ceil(rl.reset / 1000)) } });
+        if (isJson) return NextResponse.json({ error: 'Too Many Requests' }, { status: 429, headers: retryHeaders });
         return new NextResponse('<h1>429 Too Many Requests</h1><p>Please wait a moment and retry.</p>', {
           status: 429,
-          headers: { 'Content-Type': 'text/html; charset=utf-8', 'Retry-After': String(Math.ceil(rl.reset / 1000)) },
+          headers: { 'Content-Type': 'text/html; charset=utf-8', ...retryHeaders },
         });
       }
     }
   }
 
   // CORS preflight
-  if (request.method === 'OPTIONS' && request.nextUrl.pathname.startsWith('/api/')) {
+  if (request.method === 'OPTIONS' && pathnameWithoutLocale.startsWith('/api/')) {
     return new NextResponse(null, {
       status: 204,
       headers: {
@@ -110,8 +124,8 @@ export default clerkMiddleware(async (auth, request) => {
   }
 
   if (!process.env.CLERK_SECRET_KEY) {
-    if (!isPublicRoute(request)) {
-      if (isApiRoute(request)) {
+    if (!isPublicRouteWithLocale(pathname)) {
+      if (isApiRouteWithLocale(pathname)) {
         return NextResponse.json({ error: 'Service not configured' }, { status: 503 });
       }
       return NextResponse.redirect(new URL('/', request.url));
@@ -122,7 +136,7 @@ export default clerkMiddleware(async (auth, request) => {
   try {
     const { userId } = await auth();
 
-    if (isAuthRoute(request)) {
+    if (isAuthRouteWithLocale(pathname)) {
       if (userId) {
         const url = request.nextUrl.clone();
         url.pathname = '/dashboard';
@@ -132,9 +146,9 @@ export default clerkMiddleware(async (auth, request) => {
       return;
     }
 
-    if (!isPublicRoute(request)) {
+    if (!isPublicRouteWithLocale(pathname)) {
       if (!userId) {
-        if (isApiRoute(request)) {
+        if (isApiRouteWithLocale(pathname)) {
           return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
         await auth.protect();
@@ -146,12 +160,24 @@ export default clerkMiddleware(async (auth, request) => {
       err?.message?.includes('signing key') ||
       err?.message?.includes('Handshake');
 
-    if (isApiRoute(request)) {
+    const isApi = isApiRouteWithLocale(pathname);
+    const isPublic = isPublicRouteWithLocale(pathname);
+
+    if (isApi) {
       const status = err?.status === 401 || err?.message?.includes('Unauth') ? 401 : 500;
       return NextResponse.json({ error: 'Unauthorized' }, { status });
     }
 
-    if (isPublicRoute(request)) {
+    if (isPublic) {
+      const res = NextResponse.redirect(new URL('/sign-in', request.url));
+      res.cookies.delete('__session');
+      res.cookies.delete('__client');
+      return res;
+    }
+
+    // Clerk key rotation / handshake failure on a protected page:
+    // fail gracefully (clear stale session, send to sign-in) instead of a 500.
+    if (isKeyError) {
       const res = NextResponse.redirect(new URL('/sign-in', request.url));
       res.cookies.delete('__session');
       res.cookies.delete('__client');

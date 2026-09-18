@@ -54,6 +54,17 @@
     "greetingAfternoon": "Good afternoon",
     "greetingEvening": "Good evening",
     "welcome": "Welcome back",
+    "setupBusiness": "Set up your business",
+    "replyDayNight": "I reply to your customers day and night.",
+    "addShopNameStart": "Add your shop name in Settings to start.",
+    "updatedJustNow": "Updated just now",
+    "helperNotSetupTitle": "Your helper isn't set up yet",
+    "helperNotSetupDesc": "Answer 10 quick questions so it can sell and reply for you.",
+    "finishSetup": "Finish set-up",
+    "testReplies": "Test replies",
+    "addGoods": "Add goods",
+    "generalCategory": "General",
+    "whatsappNotConnected": "WhatsApp not connected",
     "stats": {
       "messagesToday": "Messages today",
       "openChats": "Open chats",
@@ -87,6 +98,7 @@
     "runningOut": {
       "title": "Running out",
       "description": "or less left — AI will warn you automatically.",
+      "items": "{count} items",
       "noProducts": "No goods yet — add products and the AI tracks stock for you.",
       "allHealthy": "Everything is healthy.",
       "manageStock": "Manage stock →",
@@ -468,8 +480,8 @@
   "empty": {
     "noProducts": "No products yet",
     "noServices": "No services yet",
-    noConversations: "No conversations yet",
-    noMessages: "No messages yet",
-    noResults: "No results found"
+    "noConversations": "No conversations yet",
+    "noMessages": "No messages yet",
+    "noResults": "No results found"
   }
 }

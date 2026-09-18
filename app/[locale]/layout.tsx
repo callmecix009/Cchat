@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { I18nProvider } from '@/components/i18n-provider';
-import { locales, defaultLocale } from '@/i18n-config';
+import { isValidLocale } from '@/i18n-config';
 
 interface Props {
   children: React.ReactNode;
@@ -14,9 +14,8 @@ export default async function LocaleLayout({
   params
 }: Props) {
   const { locale } = await params;
-  const validLocales = ['en', 'sw'];
 
-  if (!validLocales.includes(locale)) {
+  if (!isValidLocale(locale)) {
     notFound();
   }
 
