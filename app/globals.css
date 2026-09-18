@@ -355,6 +355,21 @@ button, a, [role="button"], .chip, .btn {
 .dot.a { background: #E8A222; }
 .dot.r { background: var(--red); }
 .dot.m { background: var(--mut2); }
+/* Status indicator dots — larger variant for cards */
+.dot-lg { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.dot-lg.g { background: var(--grn); }
+.dot-lg.a { background: var(--amb); }
+.dot-lg.r { background: var(--red); }
+.dot-lg.m { background: var(--mut2); }
+/* Text color utilities — semantic, dark-mode aware */
+.text-red { color: var(--red); }
+.text-red-light { color: var(--red); }
+.text-amber { color: var(--amb); }
+.text-amber-light { color: var(--amb); }
+.text-green { color: var(--grn); }
+.text-green-light { color: var(--grn); }
+.text-muted { color: var(--mut); }
+
 .pulse { position: relative; }
 .pulse::after {
   content: '';
@@ -1587,6 +1602,21 @@ html.dark .dashboard-theme:not(.light) [class*="border-[#EFD9A8]"] { border-colo
 html.dark .dashboard-theme:not(.light) [class*="divide-[#F1F1EF]"] > :not([hidden]) ~ :not([hidden]) { border-color: #2A2A2A !important; }
 .dashboard-theme.dark [class*="bg-[#E8A222]"],
 html.dark .dashboard-theme:not(.light) [class*="bg-[#E8A222]"] { background-color: #E8A222 !important; }
+/* Text color utilities dark mode */
+.dashboard-theme.dark .text-red,
+html.dark .dashboard-theme:not(.light) .text-red { color: var(--red) !important; }
+.dashboard-theme.dark .text-red-light,
+html.dark .dashboard-theme:not(.light) .text-red-light { color: var(--red) !important; }
+.dashboard-theme.dark .text-amber,
+html.dark .dashboard-theme:not(.light) .text-amber { color: var(--amb) !important; }
+.dashboard-theme.dark .text-amber-light,
+html.dark .dashboard-theme:not(.light) .text-amber-light { color: var(--amb) !important; }
+.dashboard-theme.dark .text-green,
+html.dark .dashboard-theme:not(.light) .text-green { color: var(--grn) !important; }
+.dashboard-theme.dark .text-green-light,
+html.dark .dashboard-theme:not(.light) .text-green-light { color: var(--grn) !important; }
+.dashboard-theme.dark .text-muted,
+html.dark .dashboard-theme:not(.light) .text-muted { color: var(--mut) !important; }
 
 /* System fallback for utilities */
 @media (prefers-color-scheme: dark) {
@@ -1603,6 +1633,10 @@ html.dark .dashboard-theme:not(.light) [class*="bg-[#E8A222]"] { background-colo
   .dashboard-theme:not(.light):not(.dark) [class*="text-[#6B6B6B]"] { color: #9B9B9B !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="text-[#8E2F2F]"] { color: #E8A0A0 !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="text-[#8A6B2A]"] { color: #E8C86A !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-red"] { color: var(--red) !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-amber"] { color: var(--amb) !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-green"] { color: var(--grn) !important; }
+  .dashboard-theme:not(.light):not(.dark) [class*="text-muted"] { color: var(--mut) !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="border-[#E9E9E7]"] { border-color: #2A2A2A !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="border-[#F0C4C4]"] { border-color: #4A2424 !important; }
   .dashboard-theme:not(.light):not(.dark) [class*="border-[#E3C7C7]"] { border-color: #4A2424 !important; }

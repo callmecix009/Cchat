@@ -12,6 +12,7 @@ export default function ProductThumb({
   cl,
   size = 42,
   radius = 10,
+  showFallback = true,
 }: {
   image?: string | null;
   emoji?: string;
@@ -19,17 +20,18 @@ export default function ProductThumb({
   cl?: string;
   size?: number;
   radius?: number;
+  showFallback?: boolean;
 }) {
   const style = {
     width: size,
     height: size,
     borderRadius: radius,
-    background: image ? "#F7F7F5" : cl || "#E3F4E9",
+    background: image ? "var(--surface-2)" : cl || "var(--grn-bg)",
   } as const;
   if (image) {
     return (
       <span
-        className="overflow-hidden flex-none border border-[#E9E9E7] bg-white"
+        className="overflow-hidden flex-none border border-[var(--border)] bg-[var(--surface)]"
         style={style}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -43,9 +45,20 @@ export default function ProductThumb({
       </span>
     );
   }
+  if (!showFallback) {
+    return (
+      <span
+        className="flex items-center justify-center flex-none font-semibold text-[var(--text-primary)]"
+        style={{ ...style, fontSize: Math.max(13, Math.round(size * 0.42)) }}
+        aria-hidden
+      >
+        {initials(name) || "📦"}
+      </span>
+    );
+  }
   return (
     <span
-      className="flex items-center justify-center flex-none font-semibold text-[#111]"
+      className="flex items-center justify-center flex-none font-semibold text-[var(--text-primary)]"
       style={{ ...style, fontSize: Math.max(13, Math.round(size * 0.42)) }}
       aria-hidden
     >

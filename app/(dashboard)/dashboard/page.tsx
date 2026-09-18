@@ -430,36 +430,36 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <CollapsibleCard
+<CollapsibleCard
         id="stock"
         title="Running out"
         desc={`${threshold} or less left — AI will warn you automatically.`}
         badge={<Badge variant={lowStock.length ? "amber" : "green"}>{lowStock.length} items</Badge>}
       >
         {!catalogProducts.length ? (
-          <div className="py-10 text-center text-[#6B6B6B] text-[13px] px-5">
+          <div className="py-10 text-center text-muted text-[13px] px-5">
             No goods yet — add products and the AI tracks stock for you.
           </div>
         ) : lowStock.length === 0 ? (
-          <div className="py-10 text-center text-[13px] text-[#6B6B6B]">Everything is healthy.</div>
+          <div className="py-10 text-center text-[13px] text-muted">Everything is healthy.</div>
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-3 sm:p-4 bg-[#FCFCF9] dark:bg-[#0F0F0F]">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-3 sm:p-4 bg-[var(--surface-2)]">
             {lowStock.slice(0, 8).map((p) => (
               <div
                 key={p.id}
-                className="group flex gap-3 p-3 rounded-[12px] bg-white dark:bg-[#1E1E1E] border border-[#E9E9E7] dark:border-[#2A2A2A] hover:border-[#111] dark:hover:border-[#EDEDED] hover:shadow-[0_2px_0_#111] dark:hover:shadow-none transition-all"
+                className="group flex gap-3 p-3 rounded-[12px] bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--border-strong)] hover:shadow-[0_2px_0_var(--border-strong)] transition-all"
               >
                 <div className="shrink-0">
-                  <ProductThumb image={p.image} emoji={p.emoji} name={p.name} cl={p.cl} size={44} radius={10} />
+                  <ProductThumb image={null} emoji={p.emoji} name={p.name} cl={p.cl} size={48} radius={10} showFallback={false} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-[13.5px] leading-tight text-dark line-clamp-1 truncate">{p.name}</div>
-                  <div className="text-[11.5px] font-medium mt-0.5 flex items-center gap-1.5">
-                    <span className={`inline-flex w-1.5 h-1.5 rounded-full ${p.stock === 0 ? "bg-[#C74343]" : "bg-[#B97708]"}`} />
-                    <span className={`${p.stock === 0 ? "text-[#C74343] dark:text-[#E85D5D]" : "text-[#B97708] dark:text-[#E8A222]"}`}>
+                  <div className="font-semibold text-[14px] leading-tight text-[var(--text-primary)] line-clamp-1 truncate">{p.name}</div>
+                  <div className="text-[12px] font-medium mt-0.5 flex items-center gap-1.5">
+                    <span className={`dot-lg ${p.stock === 0 ? "r" : "a"}`} />
+                    <span className={`${p.stock === 0 ? "text-red" : "text-amber"}`}>
                       {p.stock === 0 ? "Finished" : `${p.stock} left`}
                     </span>
-                    <span className="text-muted">· {p.cat || "General"}</span>
+                    <span className="text-[var(--text-muted)]">· {p.cat || "General"}</span>
                   </div>
                   <div className="mt-1.5">
                     {p.stock === 0 ? (
@@ -473,8 +473,8 @@ export default async function DashboardPage() {
             ))}
           </div>
         )}
-        <div className="flex justify-center border-t border-[#E9E9E7] dark:border-[#2A2A2A] py-2.5 bg-white dark:bg-[#1E1E1E]">
-          <Link href="/dashboard/products" className="text-[12px] font-medium text-[#6B6B6B] hover:text-[#111] dark:hover:text-[#EDEDED] inline-flex items-center gap-1">
+        <div className="flex justify-center border-t border-[var(--border)] py-2.5 bg-[var(--surface)]">
+          <Link href="/dashboard/products" className="text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] inline-flex items-center gap-1">
             Manage stock →
           </Link>
         </div>
