@@ -81,10 +81,7 @@ export default clerkMiddleware(async (auth, request) => {
   // Extract locale from path
   const { locale, pathnameWithoutLocale } = getLocaleFromPath(pathname);
 
-  // Handle root redirect
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL(`/${defaultLocale}`, request.url));
-  }
+  // `/` serves the public landing page (app/page.tsx) — never redirect it.
 
   // Add locale prefix only for sections that actually have localized
   // routes (exact-segment match; skip non-page paths)
