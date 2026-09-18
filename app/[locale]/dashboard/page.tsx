@@ -286,7 +286,7 @@ export default async function DashboardPage() {
   const checklist = [
     { label: t("setup.answerQuestions"), done: onboarded, href: "/onboarding", cta: onboarded ? t("setup.edit") : t("setup.start") },
     { label: t("setup.addShopName"), done: hasBusinessName, href: "/settings", cta: t("setup.add") },
-    { label: t("setup.addProducts"), done: catalogProducts.length > 0, href: "/dashboard/products", cta: t("setup.add") },
+    { label: t("setup.addProducts"), done: catalogProducts.length > 0, href: `/${activeLocale}/dashboard/products`, cta: t("setup.add") },
     { label: t("setup.connectWhatsApp"), done: !!wa, href: "/settings", cta: t("setup.connect") },
   ];
   const doneCount = checklist.filter((c) => c.done).length;
