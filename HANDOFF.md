@@ -1,9 +1,10 @@
 # C-chat — Session Handoff (for next AI session)
 
-> Read this first. Repo has open work on `feat/green-dark-demo-v2` → `main`. Last verified: 2026-09-17 (build 28 routes ok, tsc clean). Operational mode: build (was plan, now build).
+> Read this first. Repo has open work on `feat/green-dark-demo-v2` → `main`. Last verified: 2026-09-18 (build 28 routes ok, tsc clean). Operational mode: build (was plan, now build).
 
-## 0. RESUME MARKER — "im back" = this topic
-- If user says **"im back"**, they mean: continue **Mwongozo SEO + legal + pricing + icons + dark mode + fold button** thread. Current branch `feat/green-dark-demo-v2` @ `1abca0c` (pushed, 7 commits ahead of `0c09f0f` baseline). Do NOT invent credentials.
+## 0. RESUME MARKER — "woke up" / "im back" = this topic
+- If user says **"woke up"** or **"im back"**, they mean: continue **Mwongozo SEO + legal + pricing + icons + dark mode + fold button + i18n (Swahili/English)** thread. Current branch `feat/green-dark-demo-v2` @ `1778c81` (pushed, 8 commits ahead of `0c09f0f` baseline). Do NOT invent credentials.
+- **Wake phrase:** "woke up" or "im back" → resume from HANDOFF.md, branch `feat/green-dark-demo-v2`, build verified.
 
 ## 1. Project snapshot
 - **What:** C-chat — AI WhatsApp agent for Tanzanian small business (Swahili/English). Next.js 16 App Router (webpack), React 19.2.8, Tailwind 4, Clerk auth, Supabase Postgres + Drizzle, DeepSeek (OpenAI-compatible), Pesapal (stub), Meta WhatsApp (Embedded Signup stub).
@@ -20,6 +21,7 @@
 6. `eadda59` **fix: restore sura anchors, expand Terms 8-16, clarify AI** — added `span id="sura-1"..sura-6` before each `section id="kuanza" etc` in guide (`app/jinsi...:216`), updated AI clause `hakiki kabla → fuatilia ... hakiki au sahihisha inapohitajika` (`app/jinsi...:474`), expanded Terms `8–16` to full provisions 8 Intellectual Property →16 Contact (`app/jinsi...:451`)
 7. `5956084` **fix: Tabler crown for Save 20%** — replaced `Icon award` with exact SVG `M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4l4 -6` in `app/page.tsx:572` and `app/(dashboard)/billing/page.tsx:286` per user supplied code
 8. `1abca0c` **feat: move fold toggle to top, light black-grid, dark unreadable** — moved `toggleNavCollapsed` from bottom `hidden md:flex p-2.5 justify-end` (`dashboard-shell.tsx:362`) to header `flex items-center px-2.5 pt-3` next to logo (`dashboard-shell.tsx:302`), with `md:flex-col` when collapsed; added light-mode black-grid `app/globals.css:97` for `.stat/.card/.svc/.polsec` etc `border 1.5px #111 shadow 0 2px 0 #111` (white-mode only, not landing, not dark); added dark overrides `text-[#2B2B2B] #E0E0E0` etc (`app/globals.css:1446`), fixed `dashboard-shell.tsx:350` pricing display; build 28/28 ok
+9. `1778c81` **feat(i18n): add Swahili support with next-intl** — installed `next-intl`, created `messages/en.json` + `messages/sw.json` (500+ keys each), locale routing `app/[locale]/` with `layout.tsx`, `page.tsx`, `dashboard/page.tsx`, updated `proxy.ts` for locale prefix detection/redirects, added `i18n.ts`, `i18n-config.ts`, `components/i18n-provider.tsx`, updated `app/layout.tsx` Clerk redirects to `/en/...`, root `page.tsx` redirects to `/en`, build 28 routes + 2 locales
 
 ## 3. Key decisions / gotchas
 - **Design system:** Notion light source: `white #FFF` page, `bg-[#FCFCF9]` sections, `border #E9E9E7`, `shadow 0 8px 32px rgba(0,0,0,.06)`, `radius 16/12/8`. App shell now light `white border #E9E9E7`. Keep `.notion-frame/.notion-pin/.notion-nav/.marquee` in `app/globals.css:1280`. Green `#149A5B` only for landing hero/free trial accents.
@@ -31,6 +33,7 @@
 - **Foldable nav:** `components/dashboard-shell.tsx:302` header now contains toggle, bottom toggle removed. `navCollapsed` persisted via `cchat-nav-collapsed` localStorage. Sidebar `md:w-[64px]` icons-only.
 - **DB:** `DATABASE_URL` pooler 6543 `?pgbouncer=true`, `DIRECT_URL` pooler 5432, both `postgres.udgrgccsffjdkpbwrfvg@aws-1-eu-west-1.pooler.supabase.com`, password `qxFH3jy2NNDLurAh` (no encoding needed). `drizzle-kit push` applied, `products.image` exists true. Vercel env must match if password reset.
 - **Build quirk:** `@next/swc-win32-x64-msvc.node is not a valid Win32 application` warnings harmless, WASM fallback. Build 28 routes, `ƒ Proxy`.
+- **i18n (Swahili/English):** `next-intl` with locale routing `app/[locale]/` (`en`, `sw`). Messages in `messages/en.json` + `messages/sw.json` (500+ keys each). `proxy.ts` handles locale prefix detection/redirects. `i18n.ts` server config, `i18n-config.ts` locale defs, `components/i18n-provider.tsx` client provider. Locale layout `app/[locale]/layout.tsx` wraps children in `I18nProvider`. Clerk redirects use `/en/...`. Root `/` → `/en`. To add language: add to `i18n-config.ts`, create `messages/{locale}.json`, rebuild.
 
 ## 4. SEO / Search Console status
 - Live (after merge to `main`): `https://cchat.site/sitemap.xml` will include `.../jinsi-ya-kufanya-biashara-mtandaoni-tanzania` (priority 0.9 weekly) plus `/privacy /terms /acceptable-use` (redirect to `#terms` etc). `https://cchat.site/robots.txt` has `Sitemap:`.
@@ -44,9 +47,10 @@
 
 ## 6. How to run / verify
 - `npm run dev` / `npm run build -- --webpack` (expect `✓ Compiled`, `28 static pages`, `ƒ Proxy`). `npx tsc --noEmit --skipLibCheck`
-- Quick check: `git status`, `git log --oneline -8`, `git branch -a -vv` (current `feat/green-dark-demo-v2` `1abca0c` ahead of `main` `0f8c7a1`)
+- Quick check: `git status`, `git log --oneline -8`, `git branch -a -vv` (current `feat/green-dark-demo-v2` `1778c81` ahead of `main` `0f8c7a1`)
 - PR for this work is `feat/green-dark-demo-v2` → `main` (not yet created as PR #? existing PR #6 is `feat/notion-landing` stale). Create new PR for `feat/green-dark-demo-v2` when ready to merge. Vercel auto-deploys `main`.
 - Test public guide: `npm run dev` → `http://localhost:3000/jinsi-ya-kufanya-biashara-mtandaoni-tanzania` no login, landing `#mwongozo` cards link to `#sura-1..6` scroll correctly, dark toggle via Settings → Appearance → Dark (check unreadable words fixed, black-grid only in light)
+- Test i18n: `http://localhost:3000/en/dashboard` and `http://localhost:3000/sw/dashboard` — all UI text in English/Swahili. Root `/` redirects to `/en`. Locale prefix auto-added by `proxy.ts`.
 
 ## 7. Open TODOs for next session (priority order)
 1. **Merge PR `feat/green-dark-demo-v2`** — create PR `feat/green-dark-demo-v2` → `main` (or update existing), merge via GitHub UI (Squash), then `git checkout main; git pull --ff-only; git branch -d feat/green-dark-demo-v2; git push origin --delete feat/green-dark-demo-v2` optional. Verify `https://cchat.site` renders landing mwongozo section, guide public, pricing 15k/144k, Save 20% crown tabler, fold toggle top, black-grid light only, dark readable.
@@ -54,11 +58,12 @@
 3. **If user wants more onboarding black-grid everywhere:** The light black-grid currently covers `.card/.stat/.svc/.polsec/.sidecard/.inboxgrid/.intoolbar/.phone/.ptable`. If user wants it on *every* app code, extend to `.collapsible-card`, `.rulecard`, `.sale*` etc in `app/globals.css`.
 4. **Decide branch cleanup:** Delete `feat/notion-landing` (`c2314c3`) and `feat/ui-ux-pro-max` (`0f8c7a1`) after merge to leave single-`main`.
 5. **GSC:** submit updated `sitemap.xml` + Request Indexing for guide URL.
+6. **i18n polish (low priority):** Add locale switcher in Settings/navbar, persist locale in cookie/localStorage, add more languages (e.g., French for DRC), ensure all dashboard pages use `useTranslations()` for dynamic content.
 
 ## 8. Commands cheat-sheet
 - `git checkout feat/green-dark-demo-v2; git log --oneline -8; git status --short`
 - `git diff origin/main --stat`
 - `npm run build -- --webpack > $env:LOCALAPPDATA\Temp\opencode\build.log 2>&1` (then `Get-Content ... -Tail 80`)
 - `npx tsc --noEmit --skipLibCheck`
-- `git push origin feat/green-dark-demo-v2` (already pushed `1abca0c`)
-- `gh pr create --base main --head feat/green-dark-demo-v2 --title "feat: mwongozo docs + pricing 15k + icons + dark + fold"` (if `gh` installed)
+- `git push origin feat/green-dark-demo-v2` (already pushed `1778c81`)
+- `gh pr create --base main --head feat/green-dark-demo-v2 --title "feat: mwongozo docs + pricing 15k + icons + dark + fold + i18n"` (if `gh` installed)
