@@ -1,7 +1,4 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
-
-const withNextIntl = createNextIntlPlugin("./i18n.ts");
 
 const nextConfig: NextConfig = {
   // Trim heavy client bundles (recharts, Clerk) via per-package code splitting.
@@ -16,4 +13,4 @@ const nextConfig: NextConfig = {
   // and preserves URL state — no SPA fallback needed on Vercel/hosting.
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;
