@@ -56,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeScript />
       </head>
       <body className="min-h-full flex flex-col font-body bg-surface text-dark">
-        <ClerkProvider signInFallbackRedirectUrl="/en/dashboard" signUpFallbackRedirectUrl="/en/onboarding">{children}</ClerkProvider>
+        <ClerkProvider signInFallbackRedirectUrl="/dashboard" signUpFallbackRedirectUrl="/onboarding">{children}</ClerkProvider>
       </body>
     </html>
   );
