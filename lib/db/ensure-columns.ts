@@ -15,3 +15,16 @@ export async function ensureProductImageColumn(): Promise<void> {
     console.error('ensureProductImageColumn failed:', e);
   }
 }
+
+let messageDeliveryEnsured = false;
+
+export async function ensureMessageDeliveryColumns(): Promise<void> {
+  if (messageDeliveryEnsured) return;
+  try {
+    await db.execute(sql`ALTER TABLE messages ADD COLUMN IF NOT EXISTS delivered boolean DEFAULT true NOT NULL`);
+    await db.execute(sql`ALTER TABLE messages ADD COLUMN IF NOT EXISTS test_mode boolean DEFAULT false NOT NULL`);
+    messageDeliveryEnsured = true;
+  } catch (e) {
+    console.error('ensureMessageDeliveryColumns failed:', e);
+  }
+}

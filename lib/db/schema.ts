@@ -43,6 +43,8 @@ export const messages = pgTable('messages', {
   role: text('role').notNull(),
   content: text('content').notNull(),
   aiHandled: boolean('ai_handled').default(false),
+  delivered: boolean('delivered').default(true).notNull(),
+  testMode: boolean('test_mode').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (t) => [index('messages_conversation_id_idx').on(t.conversationId)]);
 

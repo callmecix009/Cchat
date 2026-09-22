@@ -5,6 +5,7 @@ import { users, conversations, messages, settings, whatsappConnections } from '@
 import { eq } from 'drizzle-orm';
 import { sendWhatsAppText } from '@/lib/whatsapp';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { ensureMessageDeliveryColumns } from '@/lib/db/ensure-columns';
 import { checkRateLimit, getClientIp, rateLimitedResponse, RL_INBOX_SEND, RL_INBOX_SEND_USER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -110,6 +111,7 @@ export async function POST(req: NextRequest) {
     // so the inbox reply flow can be tested before real WhatsApp is
     // connected. Real connections always go through WhatsApp below.
     const isTestConnection = waRow[0].accessToken.startsWith('demo_fake_token_');
+    await ensureMessageDeliveryColumns();
     if (!isTestConnection) {
       await sendWhatsAppText(waRow[0].accessToken, waRow[0].phoneNumberId, contactPhone, text);
     } else {
@@ -122,6 +124,8 @@ export async function POST(req: NextRequest) {
       role: 'owner',
       content: text,
       aiHandled: false,
+      delivered: !isTestConnection,
+      testMode: isTestConnection,
     });
 
     await db
