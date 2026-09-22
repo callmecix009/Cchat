@@ -1700,6 +1700,16 @@ html.dark .dashboard-theme:not(.light) select.inp,
 html.dark .dashboard-theme:not(.light) textarea.inp { background: #1A1A1A !important; border-color: #2A2A2A !important; color: #EDEDED !important; }
 .dashboard-theme.dark .inp:focus,
 html.dark .dashboard-theme:not(.light) .inp:focus { border-color: #EDEDED !important; box-shadow: 0 0 0 3px rgba(237,237,237,.08) !important; }
+.dashboard-theme.dark .stepq,
+html.dark .dashboard-theme:not(.light) .stepq { border-color: #2A2A2A !important; }
+.dashboard-theme.dark .stepq input,
+html.dark .dashboard-theme:not(.light) .stepq input { background: #1A1A1A !important; color: #EDEDED !important; }
+.dashboard-theme.dark .stepq button,
+html.dark .dashboard-theme:not(.light) .stepq button { color: #9B9B9B !important; }
+.dashboard-theme.dark input[type="time"],
+.dashboard-theme.dark input[type="date"],
+html.dark .dashboard-theme:not(.light) input[type="time"],
+html.dark .dashboard-theme:not(.light) input[type="date"] { color-scheme: dark; }
 .dashboard-theme.dark .btn.ghost,
 html.dark .dashboard-theme:not(.light) .btn.ghost { background: #1E1E1E !important; border-color: #2A2A2A !important; color: #EDEDED !important; }
 .dashboard-theme.dark .btn.ghost:hover,
@@ -1916,6 +1926,11 @@ html.dark .dashboard-theme:not(.light) .hover\:bg-\[\#F7F7F5\]:hover { backgroun
   .dashboard-theme:not(.light):not(.dark) .ptable th { background: #1E1E1E !important; border-color: #2A2A2A !important; color: #7A7A7A !important; }
   .dashboard-theme:not(.light):not(.dark) .ptable td { border-color: #242424 !important; }
   .dashboard-theme:not(.light):not(.dark) .inp { background: #1A1A1A !important; border-color: #2A2A2A !important; color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .stepq { border-color: #2A2A2A !important; }
+  .dashboard-theme:not(.light):not(.dark) .stepq input { background: #1A1A1A !important; color: #EDEDED !important; }
+  .dashboard-theme:not(.light):not(.dark) .stepq button { color: #9B9B9B !important; }
+  .dashboard-theme:not(.light):not(.dark) input[type="time"],
+  .dashboard-theme:not(.light):not(.dark) input[type="date"] { color-scheme: dark; }
   .dashboard-theme:not(.light):not(.dark) .btn.ghost { background: #1E1E1E !important; border-color: #2A2A2A !important; color: #EDEDED !important; }
   .dashboard-theme:not(.light):not(.dark) .btn.pri,
   .dashboard-theme:not(.light):not(.dark) .btn.dark { background: #EDEDED !important; color: #0F0F0F !important; border-color: #EDEDED !important; }
