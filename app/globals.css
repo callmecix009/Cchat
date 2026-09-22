@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: `dark:` utilities must follow the `.dark` class
+   managed by ThemeProvider (wrapper + <html>), NOT the OS color scheme.
+   Without this, Tailwind v4 defaults `dark:` to prefers-color-scheme and
+   the in-app Light/Dark toggle is ignored (dark fills in light mode and
+   vice versa). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --ink: #0B1B12;
   --pine: #0E2A1B;
