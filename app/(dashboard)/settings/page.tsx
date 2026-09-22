@@ -27,7 +27,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const inpCls = "w-full px-3 py-2.5 border border-[#E9E9E7] rounded-lg bg-white text-[14px] text-[#111] placeholder:text-[#9B9B9B] focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 transition-all dark:bg-[#1A1A1A] dark:border-[#2A2A2A] dark:text-[#EDEDED] dark:placeholder-[#7A7A7A] dark:focus:border-[#EDEDED]";
+const inpCls = "w-full px-3 py-2.5 border border-[#E9E9E7] rounded-lg bg-white text-[14px] focus:outline-none focus:border-[#111] focus:ring-2 focus:ring-[#111]/10/14 transition-all dark:bg-[#1A1A1A] dark:border-[#2A2A2A] dark:text-[#EDEDED] dark:placeholder-[#7A7A7A] dark:focus:border-[#EDEDED]";
 
 function AppearanceCard() {
   const { theme, setTheme } = useTheme();
