@@ -73,6 +73,12 @@ export async function GET(req: NextRequest) {
     const msgsByConvo = new Map<string, ConvoMsg[]>();
     if (rows.length) {
       const ids = rows.map((r) => r.id);
+      // NOTE: drizzle's sql`` expands a JS array into ($1, $2, ...) — NOT a
+      // Postgres array — so `= ANY(${ids})` throws 42809. Use an IN-list.
+      const idList = sql.join(
+        ids.map((id) => sql`${id}`),
+        sql`, `
+      );
       // Per-conversation bounded transcript: the old global ORDER BY +
       // LIMIT(2000) let busy threads starve quiet ones (empty transcript +
       // wrong unreadCount). Window function keeps the newest N per thread.
@@ -85,7 +91,7 @@ export async function GET(req: NextRequest) {
         created_at: Date;
       }>(sql`SELECT id, conversation_id, role, content, ai_handled, created_at FROM (
         SELECT m.*, ROW_NUMBER() OVER (PARTITION BY m.conversation_id ORDER BY m.created_at DESC) AS rn
-        FROM messages m WHERE m.conversation_id = ANY(${ids})
+        FROM messages m WHERE m.conversation_id IN (${idList})
       ) t WHERE rn <= 120 ORDER BY created_at DESC`);
       for (const m of msgs) {
         const list = msgsByConvo.get(m.conversation_id) ?? [];
@@ -106,12 +112,16 @@ export async function GET(req: NextRequest) {
     if (rows.length && lastReadMap.size) {
       try {
         const countIds = rows.map((r) => r.id);
+        const countIdList = sql.join(
+          countIds.map((id) => sql`${id}`),
+          sql`, `
+        );
         const counts = await db.execute<{
           conversation_id: string;
           cnt: number;
         }>(sql`SELECT m.conversation_id, COUNT(*)::int AS cnt FROM messages m
           JOIN conversations c ON c.id = m.conversation_id
-          WHERE m.conversation_id = ANY(${countIds})
+          WHERE m.conversation_id IN (${countIdList})
             AND m.role = 'customer'
             AND c.last_read_at IS NOT NULL
             AND m.created_at > c.last_read_at
