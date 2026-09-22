@@ -105,7 +105,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'NO_CONTACT_NUMBER', message: "This conversation has no customer phone number to deliver to." }, { status: 502 });
     }
 
-    await sendWhatsAppText(waRow[0].accessToken, waRow[0].phoneNumberId, contactPhone, text);
+    // TEST MODE bypass: fake/demo connections (accessToken starting with
+    // `demo_fake_token_`) persist the reply locally without calling Meta,
+    // so the inbox reply flow can be tested before real WhatsApp is
+    // connected. Real connections always go through WhatsApp below.
+    const isTestConnection = waRow[0].accessToken.startsWith('demo_fake_token_');
+    if (!isTestConnection) {
+      await sendWhatsAppText(waRow[0].accessToken, waRow[0].phoneNumberId, contactPhone, text);
+    } else {
+      console.log(`Inbox send TEST MODE for user ${user.id.slice(0, 8)} — persisted locally, not delivered to WhatsApp.`);
+    }
 
     await db.insert(messages).values({
       id: crypto.randomUUID(),
@@ -122,7 +131,7 @@ export async function POST(req: NextRequest) {
       .set({ status: 'waiting', contactName, contactPhone, createdAt: new Date() })
       .where(eq(conversations.id, conversationId));
 
-    return NextResponse.json({ ok: true, delivered: true }, { status: 200 });
+    return NextResponse.json({ ok: true, delivered: !isTestConnection, testMode: isTestConnection }, { status: 200 });
   } catch (err: any) {
     const msg = String(err?.message || err || '');
     if (msg.includes('WHATSAPP_SEND_FAILED')) {
