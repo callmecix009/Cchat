@@ -163,6 +163,54 @@ function buildSystemPrompt(ctx: BusinessContext): string {
   return lines.join("\n");
 }
 
+function buildOwnerSystemPrompt(ctx: BusinessContext): string {
+  const lines: string[] = [];
+  lines.push("You are the private business assistant of " + (ctx.owner || "the shop owner") + ", who runs " + (ctx.businessName || "a business") + (ctx.city ? " in " + ctx.city : "") + ".");
+  if (ctx.businessDesc) lines.push("About the business: " + ctx.businessDesc);
+  lines.push("Your job: answer the owner's questions about THEIR OWN shop using ONLY the live data below — sales performance, stock levels, customers, and handoffs.");
+  lines.push("Be direct and concrete: cite real product names, numbers, and prices from the data. Never invent figures. If the data doesn't cover something, say so honestly.");
+
+  if (ctx.products.length) {
+    lines.push("\nLIVE CATALOG:");
+    const sorted = [...ctx.products].filter((p) => !p.hidden).sort((a, b) => b.sold - a.sold);
+    for (const p of sorted) {
+      const stockLine = p.stock > 0 ? p.stock + " in stock" : "OUT OF STOCK";
+      lines.push("- " + p.name + " (" + p.cat + "): TZS " + p.price.toLocaleString() + " — " + stockLine + " — " + p.sold + " sold");
+    }
+  } else {
+    lines.push("\nLIVE CATALOG: empty — no products added yet.");
+  }
+
+  if (ctx.services.length) {
+    lines.push("\nSERVICES:");
+    for (const s of ctx.services) {
+      lines.push("- " + s.name + ": TZS " + s.price.toLocaleString() + (s.dur ? " — " + s.dur : ""));
+    }
+  }
+
+  const pol = ctx.policies;
+  if (pol) {
+    const bits: string[] = [];
+    if (pol.deliveryMode === "no") bits.push("no delivery (pickup only)");
+    else if (pol.deliveryMode === "free") bits.push("free delivery");
+    else bits.push("paid delivery, free over TZS " + (pol.freeOver || 0).toLocaleString());
+    if (pol.payments.length) bits.push("payments: " + pol.payments.map((p) => p.name).join(", "));
+    if (pol.returns) bits.push("returns: " + pol.returns);
+    if (pol.refunds) bits.push("refunds: " + pol.refunds);
+    lines.push("\nSHOP RULES: " + bits.join(" · "));
+  }
+
+  const ai = ctx.aiConfig;
+  if (ai?.tone) lines.push("\nVoice: " + ai.tone + (ai.personality ? " — " + ai.personality : ""));
+
+  lines.push("\nRULES:");
+  lines.push("- You talk TO the owner, not to customers. Never pretend to be a customer and never role-play a sale.");
+  lines.push("- Keep answers short and scannable (a few lines or bullets). No emojis unless the owner asks.");
+  lines.push("- Reply in the same language the owner uses (Swahili or English).");
+
+  return lines.join("\n");
+}
+
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
 function buildGeneralSystemPrompt(): string {
@@ -179,10 +227,15 @@ function buildGeneralSystemPrompt(): string {
 export async function chatWithAI(
   userId: string,
   messages: ChatMessage[],
-  opts?: { mode?: "business" | "general" },
+  opts?: { mode?: "business" | "general" | "owner" },
 ): Promise<{ reply: string; error?: string }> {
-  const mode = opts?.mode === "general" ? "general" : "business";
-  const systemPrompt = mode === "general" ? buildGeneralSystemPrompt() : buildSystemPrompt(await loadBusinessContext(userId));
+  const mode = opts?.mode === "general" ? "general" : opts?.mode === "owner" ? "owner" : "business";
+  const systemPrompt =
+    mode === "general"
+      ? buildGeneralSystemPrompt()
+      : mode === "owner"
+        ? buildOwnerSystemPrompt(await loadBusinessContext(userId))
+        : buildSystemPrompt(await loadBusinessContext(userId));
 
   const openai = getClient();
   if (!openai) {

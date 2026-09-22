@@ -5,8 +5,6 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import {
   createEmptyState,
-  agentBrain,
-  ownerBrain,
   detectLang,
   type ConvoMsg,
   type DemoState,
@@ -23,6 +21,13 @@ const HINTS = [
   "Nalipaje kwa M-Pesa?",
   "Screen ya simu imevunjika",
   "Naomba kuongea na mmiliki",
+];
+
+const OWNER_HINTS = [
+  "Summarize yesterday's chats",
+  "Which product sold the most?",
+  "What's low on stock?",
+  "What are customers asking?",
 ];
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -130,7 +135,35 @@ export default function ChatAgentPage() {
 
     if (tab === "owner") {
       setOwnerConvo((c) => ({ ...c, msgs: [...c.msgs, { from: "c", text: t, t: Date.now() }] }));
-      pushReplies(ownerBrain(t, st), "owner");
+      setTyping(true);
+      try {
+        const history = ownerConvo.msgs
+          .filter((m) => m.from !== "sys")
+          .map((m) => ({
+            role: m.from === "c" ? ("user" as const) : ("assistant" as const),
+            content: m.text,
+          }));
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: [...history, { role: "user", content: t }], mode: "owner" }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.reply) {
+          pushReplies([data.reply], "owner");
+        } else if (res.status === 503 || data.error?.includes("not configured") || data.error === "DEEPSEEK_NOT_CONFIGURED") {
+          pushReplies(
+            [
+              "AI is not configured yet. Add DEEPSEEK_API_KEY to your environment variables to enable the real AI brain. See https://api-docs.deepseek.com/",
+            ],
+            "owner"
+          );
+        } else {
+          pushReplies([data.error || "Sorry, I couldn't process that right now. Please try again."], "owner");
+        }
+      } catch {
+        pushReplies(["Connection error. Please try again."], "owner");
+      }
       return;
     }
 
@@ -315,16 +348,23 @@ export default function ChatAgentPage() {
             )}
           </div>
 
-          {tab === "test" && !testConvo.takeover && (
+          {tab === "test" && !testConvo.takeover && testConvo.msgs.length === 0 && (
             <div className="hintchips">
               {HINTS.map((h) => (
                 <button key={h} onClick={() => setInput(h)}>{h}</button>
               ))}
             </div>
           )}
-          {tab === "assistant" && (
+          {tab === "assistant" && assistantConvo.msgs.length === 0 && (
             <div className="hintchips">
               {["Explain black holes", "Andika shairi la Kiswahili", "Write a Python function", "Help me plan a trip to Zanzibar", "Summarize my business data"].map((h) => (
+                <button key={h} onClick={() => setInput(h)}>{h}</button>
+              ))}
+            </div>
+          )}
+          {tab === "owner" && ownerConvo.msgs.length === 0 && (
+            <div className="hintchips">
+              {OWNER_HINTS.map((h) => (
                 <button key={h} onClick={() => setInput(h)}>{h}</button>
               ))}
             </div>
