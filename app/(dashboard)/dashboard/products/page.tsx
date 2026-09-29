@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/icons";
 import ProductThumb from "@/components/product-thumb";
 import { processProductImage, validateProductFile } from "@/lib/product-image";
+import { ProductsSkeleton } from "@/components/skeletons";
 import { TZS, uid, type Product } from "@/lib/demo";
 
 const CHIP_COLORS = ["#E8F0FE", "#E7F6EC", "#FFF4DE", "#FDECEC", "#F3EDFB"];
@@ -323,11 +324,7 @@ export default function ProductsPage() {
       </div>
 
       {!loaded ? (
-        <div className="card">
-          <div className="empty">
-            <p>Loading your catalog…</p>
-          </div>
-        </div>
+        <ProductsSkeleton />
       ) : list.length ? (
         <div style={{ overflowX: "auto" }}>
           <table className="ptable">

@@ -4,6 +4,7 @@ import { useDeferredValue, useEffect, useMemo, useState, useRef, useCallback } f
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import ProductThumb from "@/components/product-thumb";
+import { InboxSkeleton } from "@/components/skeletons";
 import { initials, fmtDay, fmtClock, type Convo, type Product } from "@/lib/demo";
 
 type Filter = "all" | "ai" | "human" | "unread" | "closed";
@@ -456,7 +457,9 @@ export default function InboxPage() {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col w-full">
-      {loaded && conversations.length === 0 ? (
+      {!loaded ? (
+        <InboxSkeleton />
+      ) : conversations.length === 0 ? (
         <div className="flex-1 min-h-0 overflow-auto p-4 sm:p-6">
         <div className="card mx-auto max-w-[560px]" style={{ padding: "46px 24px" }}>
           <div className="empty">
