@@ -18,6 +18,14 @@ const FILTERS: { id: Filter; label: string }[] = [
   { id: "closed", label: "Closed" },
 ];
 
+const EMOJIS = [
+  "😀", "😁", "😂", "🤣", "😊", "😍", "😎", "🤔",
+  "😅", "😭", "😡", "🥳", "😇", "😴", "🤗", "🙌",
+  "👍", "👎", "🙏", "👏", "💪", "👌", "🤝", "👀",
+  "🔥", "🎉", "✅", "❌", "❓", "❗", "💯", "⭐",
+  "❤️", "💔", "🎁", "💰", "📱", "🚚", "📦", "🏪",
+];
+
 function lastMsg(c: Convo) {
   return c.msgs.length ? c.msgs[c.msgs.length - 1] : null;
 }
@@ -93,6 +101,8 @@ export default function InboxPage() {
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<{ type: string; message: string } | null>(null);
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [attach, setAttach] = useState<{ file: File; preview: string } | null>(null);
   const [wa, setWa] = useState<{ connected: boolean; paused: boolean } | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [saleOpen, setSaleOpen] = useState<string | null>(null);
@@ -111,6 +121,8 @@ export default function InboxPage() {
   const [saleSectionOpen, setSaleSectionOpen] = useState(false);
 
   const transcriptRef = useRef<HTMLDivElement>(null);
+  const taRef = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const atBottomRef = useRef(true);
   const openIdRef = useRef<string | null>(null);
   openIdRef.current = openId;
@@ -189,6 +201,11 @@ export default function InboxPage() {
   useEffect(() => {
     atBottomRef.current = true;
     setShowNewMsg(false);
+    setEmojiOpen(false);
+    setAttach((prev) => {
+      if (prev) URL.revokeObjectURL(prev.preview);
+      return null;
+    });
     // Wait for render, then jump to bottom
     const t = requestAnimationFrame(() => {
       if (transcriptRef.current) transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
@@ -353,6 +370,90 @@ export default function InboxPage() {
       });
     } catch {
       setSendError({ type: "failed", message: "Network error — the message was not sent. Check your connection and try again." });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const insertEmoji = (e: string) => {
+    const el = taRef.current;
+    const start = el?.selectionStart ?? reply.length;
+    const end = el?.selectionEnd ?? reply.length;
+    setReply(reply.slice(0, start) + e + reply.slice(end));
+    if (sendError) setSendError(null);
+    requestAnimationFrame(() => {
+      if (!el) return;
+      el.focus();
+      const pos = start + e.length;
+      el.setSelectionRange(pos, pos);
+      el.style.height = "auto";
+      el.style.height = Math.min(110, el.scrollHeight) + "px";
+    });
+  };
+
+  const pickFile = (f: File | null) => {
+    if (!f) return;
+    if (!/^image\/(jpeg|png|webp)$/.test(f.type)) {
+      setSendError({ type: "INVALID_TYPE", message: "Only JPG, PNG or WebP images are supported." });
+      return;
+    }
+    if (f.size > 4 * 1024 * 1024) {
+      setSendError({ type: "INVALID_SIZE", message: "Image must be smaller than 4 MB." });
+      return;
+    }
+    setAttach((prev) => {
+      if (prev) URL.revokeObjectURL(prev.preview);
+      return { file: f, preview: URL.createObjectURL(f) };
+    });
+    setSendError(null);
+  };
+
+  const clearAttach = () => {
+    setAttach((prev) => {
+      if (prev) URL.revokeObjectURL(prev.preview);
+      return null;
+    });
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const sendImage = async (id: string) => {
+    if (!attach || sending) return;
+    const c = conversations.find((x) => x.id === id);
+    const caption = reply.trim();
+    setSending(true);
+    setSendError(null);
+    try {
+      const fd = new FormData();
+      fd.append("conversationId", id);
+      fd.append("caption", caption);
+      if (c?.name) fd.append("contactName", c.name);
+      if (c?.phone) fd.append("contactPhone", c.phone);
+      fd.append("file", attach.file);
+      const res = await fetch("/api/inbox/image", { method: "POST", body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setSendError({
+          type: data?.error || "failed",
+          message: data?.message || "Image failed to send. Please try again.",
+        });
+        return;
+      }
+      const text = caption ? `[image] ${caption}` : "[image]";
+      setReply("");
+      clearAttach();
+      atBottomRef.current = true;
+      update(id, (cc) => ({
+        ...cc,
+        t: Date.now(),
+        takeover: true,
+        status: "waiting",
+        msgs: [...cc.msgs, { from: "me", text, t: Date.now() }],
+      }));
+      requestAnimationFrame(() => {
+        if (transcriptRef.current) transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
+      });
+    } catch {
+      setSendError({ type: "failed", message: "Network error — the image was not sent. Check your connection and try again." });
     } finally {
       setSending(false);
     }
@@ -809,11 +910,34 @@ export default function InboxPage() {
                         <button className="ml-auto flex-none text-[12px] font-bold underline" onClick={() => takeOver(open.id)}>Take over</button>
                       </div>
                     )}
+                    <div className="flex-none relative">
+                      {attach && (
+                        <div className="attach-prev">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={attach.preview} alt="Attachment preview" />
+                          <span className="truncate flex-1 min-w-0">{attach.file.name}</span>
+                          <button onClick={clearAttach} aria-label="Remove attachment" className="attach-x">
+                            <Icon name="x" size={13} />
+                          </button>
+                        </div>
+                      )}
                     <div className="composer-pro flex-none">
-                      <button className="composer-icon" title="Attach" aria-label="Attach">
+                      <input
+                        ref={fileRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        aria-label="Attach image"
+                        onChange={(e) => {
+                          pickFile(e.target.files?.[0] ?? null);
+                          e.target.value = "";
+                        }}
+                      />
+                      <button className="composer-icon" title="Attach image" aria-label="Attach image" disabled={sending} onClick={() => fileRef.current?.click()}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" /></svg>
                       </button>
                       <textarea
+                        ref={taRef}
                         value={reply}
                         rows={1}
                         onChange={(e) => {
@@ -825,20 +949,21 @@ export default function InboxPage() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && !e.shiftKey) {
                             e.preventDefault();
-                            sendReply(open.id);
+                            if (attach) sendImage(open.id);
+                            else sendReply(open.id);
                           }
                         }}
-                        placeholder={open.takeover || openState !== "ai" ? "Type a message..." : "Type a message to take over..."}
+                        placeholder={attach ? "Add a caption..." : open.takeover || openState !== "ai" ? "Type a message..." : "Type a message to take over..."}
                         disabled={sending}
                         aria-label="Type a message"
                       />
-                      <button className="composer-icon" title="Emoji" aria-label="Emoji">
+                      <button className="composer-icon" title="Emoji" aria-label="Emoji" onClick={() => setEmojiOpen((v) => !v)}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
                       </button>
                       <button
                         className="composer-send"
-                        onClick={() => sendReply(open.id)}
-                        disabled={sending || !reply.trim()}
+                        onClick={() => (attach ? sendImage(open.id) : sendReply(open.id))}
+                        disabled={sending || (!reply.trim() && !attach)}
                         aria-label="Send message"
                       >
                         {sending ? (
@@ -847,6 +972,19 @@ export default function InboxPage() {
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
                         )}
                       </button>
+                    </div>
+                      {emojiOpen && (
+                        <>
+                          <div className="fixed inset-0 z-30" onClick={() => setEmojiOpen(false)} />
+                          <div className="emoji-pop" role="dialog" aria-label="Emoji picker">
+                            {EMOJIS.map((e) => (
+                              <button key={e} type="button" onClick={() => insertEmoji(e)} aria-label={`Insert ${e}`}>
+                                {e}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </>
                 )}
