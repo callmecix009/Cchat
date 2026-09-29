@@ -28,3 +28,15 @@ export async function ensureMessageDeliveryColumns(): Promise<void> {
     console.error('ensureMessageDeliveryColumns failed:', e);
   }
 }
+
+let messageMediaEnsured = false;
+
+export async function ensureMessageMediaColumn(): Promise<void> {
+  if (messageMediaEnsured) return;
+  try {
+    await db.execute(sql`ALTER TABLE messages ADD COLUMN IF NOT EXISTS media_id text`);
+    messageMediaEnsured = true;
+  } catch (e) {
+    console.error('ensureMessageMediaColumn failed:', e);
+  }
+}

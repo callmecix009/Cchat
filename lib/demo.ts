@@ -23,7 +23,7 @@ export type Service = {
   warranty: string;
 };
 
-export type ConvoMsg = { from: "c" | "ai" | "me" | "sys"; text: string; t: number };
+export type ConvoMsg = { from: "c" | "ai" | "me" | "sys"; text: string; t: number; media?: string | null };
 
 export type Convo = {
   id: string;

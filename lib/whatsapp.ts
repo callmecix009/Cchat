@@ -202,7 +202,8 @@ export async function sendWhatsAppImage(
     const detail = await res.text().catch(() => '');
     throw new Error('WHATSAPP_SEND_FAILED' + (detail ? ': ' + detail.slice(0, 300) : ''));
   }
-  return res.json();
+  await res.json().catch(() => ({}));
+  return { mediaId };
 }
 
 export function verifyMetaSignature(rawBody: string, signature: string | null | undefined) {

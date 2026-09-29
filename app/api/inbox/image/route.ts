@@ -5,7 +5,7 @@ import { users, conversations, messages, settings, whatsappConnections } from '@
 import { eq } from 'drizzle-orm';
 import { sendWhatsAppImage } from '@/lib/whatsapp';
 import { ensureUserRow } from '@/lib/ensureUser';
-import { ensureMessageDeliveryColumns } from '@/lib/db/ensure-columns';
+import { ensureMessageDeliveryColumns, ensureMessageMediaColumn } from '@/lib/db/ensure-columns';
 import { checkRateLimit, getClientIp, rateLimitedResponse, RL_INBOX_SEND, RL_INBOX_SEND_USER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -119,27 +119,31 @@ export async function POST(req: NextRequest) {
 
     const isTestConnection = waRow[0].accessToken.startsWith('demo_fake_token_');
     await ensureMessageDeliveryColumns();
+    await ensureMessageMediaColumn();
+    let mediaId: string | null = null;
     if (!isTestConnection) {
       const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
-      await sendWhatsAppImage(waRow[0].accessToken, waRow[0].phoneNumberId, phone, {
+      ({ mediaId } = await sendWhatsAppImage(waRow[0].accessToken, waRow[0].phoneNumberId, phone, {
         bytes: file,
         mimeType: file.type,
         filename: `cchat-${Date.now()}.${ext}`,
-      }, caption || undefined);
+      }, caption || undefined));
     } else {
       console.log(`Inbox image TEST MODE for user ${user.id.slice(0, 8)} — persisted locally, not delivered to WhatsApp.`);
     }
 
     // Same convention as the webhook's non-text placeholder: text marker + caption.
     const content = caption ? `[image] ${caption}` : '[image]';
+    const messageId = crypto.randomUUID();
     await db.insert(messages).values({
-      id: crypto.randomUUID(),
+      id: messageId,
       conversationId,
       role: 'owner',
       content,
       aiHandled: false,
       delivered: !isTestConnection,
       testMode: isTestConnection,
+      mediaId,
     });
 
     await db
@@ -147,7 +151,7 @@ export async function POST(req: NextRequest) {
       .set({ status: 'waiting', contactName: name, contactPhone: phone, createdAt: new Date() })
       .where(eq(conversations.id, conversationId));
 
-    return NextResponse.json({ ok: true, delivered: !isTestConnection, testMode: isTestConnection }, { status: 200 });
+    return NextResponse.json({ ok: true, delivered: !isTestConnection, testMode: isTestConnection, messageId, mediaId }, { status: 200 });
   } catch (err: any) {
     const msg = String(err?.message || err || '');
     if (msg.includes('WHATSAPP_SEND_FAILED')) {
