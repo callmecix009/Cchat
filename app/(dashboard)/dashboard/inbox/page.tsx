@@ -121,18 +121,21 @@ export default function InboxPage() {
         fetch("/api/settings").then((r) => (r.ok ? r.json() : null)).catch(() => null),
         fetch("/api/workspace").then((r) => (r.ok ? r.json() : null)).catch(() => null),
       ]);
-      const list: Convo[] = inboxRes?.conversations ?? [];
-      setConversations((prev) => {
-        // Preserve optimistic takeover flags across silent polls (server always returns takeover:false)
-        if (!silent || prev.length === 0) return list;
-        const prevMap = new Map(prev.map((c) => [c.id, c]));
-        return list.map((c) => {
-          const p = prevMap.get(c.id);
-          if (p && p.takeover && c.status === "waiting") return { ...c, takeover: true, reason: p.reason };
-          return c;
+      const inboxList = inboxRes?.conversations;
+      if (Array.isArray(inboxList)) {
+        const list: Convo[] = inboxList;
+        setConversations((prev) => {
+          // Preserve optimistic takeover flags across silent polls (server always returns takeover:false)
+          if (!silent || prev.length === 0) return list;
+          const prevMap = new Map(prev.map((c) => [c.id, c]));
+          return list.map((c) => {
+            const p = prevMap.get(c.id);
+            if (p && p.takeover && c.status === "waiting") return { ...c, takeover: true, reason: p.reason };
+            return c;
+          });
         });
-      });
-      setOpenId((prev) => (prev && list.some((c) => c.id === prev) ? prev : list[0]?.id ?? prev ?? null));
+        setOpenId((prev) => (prev && list.some((c) => c.id === prev) ? prev : list[0]?.id ?? prev ?? null));
+      }
       if (settingsRes) setWa({ connected: !!settingsRes.whatsappConnected, paused: !!settingsRes.whatsappPaused });
       if (workspaceRes) setProducts(workspaceRes.products ?? []);
     } finally {

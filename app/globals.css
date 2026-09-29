@@ -2135,6 +2135,10 @@ html.dark .dashboard-theme:not(.light) .msg-time { color: rgba(237,237,237,.55) 
 html.dark .dashboard-theme:not(.light) .composer-pro { background: #1E1E1E !important; border-color: #2A2A2A !important; }
 .dashboard-theme.dark .composer-pro textarea,
 html.dark .dashboard-theme:not(.light) .composer-pro textarea { background: #1A1A1A !important; border-color: #2A2A2A !important; color: #EDEDED !important; }
+.dashboard-theme.dark .composer-pro textarea:focus,
+.dashboard-theme.dark .composer-pro textarea:focus-visible,
+html.dark .dashboard-theme:not(.light) .composer-pro textarea:focus,
+html.dark .dashboard-theme:not(.light) .composer-pro textarea:focus-visible { border-color: var(--grn) !important; box-shadow: var(--focus-ring); background: #1A1A1A !important; }
 .dashboard-theme.dark .composer-icon,
 html.dark .dashboard-theme:not(.light) .composer-icon { background: #1E1E1E !important; border-color: #2A2A2A !important; color: #9B9B9B !important; }
 .dashboard-theme.dark .composer-send,
