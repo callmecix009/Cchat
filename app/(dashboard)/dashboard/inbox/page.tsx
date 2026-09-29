@@ -103,6 +103,7 @@ export default function InboxPage() {
   const [sendError, setSendError] = useState<{ type: string; message: string } | null>(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [attach, setAttach] = useState<{ file: File; preview: string } | null>(null);
+  const [sendInfo, setSendInfo] = useState<string | null>(null);
   const [wa, setWa] = useState<{ connected: boolean; paused: boolean } | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [saleOpen, setSaleOpen] = useState<string | null>(null);
@@ -202,6 +203,7 @@ export default function InboxPage() {
     atBottomRef.current = true;
     setShowNewMsg(false);
     setEmojiOpen(false);
+    setSendInfo(null);
     setAttach((prev) => {
       if (prev) URL.revokeObjectURL(prev.preview);
       return null;
@@ -442,6 +444,9 @@ export default function InboxPage() {
       const media = (data?.mediaId as string | null) ?? null;
       setReply("");
       clearAttach();
+      if (data?.testMode) {
+        setSendInfo("Test mode — image saved locally, not delivered to WhatsApp. Connect a real number in Settings to deliver images.");
+      }
       atBottomRef.current = true;
       update(id, (cc) => ({
         ...cc,
@@ -796,8 +801,7 @@ export default function InboxPage() {
                           )}
                           {mediaUrl && (
                             <a className="msg-media" href={mediaUrl} target="_blank" rel="noreferrer">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={mediaUrl} alt="Shared image" loading="lazy" />
+                              <MediaThumb url={mediaUrl} />
                             </a>
                           )}
                           {caption ? <span className="msg-text">{caption}</span> : null}
@@ -909,6 +913,12 @@ export default function InboxPage() {
                   </div>
                 ) : (
                   <>
+                    {sendInfo && (
+                      <div className="inote flex-none">
+                        <Icon name="alert" size={14} />
+                        <span>{sendInfo}</span>
+                      </div>
+                    )}
                     {sendError && (
                       <div className="inote fail flex-none">
                         <Icon name="alert" size={14} />
@@ -959,6 +969,7 @@ export default function InboxPage() {
                         onChange={(e) => {
                           setReply(e.target.value);
                           if (sendError) setSendError(null);
+                          if (sendInfo) setSendInfo(null);
                           e.target.style.height = "auto";
                           e.target.style.height = Math.min(110, e.target.scrollHeight) + "px";
                         }}
@@ -1069,6 +1080,34 @@ export default function InboxPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function MediaThumb({ url }: { url: string }) {
+  const [failed, setFailed] = useState(false);
+  const [retry, setRetry] = useState(0);
+  if (failed) {
+    return (
+      <button
+        type="button"
+        className="msg-media-fail"
+        onClick={() => {
+          setRetry((r) => r + 1);
+          setFailed(false);
+        }}
+      >
+        <Icon name="alert" size={14} /> Image unavailable — tap to retry
+      </button>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={retry ? `${url}&r=${retry}` : url}
+      alt="Shared image"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
   );
 }
 

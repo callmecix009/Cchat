@@ -2062,6 +2062,23 @@ html.dark .dashboard-theme:not(.light) .hover\:bg-\[\#F7F7F5\]:hover { backgroun
   object-fit: cover;
   background: #E9E9E7;
 }
+.msg-media-fail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 240px;
+  padding: 14px 12px;
+  border-radius: 8px;
+  background: #F7F7F5;
+  border: 1px dashed #E9E9E7;
+  color: #6B6B6B;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.msg-media-fail:hover { border-color: #111; color: #111; }
 .msg-time {
   display: flex;
   align-items: center;
