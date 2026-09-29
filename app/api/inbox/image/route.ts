@@ -123,7 +123,6 @@ export async function POST(req: NextRequest) {
       const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
       await sendWhatsAppImage(waRow[0].accessToken, waRow[0].phoneNumberId, phone, {
         bytes: file,
-        byteLength: file.size,
         mimeType: file.type,
         filename: `cchat-${Date.now()}.${ext}`,
       }, caption || undefined);

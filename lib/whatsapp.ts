@@ -154,57 +154,36 @@ export async function sendWhatsAppText(
 }
 
 /**
- * Sends an image via Meta's resumable upload (no public storage needed):
- * 1) create upload session, 2) upload bytes, 3) send image message w/ caption.
+ * Sends an image via the WhatsApp Cloud API /media endpoint (multipart upload,
+ * no public storage needed): upload bytes → get media id → send image w/ caption.
  * Throws WHATSAPP_SEND_FAILED with Meta's detail on any step.
  */
 export async function sendWhatsAppImage(
   accessToken: string,
   phoneNumberId: string,
   to: string,
-  file: { bytes: Blob; byteLength: number; mimeType: string; filename: string },
+  file: { bytes: Blob; mimeType: string; filename: string },
   caption?: string
 ) {
-  // 1) Upload session
-  const sessionRes = await fetch(`${GRAPH}/${phoneNumberId}/uploads`, {
+  // 1) Upload media (multipart)
+  const form = new FormData();
+  form.append('messaging_product', 'whatsapp');
+  form.append('file', file.bytes, file.filename);
+  form.append('type', file.mimeType);
+  const uploadRes = await fetch(`${GRAPH}/${phoneNumberId}/media`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      file_name: file.filename,
-      file_length: file.byteLength,
-      file_type: file.mimeType,
-    }),
-  });
-  if (!sessionRes.ok) {
-    const detail = await sessionRes.text().catch(() => '');
-    throw new Error('WHATSAPP_SEND_FAILED' + (detail ? ': ' + detail.slice(0, 300) : ''));
-  }
-  const sessionJson = await sessionRes.json().catch(() => ({}));
-  const sessionId: string | undefined = sessionJson.id;
-  if (!sessionId) throw new Error('WHATSAPP_SEND_FAILED: no upload session');
-
-  // 2) Upload bytes
-  const uploadRes = await fetch(`${GRAPH}/${sessionId}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `OAuth ${accessToken}`,
-      file_offset: '0',
-      'Content-Type': 'application/octet-stream',
-    },
-    body: file.bytes,
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: form,
   });
   if (!uploadRes.ok) {
     const detail = await uploadRes.text().catch(() => '');
     throw new Error('WHATSAPP_SEND_FAILED' + (detail ? ': ' + detail.slice(0, 300) : ''));
   }
   const uploadJson = await uploadRes.json().catch(() => ({}));
-  const mediaId: string | undefined = uploadJson.h ?? uploadJson.id;
+  const mediaId: string | undefined = uploadJson.id;
   if (!mediaId) throw new Error('WHATSAPP_SEND_FAILED: no media id');
 
-  // 3) Send image message
+  // 2) Send image message
   const res = await fetch(`${GRAPH}/${phoneNumberId}/messages`, {
     method: 'POST',
     headers: {
