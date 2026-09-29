@@ -6,6 +6,7 @@ import { initials } from "@/lib/demo";
 import { Icon } from "@/components/icons";
 import { useTheme } from "@/components/theme-provider";
 import LogoCropDialog from "@/components/logo-crop-dialog";
+import { SettingsSkeleton } from "@/components/skeletons";
 
 function Polsec({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
@@ -246,7 +247,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {!loaded && <div className="text-center py-16 text-muted text-sm">Loading settings...</div>}
+      {!loaded && <SettingsSkeleton />}
 
       {loaded && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
