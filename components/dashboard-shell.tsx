@@ -66,7 +66,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   }, []);
 
   const pathname = usePathname();
-  const isInbox = (pathname ?? "").startsWith("/dashboard/inbox");
+  // Full-workspace routes: no shell header, full-bleed main (inbox + test replies).
+  const fullWorkspace =
+    (pathname ?? "").startsWith("/dashboard/inbox") || (pathname ?? "").startsWith("/dashboard/agent");
 
   // Opening any section shrinks the sidebar to its icon rail so the
   // active workspace gets maximum width. Manual expand stays one click away.
@@ -414,8 +416,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             <Link href="/billing" className="self-start sm:self-auto inline-flex items-center justify-center text-xs font-semibold px-3.5 py-1.5 rounded-[8px] bg-[#111] text-white hover:bg-black transition-colors whitespace-nowrap shrink-0">View plans</Link>
           </div>
         )}
-        {/* Inbox is a full-workspace route: no shell header, full-bleed main */}
-        {!isInbox && (
+        {/* Full-workspace routes render their own chrome */}
+        {!fullWorkspace && (
         <header className="h-14 flex-none bg-white/80 backdrop-blur-[10px] border-b border-[#E9E9E7] flex items-center gap-2 sm:gap-3.5 px-3 sm:px-5 sticky top-0 z-10">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -493,7 +495,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </div>
         </header>
         )}
-        <main className={isInbox ? "flex-1 min-h-0 overflow-hidden flex flex-col" : "flex-1 overflow-auto p-4 sm:p-6 md:p-8"}>{children}</main>
+        <main className={fullWorkspace ? "flex-1 min-h-0 overflow-hidden flex flex-col" : "flex-1 overflow-auto p-4 sm:p-6 md:p-8"}>{children}</main>
       </div>
 
       {/* Global pop-up toasts */}
