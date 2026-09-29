@@ -153,6 +153,58 @@ export async function sendWhatsAppText(
   return res.json();
 }
 
+/**
+ * Sends an image via the WhatsApp Cloud API /media endpoint (multipart upload,
+ * no public storage needed): upload bytes → get media id → send image w/ caption.
+ * Throws WHATSAPP_SEND_FAILED with Meta's detail on any step.
+ */
+export async function sendWhatsAppImage(
+  accessToken: string,
+  phoneNumberId: string,
+  to: string,
+  file: { bytes: Blob; mimeType: string; filename: string },
+  caption?: string
+) {
+  // 1) Upload media (multipart)
+  const form = new FormData();
+  form.append('messaging_product', 'whatsapp');
+  form.append('file', file.bytes, file.filename);
+  form.append('type', file.mimeType);
+  const uploadRes = await fetch(`${GRAPH}/${phoneNumberId}/media`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: form,
+  });
+  if (!uploadRes.ok) {
+    const detail = await uploadRes.text().catch(() => '');
+    throw new Error('WHATSAPP_SEND_FAILED' + (detail ? ': ' + detail.slice(0, 300) : ''));
+  }
+  const uploadJson = await uploadRes.json().catch(() => ({}));
+  const mediaId: string | undefined = uploadJson.id;
+  if (!mediaId) throw new Error('WHATSAPP_SEND_FAILED: no media id');
+
+  // 2) Send image message
+  const res = await fetch(`${GRAPH}/${phoneNumberId}/messages`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      messaging_product: 'whatsapp',
+      to: normalizeWhatsAppNumber(to),
+      type: 'image',
+      image: { id: mediaId, ...(caption ? { caption } : {}) },
+    }),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    throw new Error('WHATSAPP_SEND_FAILED' + (detail ? ': ' + detail.slice(0, 300) : ''));
+  }
+  return res.json();
+}
+
 export function verifyMetaSignature(rawBody: string, signature: string | null | undefined) {
   const secret = process.env.META_APP_SECRET;
   if (!secret || !signature) return false;
