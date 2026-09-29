@@ -455,9 +455,10 @@ export default function InboxPage() {
   };
 
   return (
-    <div className="w-full">
+    <div className="flex-1 min-h-0 flex flex-col w-full">
       {loaded && conversations.length === 0 ? (
-        <div className="card" style={{ padding: "46px 24px" }}>
+        <div className="flex-1 min-h-0 overflow-auto p-4 sm:p-6">
+        <div className="card mx-auto max-w-[560px]" style={{ padding: "46px 24px" }}>
           <div className="empty">
             <span className="ic-big"><Icon name="chat" size={26} /></span>
             <p style={{ marginBottom: 16 }}>
@@ -473,12 +474,20 @@ export default function InboxPage() {
             </div>
           </div>
         </div>
+        </div>
       ) : (
-        <div className="inbox-pro bg-white border border-[#E9E9E7] rounded-[12px] overflow-hidden flex min-h-[560px] h-[calc(100vh-170px)]">
+        <div className="inbox-pro bg-white overflow-hidden flex flex-1 min-h-0">
           {/* ============ LEFT: conversation list ============ */}
           <aside className={`w-full md:w-[300px] lg:w-[310px] flex-none flex-col border-r border-[#E9E9E7] bg-white min-h-0 ${mobile === "detail" ? "hidden md:flex" : "flex"}`}>
             <div className="flex-none p-3 border-b border-[#E9E9E7]">
               <div className="flex gap-2">
+                <button
+                  className="btn ghost xs !px-2 flex-none md:hidden"
+                  onClick={() => window.dispatchEvent(new Event("cchat:open-nav"))}
+                  aria-label="Open menu"
+                >
+                  <Icon name="menu" size={15} />
+                </button>
                 <div className="relative flex-1 min-w-0">
                   <input
                     className="inp !pl-9 !py-2 !text-[13px]"
@@ -638,11 +647,14 @@ export default function InboxPage() {
                   {open.msgs.length === 0 && <div className="sysline">No messages in this conversation yet.</div>}
                   {open.msgs.map((m, i) => {
                     const showDay = i === 0 || dayKey(m.t) !== dayKey(open.msgs[i - 1].t);
+                    const prev = i > 0 ? open.msgs[i - 1] : null;
+                    // Group consecutive same-side messages: sender label only on the first of a group
+                    const newGroup = showDay || !prev || prev.from === "sys" || prev.from !== m.from;
                     if (m.from === "sys") {
                       const take = /took over|paused/i.test(m.text);
                       const resumed = /resumed/i.test(m.text);
                       return (
-                        <span key={i}>
+                        <span key={i} className="msg-group">
                           {showDay && <span className="mx-auto my-1 inline-flex self-center px-2.5 py-1 rounded-full bg-[#F1F1EF] text-[10.5px] font-semibold text-[#9B9B9B]">{dayLabel(m.t)}</span>}
                           <span className="mx-auto flex items-center gap-2 max-w-full px-3 py-1 rounded-full bg-[#F7F7F5] border border-[#E9E9E7] text-[11.5px] font-medium text-[#6B6B6B] self-center whitespace-nowrap overflow-hidden">
                             <span className="truncate">{take ? "You took over this conversation" : resumed ? "AI resumed handling this conversation" : m.text}</span>
@@ -653,16 +665,16 @@ export default function InboxPage() {
                     const incoming = m.from === "c";
                     const isAI = m.from === "ai";
                     return (
-                      <span key={i} className={`flex flex-col min-w-0 ${incoming ? "items-start" : "items-end"}`}>
+                      <span key={i} className={`flex flex-col min-w-0 ${incoming ? "items-start" : "items-end"}${newGroup ? " msg-group" : ""}`}>
                         {showDay && <span className="mx-auto my-1 inline-flex self-center px-2.5 py-1 rounded-full bg-[#F1F1EF] text-[10.5px] font-semibold text-[#9B9B9B]">{dayLabel(m.t)}</span>}
                         <span className={`msg-bub ${incoming ? "msg-in" : "msg-out"}`}>
-                          {!incoming && (
+                          {!incoming && newGroup && (
                             <span className="msg-meta">
                               <Icon name={isAI ? "bot" : "user"} size={11} />
                               {isAI ? "AI Agent" : "You"}
                             </span>
                           )}
-                          {incoming && (
+                          {incoming && newGroup && (
                             <span className="msg-meta-in">
                               <span className="w-5 h-5 rounded-full bg-[#F1F1EF] border border-[#E9E9E7] grid place-items-center text-[9px] font-bold text-[#6B6B6B] flex-none">{initials(open.name).slice(0, 1)}</span>
                               {open.name.split(" ")[0]}

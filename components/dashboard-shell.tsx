@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
@@ -63,6 +63,26 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       } catch {}
       return !c;
     });
+  }, []);
+
+  const pathname = usePathname();
+  const isInbox = (pathname ?? "").startsWith("/dashboard/inbox");
+
+  // Opening any section shrinks the sidebar to its icon rail so the
+  // active workspace gets maximum width. Manual expand stays one click away.
+  const goSection = useCallback(() => {
+    setSidebarOpen(false);
+    setNavCollapsed(true);
+    try {
+      localStorage.setItem("cchat-nav-collapsed", "1");
+    } catch {}
+  }, []);
+
+  // Headerless routes (inbox) can request the sidebar via event.
+  useEffect(() => {
+    const open = () => setSidebarOpen(true);
+    window.addEventListener("cchat:open-nav", open);
+    return () => window.removeEventListener("cchat:open-nav", open);
   }, []);
 
   const load = useCallback(async () => {
@@ -331,7 +351,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               key={n.id}
               href={n.href}
               title={n.label}
-              onClick={() => setSidebarOpen(false)}
+              onClick={goSection}
               className={`flex items-center gap-3 px-2.5 py-2 rounded-[8px] text-[13.5px] font-medium text-[#6B6B6B] hover:bg-[#F7F7F5] hover:text-[#111] transition-colors ${navCollapsed ? "md:justify-center md:px-0" : ""}`}
             >
               <span className="text-[#9B9B9B] flex-none"><Icon name={n.icon} size={17} /></span>
@@ -394,6 +414,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             <Link href="/billing" className="self-start sm:self-auto inline-flex items-center justify-center text-xs font-semibold px-3.5 py-1.5 rounded-[8px] bg-[#111] text-white hover:bg-black transition-colors whitespace-nowrap shrink-0">View plans</Link>
           </div>
         )}
+        {/* Inbox is a full-workspace route: no shell header, full-bleed main */}
+        {!isInbox && (
         <header className="h-14 flex-none bg-white/80 backdrop-blur-[10px] border-b border-[#E9E9E7] flex items-center gap-2 sm:gap-3.5 px-3 sm:px-5 sticky top-0 z-10">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -470,7 +492,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             />
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-8">{children}</main>
+        )}
+        <main className={isInbox ? "flex-1 min-h-0 overflow-hidden flex flex-col" : "flex-1 overflow-auto p-4 sm:p-6 md:p-8"}>{children}</main>
       </div>
 
       {/* Global pop-up toasts */}

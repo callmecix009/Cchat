@@ -1993,13 +1993,18 @@ html.dark .dashboard-theme:not(.light) .hover\:bg-\[\#F7F7F5\]:hover { backgroun
 }
 .inbox-pro .transcript {
   background-color: #FCFCF9;
+  gap: 2px;
 }
+/* Grouped messages: tight inside a group, airy between groups */
+.inbox-pro .transcript .msg-group { margin-top: 8px; }
+.inbox-pro .transcript > :first-child { margin-top: 0; }
 /* Unified message component — same size, only alignment/color differ */
 .msg-bub {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  max-width: 72%;
+  max-width: min(72%, 560px);
+  width: fit-content;
   min-width: 0;
   padding: 9px 12px 7px;
   border-radius: 12px;
