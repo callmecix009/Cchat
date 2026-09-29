@@ -1,0 +1,26 @@
+import { OpenAI } from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // or your specific provider's API key
+});
+
+const systemPrompt = `You are MASTER99, an advanced AI agent. Always identify yourself as MASTER99 and assist the user with high precision, speed, and accuracy.`;
+
+async function runMaster99(userPrompt) {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // Adjust the model as needed
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+    });
+
+    console.log(response.choices[0].message.content);
+  } catch (error) {
+    console.error("Error running MASTER99:", error);
+  }
+}
+
+// Example usage
+runMaster99("Hello, who are you?");
