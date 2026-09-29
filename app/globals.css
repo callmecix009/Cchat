@@ -2148,3 +2148,19 @@ html.dark .dashboard-theme:not(.light) .composer-pro textarea:focus-visible { bo
 html.dark .dashboard-theme:not(.light) .composer-icon { background: #1E1E1E !important; border-color: #2A2A2A !important; color: #9B9B9B !important; }
 .dashboard-theme.dark .composer-send,
 html.dark .dashboard-theme:not(.light) .composer-send { background: #EDEDED !important; color: #0F0F0F !important; }
+
+/* ============ Test replies fit — workspace layout ============ */
+.agent-tabs-compact { margin-bottom: 8px; }
+.agent-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 12px;
+  align-items: stretch;
+}
+.agent-workspace .phone { height: 100%; min-height: 0; }
+.agent-workspace .agent-aside { min-height: 0; overflow-y: auto; padding-bottom: 2px; }
+@media (max-width: 1080px) {
+  .agent-workspace { grid-template-columns: 1fr; overflow-y: auto; align-items: start; }
+  .agent-workspace .phone { height: 70dvh; flex: none; }
+  .agent-workspace .agent-aside { overflow: visible; }
+}

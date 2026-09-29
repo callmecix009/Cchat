@@ -15,6 +15,9 @@ const ROLE_TO_FROM: Record<string, ConvoMsg['from']> = {
   ai: 'ai',
   owner: 'me',
   sys: 'sys',
+  // Legacy shorthand written directly by seed-real.js — normalize at read time.
+  c: 'c',
+  me: 'me',
 };
 
 export async function GET(req: NextRequest) {
@@ -122,7 +125,7 @@ export async function GET(req: NextRequest) {
         }>(sql`SELECT m.conversation_id, COUNT(*)::int AS cnt FROM messages m
           JOIN conversations c ON c.id = m.conversation_id
           WHERE m.conversation_id IN (${countIdList})
-            AND m.role = 'customer'
+            AND m.role IN ('customer', 'c')
             AND c.last_read_at IS NOT NULL
             AND m.created_at > c.last_read_at
           GROUP BY m.conversation_id`);

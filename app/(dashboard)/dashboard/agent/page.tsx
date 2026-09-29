@@ -272,15 +272,13 @@ export default function ChatAgentPage() {
   const bw = 620 / state.msgsByDay.length;
 
   return (
-    <div className="mx-auto max-w-[1120px]">
-      <div className="flex items-start justify-between gap-4 mb-8">
-        <div>
-          <h2 className="font-disp text-[20px] font-semibold tracking-tight text-[#111]">Chat Agent</h2>
-          <p className="text-[13px] text-[#6B6B6B] mt-1">Verify exactly how your AI talks — before your customers ever meet it.</p>
-        </div>
+    <div className="flex-1 min-h-0 flex flex-col w-full min-w-0">
+      <div className="flex-none px-3 sm:px-4 pt-3 pb-2 flex items-center gap-x-3 gap-y-1 flex-wrap">
+        <h2 className="font-disp text-[17px] font-semibold tracking-tight text-[#111]">Chat Agent</h2>
+        <p className="text-[12.5px] text-[#6B6B6B] truncate">Verify how your AI talks — before customers meet it.</p>
       </div>
 
-      <div className="agent-tabs">
+      <div className="agent-tabs agent-tabs-compact flex-none px-3 sm:px-4">
         <button className={`atab ${tab === "test" ? "on" : ""}`} onClick={() => setTab("test")}>
           <Icon name="chat" size={16} /> Test the agent <span className="td">· behaves exactly like live</span>
         </button>
@@ -292,7 +290,7 @@ export default function ChatAgentPage() {
         </button>
       </div>
 
-      <div className="agentgrid">
+      <div className="agent-workspace flex-1 min-h-0 px-3 sm:px-4 pb-3">
         <div className="phone">
           <div className="ph">
             <span className="avatar">{isOwner ? "Y" : isAssistant ? "AI" : "C"}</span>
@@ -385,7 +383,7 @@ export default function ChatAgentPage() {
           </div>
         </div>
 
-        <div>
+        <div className="agent-aside min-h-0">
           <div className="sidecard">
             <h4>
               <Icon name="zap" size={15} /> Agent brain — live inputs

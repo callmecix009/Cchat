@@ -97,9 +97,11 @@ async function main() {
     `;
   }
   async function msg(convoId, role, ai, text, at) {
+    // Canonical roles only — the inbox API maps customer/ai/owner/sys.
+    const canonical = role === 'c' ? 'customer' : role === 'me' ? 'owner' : role;
     await sql`
       INSERT INTO public.messages (id,conversation_id,"role",content,ai_handled,created_at)
-      VALUES (${uid('m')},${convoId},${role},${text},${ai},${at})
+      VALUES (${uid('m')},${convoId},${canonical},${text},${ai},${at})
     `;
   }
 
