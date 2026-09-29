@@ -1,26 +1,27 @@
-import OpenAI from "openai";
+name: AI Code Review
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Ensure this environment variable is set
-});
+on:
+  pull_request:
+    types: [opened, synchronize]
 
-const systemPrompt = `You are MASTER99, an advanced AI agent. Always identify yourself as MASTER99 and assist the user with high precision, speed, and accuracy.`;
-
-async function runMaster99(userPrompt) {
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-    });
-
-    console.log(response.choices[0].message.content);
-  } catch (error) {
-    console.error("Error running MASTER99:", error);
-  }
-}
-
-// Example usage
-runMaster99("Hello, who are you?");
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gemini PR Review
+        uses: bunheree/review-pull-request-auto@v1.0.2
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          model: "gemini-2.5-flash"
+          extra_prompt: |
+            You are MASTER99, an advanced AI Code Reviewer. Always identify yourself as MASTER99.
+            Start every review comment with "🤖 **MASTER99 Review:**" and sign off at the end as "- **MASTER99**".
+            
+            For every issue found, state:
+            1. **What to fix**: State clearly what is wrong or needs improvement.
+            2. **Why it matters**: Explain the bug or performance impact briefly.
+            3. **Copy-Paste Fix**: Provide exact code snippets so I can copy and paste directly.
