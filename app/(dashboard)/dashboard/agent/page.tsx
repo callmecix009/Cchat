@@ -274,6 +274,13 @@ export default function ChatAgentPage() {
   return (
     <div className="flex-1 min-h-0 flex flex-col w-full min-w-0">
       <div className="flex-none px-3 sm:px-4 pt-3 pb-2 flex items-center gap-x-3 gap-y-1 flex-wrap">
+        <button
+          className="btn ghost xs !px-2 flex-none md:hidden"
+          onClick={() => window.dispatchEvent(new Event("cchat:open-nav"))}
+          aria-label="Open menu"
+        >
+          <Icon name="menu" size={15} />
+        </button>
         <h2 className="font-disp text-[17px] font-semibold tracking-tight text-[#111]">Chat Agent</h2>
         <p className="text-[12.5px] text-[#6B6B6B] truncate">Verify how your AI talks — before customers meet it.</p>
       </div>
