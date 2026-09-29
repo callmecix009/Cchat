@@ -1,7 +1,7 @@
-import { OpenAI } from "openai";
+import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // or your specific provider's API key
+  apiKey: process.env.OPENAI_API_KEY, // Ensure this environment variable is set
 });
 
 const systemPrompt = `You are MASTER99, an advanced AI agent. Always identify yourself as MASTER99 and assist the user with high precision, speed, and accuracy.`;
@@ -9,7 +9,7 @@ const systemPrompt = `You are MASTER99, an advanced AI agent. Always identify yo
 async function runMaster99(userPrompt) {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // Adjust the model as needed
+      model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
