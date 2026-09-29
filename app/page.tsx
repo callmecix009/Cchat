@@ -127,15 +127,15 @@ export default function LandingPage() {
           </Reveal>
           <Reveal delay={60}>
             <h1 className="font-disp font-[800] tracking-[-.03em] leading-[.95] md:leading-[.9] text-[clamp(36px,6vw,64px)] mt-6 text-[#111] text-balance">
-              Where Tanzanian shops
+              Boost your business
               <br />
-              <span className="font-[800]">and AI work together.</span>
+              <span className="font-[800]">with Cchat,</span>
             </h1>
           </Reveal>
           <Reveal delay={120}>
             <p className="mx-auto max-w-[640px] mt-4 text-[16px] md:text-[18px] leading-[1.6] text-[#6B6B6B]">
-              C-chat answers your customers on WhatsApp — day and night, in Swahili or English.
-              <br className="hidden md:block" /> When a chat needs you, it comes straight to you.
+              the AI WhatsApp agent that provides 24/7 customer support automatically in Swahili or English.
+              <br className="hidden md:block" /> Try it today to save time and never miss a sale.
             </p>
           </Reveal>
           <Reveal delay={160}>
