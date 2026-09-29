@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { conversations, messages, whatsappConnections } from '@/lib/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { normalizeWhatsAppNumber, verifyMetaSignature, webhookVerifyToken } from '@/lib/whatsapp';
+import { ensureMessageMediaColumn } from '@/lib/db/ensure-columns';
 import { checkRateLimit, getClientIp, rateLimitedResponse, RL_WEBHOOK } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -62,7 +63,10 @@ export async function POST(req: NextRequest) {
 
         for (const wa of waMsgs) {
           const from = String(wa.from || '');
-          const text = wa.type === 'text' ? wa.text?.body : `[${wa.type}]`;
+          const isImage = wa.type === 'image' && typeof wa.image?.id === 'string';
+          const imgCaption = isImage && typeof wa.image?.caption === 'string' ? wa.image.caption.trim().slice(0, 1024) : '';
+          const text = wa.type === 'text' ? wa.text?.body : isImage && imgCaption ? `[image] ${imgCaption}` : `[${wa.type}]`;
+          const mediaId = isImage ? (wa.image.id as string) : null;
           if (!from || !text) continue;
           const ts = Number(wa.timestamp || 0) * 1000;
 
@@ -130,12 +134,14 @@ export async function POST(req: NextRequest) {
             });
           }
 
+          await ensureMessageMediaColumn();
           await db.insert(messages).values({
             id: crypto.randomUUID(),
             conversationId: convoId,
             role: 'customer',
             content: text,
             aiHandled: false,
+            mediaId,
             createdAt: ts ? new Date(ts) : now(),
           });
         }

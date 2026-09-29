@@ -5,6 +5,7 @@ import { conversations, messages } from '@/lib/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 import { type Convo, type ConvoMsg } from '@/lib/demo';
 import { ensureUserRow } from '@/lib/ensureUser';
+import { ensureMessageMediaColumn } from '@/lib/db/ensure-columns';
 import { checkRateLimit, getClientIp, rateLimitedResponse, RL_INBOX } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -75,6 +76,7 @@ export async function GET(req: NextRequest) {
 
     const msgsByConvo = new Map<string, ConvoMsg[]>();
     if (rows.length) {
+      await ensureMessageMediaColumn();
       const ids = rows.map((r) => r.id);
       // NOTE: drizzle's sql`` expands a JS array into ($1, $2, ...) — NOT a
       // Postgres array — so `= ANY(${ids})` throws 42809. Use an IN-list.
@@ -91,6 +93,7 @@ export async function GET(req: NextRequest) {
         role: string;
         content: string;
         ai_handled: boolean | null;
+        media_id: string | null;
         created_at: Date;
       }>(sql`SELECT id, conversation_id, role, content, ai_handled, created_at FROM (
         SELECT m.*, ROW_NUMBER() OVER (PARTITION BY m.conversation_id ORDER BY m.created_at DESC) AS rn
@@ -103,6 +106,7 @@ export async function GET(req: NextRequest) {
           from: ROLE_TO_FROM[m.role] ?? 'sys',
           text: m.content,
           t: at.getTime(),
+          media: m.media_id ?? null,
         });
         msgsByConvo.set(m.conversation_id, list);
       }

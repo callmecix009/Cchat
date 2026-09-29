@@ -2048,6 +2048,20 @@ html.dark .dashboard-theme:not(.light) .hover\:bg-\[\#F7F7F5\]:hover { backgroun
   margin-bottom: 1px;
 }
 .msg-text { min-width: 0; }
+/* Compact image frame inside a bubble — chat-app style */
+.msg-media {
+  display: block;
+  max-width: 240px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.msg-media img {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  background: #E9E9E7;
+}
 .msg-time {
   display: flex;
   align-items: center;

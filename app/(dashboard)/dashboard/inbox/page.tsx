@@ -439,6 +439,7 @@ export default function InboxPage() {
         return;
       }
       const text = caption ? `[image] ${caption}` : "[image]";
+      const media = (data?.mediaId as string | null) ?? null;
       setReply("");
       clearAttach();
       atBottomRef.current = true;
@@ -447,7 +448,7 @@ export default function InboxPage() {
         t: Date.now(),
         takeover: true,
         status: "waiting",
-        msgs: [...cc.msgs, { from: "me", text, t: Date.now() }],
+        msgs: [...cc.msgs, { from: "me", text, t: Date.now(), media }],
       }));
       requestAnimationFrame(() => {
         if (transcriptRef.current) transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
@@ -521,11 +522,18 @@ export default function InboxPage() {
     }
   };
 
+  const captionOf = (t: string) => (t || "").replace(/^\[image\]\s*/, "");
+
   const prevText = (c: Convo) => {
     const last = c.msgs[c.msgs.length - 1];
     if (!last) return "";
     if (last.from === "sys") return last.text || "";
-    return (last.from === "ai" ? "AI: " : last.from === "me" ? "You: " : "") + (last.text || "");
+    const prefix = last.from === "ai" ? "AI: " : last.from === "me" ? "You: " : "";
+    if (last.media) {
+      const cap = captionOf(last.text);
+      return `${prefix}📷 ${cap || "Photo"}`;
+    }
+    return prefix + (last.text || "");
   };
 
   const recentActivity = useMemo(() => {
@@ -768,6 +776,8 @@ export default function InboxPage() {
                     }
                     const incoming = m.from === "c";
                     const isAI = m.from === "ai";
+                    const caption = m.media ? captionOf(m.text) : m.text;
+                    const mediaUrl = m.media ? `/api/inbox/media?id=${encodeURIComponent(m.media)}` : null;
                     return (
                       <span key={i} className={`flex flex-col min-w-0 ${incoming ? "items-start" : "items-end"}${newGroup ? " msg-group" : ""}`}>
                         {showDay && <span className="mx-auto my-1 inline-flex self-center px-2.5 py-1 rounded-full bg-[#F1F1EF] text-[10.5px] font-semibold text-[#9B9B9B]">{dayLabel(m.t)}</span>}
@@ -784,7 +794,13 @@ export default function InboxPage() {
                               {open.name.split(" ")[0]}
                             </span>
                           )}
-                          <span className="msg-text">{m.text}</span>
+                          {mediaUrl && (
+                            <a className="msg-media" href={mediaUrl} target="_blank" rel="noreferrer">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={mediaUrl} alt="Shared image" loading="lazy" />
+                            </a>
+                          )}
+                          {caption ? <span className="msg-text">{caption}</span> : null}
                           <time className="msg-time">
                             {fmtClock(m.t)}
                             {!incoming && (
