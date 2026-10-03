@@ -40,3 +40,23 @@ export async function ensureMessageMediaColumn(): Promise<void> {
     console.error('ensureMessageMediaColumn failed:', e);
   }
 }
+
+let waitlistEnsured = false;
+
+export async function ensureWaitlistTable(): Promise<void> {
+  if (waitlistEnsured) return;
+  try {
+    await db.execute(sql`CREATE TABLE IF NOT EXISTS waitlist (
+      id text PRIMARY KEY,
+      user_id text NOT NULL UNIQUE,
+      name text NOT NULL,
+      phone text NOT NULL,
+      business_type text DEFAULT '' NOT NULL,
+      note text DEFAULT '' NOT NULL,
+      created_at timestamp DEFAULT now() NOT NULL
+    )`);
+    waitlistEnsured = true;
+  } catch (e) {
+    console.error('ensureWaitlistTable failed:', e);
+  }
+}

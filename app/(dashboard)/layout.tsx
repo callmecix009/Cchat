@@ -16,7 +16,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   try {
     const row = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1);
     if (row.length && isSubscriptionBlocked(row[0])) {
-      redirect("/plan-selection");
+      // Launch gate: new/expired accounts join the waitlist instead of the
+      // (not yet live) payment flow. Active trials/subs bypass untouched.
+      redirect("/waitlist");
     }
   } catch (e: any) {
     if (e?.digest?.startsWith?.("NEXT_REDIRECT")) throw e;

@@ -49,6 +49,16 @@ export const messages = pgTable('messages', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (t) => [index('messages_conversation_id_idx').on(t.conversationId)]);
 
+export const waitlist = pgTable('waitlist', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().unique().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  phone: text('phone').notNull(),
+  businessType: text('business_type').default('').notNull(),
+  note: text('note').default('').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const commands = pgTable('commands', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => users.id),

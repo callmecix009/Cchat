@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { planBadgeInfo } from "@/components/premium";
 import { PremiumBadge, ExtraPremiumBadge } from "@/components/plan-badges";
 import { SaveCrown } from "@/components/premium-indicator";
@@ -148,6 +149,16 @@ export default function BillingPage() {
           <span className="livechip"><span className="dot g" /> Secure payment</span>
           <span className="text-[11px] text-muted">M-Pesa · Tigo Pesa · Airtel Money · Card</span>
         </div>
+      </div>
+
+      {/* payments opening soon */}
+      <div className="bg-[#FEF9E7] border border-[#F5E6C8] rounded-[16px] px-5 py-4 flex items-center gap-3 mb-6">
+        <Icon name="clock" size={18} />
+        <p className="text-[13px] text-[#8A6B2A] leading-relaxed">
+          <b>Payments open soon.</b> Subscriptions are activating gradually —{" "}
+          <Link href="/waitlist" className="font-bold underline">join the waitlist</Link>{" "}
+          and we&apos;ll unlock billing for your shop.
+        </p>
       </div>
 
       {/* pricing grid */}

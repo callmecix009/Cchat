@@ -49,8 +49,14 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white text-[#111] font-body selection:bg-[#E3F4E9] selection:text-[#0E7A47]">
+      {/* WAITLIST banner */}
+      <div className="fixed top-0 left-0 right-0 z-[900] h-9 bg-[#111] text-white flex items-center justify-center gap-2 px-[5vw] text-[12.5px] font-medium">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#53E89B] animate-pulse flex-none" />
+        <span className="truncate">WhatsApp connection & payments open soon —</span>
+        <Link href="/sign-up" className="font-bold underline underline-offset-2 flex-none">join the waitlist</Link>
+      </div>
       {/* NAVBAR — Notion: white blur, 1px border, height 56 */}
-      <nav className={`notion-nav fixed top-0 left-0 right-0 z-[900] flex items-center gap-6 px-[5vw] h-[56px] transition-all ${scrolled ? "scrolled" : ""}`}>
+      <nav className={`notion-nav fixed top-9 left-0 right-0 z-[900] flex items-center gap-6 px-[5vw] h-[56px] transition-all ${scrolled ? "scrolled" : ""}`}>
         <Link href="/" className="flex items-center gap-[9px] font-disp font-[800] text-[18px] tracking-tight text-[#111]">
           <CchatLogo size={32} decorative className="shrink-0" />
           C-chat
@@ -92,7 +98,7 @@ export default function LandingPage() {
       {mobileMenu && (
         <div className="fixed inset-0 z-[899] lg:hidden">
           <div className="absolute inset-0 bg-[#111]/20 backdrop-blur-[1px]" onClick={() => setMobileMenu(false)} />
-          <div className="absolute top-[56px] left-0 right-0 bg-white border-b border-[#E9E9E7] px-[5vw] py-6 space-y-1 shadow-[0_12px_32px_rgba(0,0,0,.08)]">
+          <div className="absolute top-[92px] left-0 right-0 bg-white border-b border-[#E9E9E7] px-[5vw] py-6 space-y-1 shadow-[0_12px_32px_rgba(0,0,0,.08)]">
             {[
               { href: "#capture", label: "How it works" },
               { href: "#automate", label: "Features" },
@@ -117,8 +123,8 @@ export default function LandingPage() {
         </div>
       )}
 
-      {/* HERO — Notion: centered, white, pile visual, 88px offset for 56px nav */}
-      <header className="relative bg-white pt-[88px] pb-10 md:pb-14 overflow-hidden">
+      {/* HERO — Notion: centered, white, pile visual, offset for nav + banner */}
+      <header className="relative bg-white pt-[124px] pb-10 md:pb-14 overflow-hidden">
         <div className="mx-auto max-w-[1120px] px-[5vw] text-center">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full border border-[#E9E9E7] bg-[#F7F7F5] px-3 py-1.5 text-[12px] font-semibold text-[#6B6B6B] shadow-[0_1px_2px_rgba(0,0,0,.04)]">

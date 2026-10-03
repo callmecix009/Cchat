@@ -128,10 +128,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         const isBlocked = data && (data.status === "expired" || data.status === "inactive" || data.status === "canceled");
         if (mounted && isBlocked) {
           const currentPath = window.location.pathname;
-          const allowed = ["/plan-selection", "/settings", "/onboarding", "/billing", "/privacy", "/terms", "/acceptable-use"];
+          const allowed = ["/plan-selection", "/waitlist", "/settings", "/onboarding", "/billing", "/privacy", "/terms", "/acceptable-use"];
           const isAllowed = allowed.some((p) => currentPath.startsWith(p));
           if (!isAllowed) {
-            router.push("/plan-selection");
+            router.push("/waitlist");
             return;
           }
         }
