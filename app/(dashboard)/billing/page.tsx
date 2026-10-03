@@ -25,6 +25,7 @@ function Check() {
   );
 }
 
+/** Shows fetched subscription status, trial and plan actions, and a waitlist notice. */
 export default function BillingPage() {
   const [status, setStatus] = useState<{
     status: string;

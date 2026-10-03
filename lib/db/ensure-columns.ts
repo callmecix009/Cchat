@@ -43,6 +43,12 @@ export async function ensureMessageMediaColumn(): Promise<void> {
 
 let waitlistEnsured = false;
 
+/**
+ * Attempts to create the waitlist table and add missing sequence and cascading
+ * user foreign-key support to older tables. Skips work after success for this
+ * module instance. Database errors are swallowed and setup is retried on the next
+ * call; resolving does not guarantee that subsequent waitlist queries will work.
+ */
 export async function ensureWaitlistTable(): Promise<void> {
   if (waitlistEnsured) return;
   try {

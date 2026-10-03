@@ -36,6 +36,7 @@ function CloseIcon({ size = 22 }: { size?: number }) {
 
 const TRUST_ITEMS = ["Duka la Simu Kariakoo", "Salon ya Mikocheni", "Fundi wa Vifaa", "Duka la Nguo Gongo la Mboto", "Hoteli Ndogo Sinza", "Duka la Vipuri Posta"];
 
+/** Renders product information, pricing, and FAQs, with a waitlist banner linking to sign-up. */
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenu, setMobileMenu] = useState(false);

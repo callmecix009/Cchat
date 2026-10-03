@@ -17,6 +17,7 @@ const TYPES = [
   "Other",
 ];
 
+/** Shows the waitlist join form or the user's fetched queue position and total. */
 export default function WaitlistPage() {
   const { user } = useUser();
   const [status, setStatus] = useState<{ joined: boolean; position: number | null; total: number; name?: string } | null>(null);
@@ -28,6 +29,10 @@ export default function WaitlistPage() {
   const [err, setErr] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
 
+  /**
+   * Refreshes status and prefills an empty name from Clerk before joining.
+   * Request or JSON errors set loadError while preserving the previous status.
+   */
   const load = async () => {
     setLoadError(false);
     try {
@@ -48,6 +53,11 @@ export default function WaitlistPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  /**
+   * Submits the form unless already busy, then stores the successful response.
+   * Unreadable JSON falls back to an empty object; HTTP and network failures set
+   * a display error. Clears busy when the request attempt finishes.
+   */
   const join = async () => {
     if (busy) return;
     setBusy(true);

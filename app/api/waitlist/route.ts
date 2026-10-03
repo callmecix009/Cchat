@@ -13,6 +13,16 @@ export const dynamic = 'force-dynamic';
 
 const BUSINESS_TYPES = ['Duka / Shop', 'Pharmacy', 'Salon / Barber', 'Food / Restaurant', 'Electronics', 'Fashion', 'Services', 'Other'];
 
+/**
+ * Reads waitlist status, ensuring the local user and attempting table setup first.
+ * May create the user or update demo-owner access through ensureUserRow.
+ *
+ * @param userId - Clerk user ID, not the local database user ID.
+ * @returns JSON with joined, total, and position (null before joining), plus the
+ * stored name for members; 404 if no local user can be resolved. Position counts
+ * existing entries with a sequence at or below the member's, so it can change.
+ * @throws Propagates user-resolution and waitlist-query errors to the caller.
+ */
 async function statusFor(userId: string) {
   const user = await ensureUserRow(userId);
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -33,6 +43,13 @@ async function statusFor(userId: string) {
   });
 }
 
+/**
+ * Returns the signed-in user's status via statusFor, including its setup effects.
+ * Returns 429 when the trusted-IP limit is exceeded (skipped without a trusted
+ * IP), 401 without a session, 404 without a local user, or 500 if statusFor fails.
+ *
+ * @throws Propagates authentication errors occurring before status lookup.
+ */
 export async function GET(req: NextRequest) {
   const ip = getClientIp(req);
   const rl = checkRateLimit({ key: `waitlist:get:ip:${ip}`, limit: RL_ONBOARDING.limit, windowMs: RL_ONBOARDING.windowMs });
@@ -49,6 +66,23 @@ export async function GET(req: NextRequest) {
   }
 }
 
+/**
+ * Joins the signed-in user once and returns statusFor's current queue status.
+ * Existing entries keep their original details. May create or update the local
+ * user and attempts table setup before inserting.
+ *
+ * Expects JSON name, phone, businessType, and optional note strings. Trims name
+ * and note, then truncates them to 120 and 500 UTF-16 code units, respectively.
+ * Phone normalization removes nondigits and replaces a leading zero with 255;
+ * at least nine resulting digits, a nonempty name, and a trimmed businessType
+ * from BUSINESS_TYPES are required.
+ * Returns 400 for unreadable JSON or failed validation, 401 without a session,
+ * 404 without a local user, 429 when the trusted-IP limit is exceeded (skipped
+ * without a trusted IP), or 500 for failures during persistence or status lookup.
+ *
+ * @throws Propagates authentication errors and TypeError from truthy non-string
+ * fields during normalization, which occurs outside the persistence error handler.
+ */
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
   const rl = checkRateLimit({ key: `waitlist:post:ip:${ip}`, limit: RL_ONBOARDING.limit, windowMs: RL_ONBOARDING.windowMs });

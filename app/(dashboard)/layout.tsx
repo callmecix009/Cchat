@@ -9,6 +9,12 @@ import DashboardShell from "@/components/dashboard-shell";
 import { ThemeProvider } from "@/components/theme-provider";
 import { isSubscriptionBlocked } from "@/lib/subscription-guard";
 
+/**
+ * Wraps dashboard content in the theme provider and shell after checking access.
+ * Redirects signed-out visitors to sign-in and users blocked by
+ * isSubscriptionBlocked to the waitlist. Missing user rows and database failures
+ * allow rendering; authentication errors and Next.js redirect signals propagate.
+ */
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");

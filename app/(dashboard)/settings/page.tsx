@@ -60,6 +60,10 @@ function AppearanceCard() {
   );
 }
 
+/**
+ * Manages the business profile and WhatsApp connection and shows subscription
+ * and appearance settings, with a waitlist notice when WhatsApp is disconnected.
+ */
 export default function SettingsPage() {
   const { user } = useUser();
   const [biz, setBiz] = useState({

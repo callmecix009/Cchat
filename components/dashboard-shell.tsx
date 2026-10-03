@@ -41,6 +41,10 @@ type BizSettings = {
   expiresAt: string | null;
 };
 
+/**
+ * Wraps dashboard content with navigation, business status, and polled alerts.
+ * Checks billing access on mount and remembers sidebar collapse on this device.
+ */
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const router = useRouter();
@@ -117,6 +121,11 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   // Check subscription access - non-blocking, redirects only when clearly expired/inactive
   useEffect(() => {
     let mounted = true;
+    /**
+     * Redirects expired, inactive, or canceled accounts to the waitlist unless
+     * the current path starts with an allowed prefix. Failed billing requests
+     * allow access; marks the check complete only while the effect is mounted.
+     */
     const checkAccess = async () => {
       try {
         const res = await fetch("/api/billing");
