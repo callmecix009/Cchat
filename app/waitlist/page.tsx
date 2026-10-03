@@ -26,19 +26,26 @@ export default function WaitlistPage() {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState(false);
+
+  const load = async () => {
+    setLoadError(false);
+    try {
+      const r = await fetch("/api/waitlist");
+      if (!r.ok) throw new Error("status failed");
+      const d = await r.json();
+      setStatus(d);
+      if (!d.joined && user) {
+        setName((v) => v || [user.firstName, user.lastName].filter(Boolean).join(" "));
+      }
+    } catch {
+      setLoadError(true);
+    }
+  };
 
   useEffect(() => {
-    fetch("/api/waitlist")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d) {
-          setStatus(d);
-          if (!d.joined && user) {
-            setName((v) => v || [user.firstName, user.lastName].filter(Boolean).join(" "));
-          }
-        }
-      })
-      .catch(() => {});
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const join = async () => {
@@ -87,12 +94,22 @@ export default function WaitlistPage() {
 
         <div className="card mt-8 p-5 sm:p-7">
           {status === null ? (
-            <div aria-hidden="true">
-              <span className="skel block h-5 w-40 mb-4" />
-              <span className="skel block h-[42px] rounded-[8px] mb-3" />
-              <span className="skel block h-[42px] rounded-[8px] mb-3" />
-              <span className="skel block h-[42px] rounded-[8px]" />
-            </div>
+            loadError ? (
+              <div className="text-center py-6">
+                <p className="text-[14px] font-semibold text-[#111]">Couldn&apos;t load the waitlist.</p>
+                <p className="text-[13px] text-[#6B6B6B] mt-1">Check your connection and try again.</p>
+                <button className="btn pri sm mt-4" onClick={load}>
+                  <Icon name="refresh" size={13} /> Retry
+                </button>
+              </div>
+            ) : (
+              <div aria-hidden="true">
+                <span className="skel block h-5 w-40 mb-4" />
+                <span className="skel block h-[42px] rounded-[8px] mb-3" />
+                <span className="skel block h-[42px] rounded-[8px] mb-3" />
+                <span className="skel block h-[42px] rounded-[8px]" />
+              </div>
+            )
           ) : status.joined ? (
             <div className="text-center py-2">
               <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#E3F4E9] border border-[#BCE5CB] text-[#0E7A47]">
@@ -124,17 +141,17 @@ export default function WaitlistPage() {
           ) : (
             <>
               <div className="field">
-                <label>Your name</label>
-                <input className="inp" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Juma Hassan" autoComplete="name" />
+                <label htmlFor="wl-name">Your name</label>
+                <input id="wl-name" className="inp" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Juma Hassan" autoComplete="name" />
               </div>
               <div className="field">
-                <label>WhatsApp number</label>
-                <input className="inp" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. 0757 123 456" inputMode="tel" autoComplete="tel" />
+                <label htmlFor="wl-phone">WhatsApp number</label>
+                <input id="wl-phone" className="inp" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. 0757 123 456" inputMode="tel" autoComplete="tel" />
                 <div className="hint">We&apos;ll message you here when your slot opens.</div>
               </div>
               <div className="field">
-                <label>Business type</label>
-                <select className="inp" value={type} onChange={(e) => setType(e.target.value)}>
+                <label htmlFor="wl-type">Business type</label>
+                <select id="wl-type" className="inp" value={type} onChange={(e) => setType(e.target.value)}>
                   <option value="">Choose…</option>
                   {TYPES.map((t) => (
                     <option key={t} value={t}>{t}</option>
@@ -142,8 +159,8 @@ export default function WaitlistPage() {
                 </select>
               </div>
               <div className="field">
-                <label>Anything we should know? <span className="font-normal">(optional)</span></label>
-                <textarea className="inp" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. I sell phones in Kariakoo" rows={2} />
+                <label htmlFor="wl-note">Anything we should know? <span className="font-normal">(optional)</span></label>
+                <textarea id="wl-note" className="inp" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. I sell phones in Kariakoo" rows={2} />
               </div>
               {err && <p className="text-[13px] font-semibold text-red-500 mb-3">{err}</p>}
               <button className="btn pri wide" disabled={busy || !name.trim() || !phone.trim() || !type} onClick={join}>

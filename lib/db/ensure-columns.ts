@@ -48,13 +48,21 @@ export async function ensureWaitlistTable(): Promise<void> {
   try {
     await db.execute(sql`CREATE TABLE IF NOT EXISTS waitlist (
       id text PRIMARY KEY,
-      user_id text NOT NULL UNIQUE,
+      seq SERIAL NOT NULL,
+      user_id text NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
       name text NOT NULL,
       phone text NOT NULL,
       business_type text DEFAULT '' NOT NULL,
       note text DEFAULT '' NOT NULL,
       created_at timestamp DEFAULT now() NOT NULL
     )`);
+    // Backfill for tables created before the seq/FK constraints existed.
+    await db.execute(sql`ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS seq SERIAL NOT NULL`);
+    await db.execute(sql`DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'waitlist_user_id_fkey') THEN
+        ALTER TABLE waitlist ADD CONSTRAINT waitlist_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+      END IF;
+    END $$`);
     waitlistEnsured = true;
   } catch (e) {
     console.error('ensureWaitlistTable failed:', e);

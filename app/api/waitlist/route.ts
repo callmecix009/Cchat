@@ -23,7 +23,7 @@ async function statusFor(userId: string) {
     return NextResponse.json({ joined: false, position: null, total: Number(total[0]?.n ?? 0) });
   }
   const mine = rows[0];
-  const ahead = await db.select({ n: sql<number>`COUNT(*)::int` }).from(waitlist).where(lte(waitlist.createdAt, mine.createdAt));
+  const ahead = await db.select({ n: sql<number>`COUNT(*)::int` }).from(waitlist).where(lte(waitlist.seq, mine.seq));
   const total = await db.select({ n: sql<number>`COUNT(*)::int` }).from(waitlist);
   return NextResponse.json({
     joined: true,
@@ -84,18 +84,19 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
     await ensureWaitlistTable();
 
-    // Idempotent — already joined returns current position.
-    const existing = await db.select().from(waitlist).where(eq(waitlist.userId, user.id)).limit(1);
-    if (!existing.length) {
-      await db.insert(waitlist).values({
+    // Conflict-safe: concurrent joins for the same user collapse onto the
+    // unique user_id instead of throwing. Either way, return live status.
+    await db
+      .insert(waitlist)
+      .values({
         id: crypto.randomUUID(),
         userId: user.id,
         name,
         phone,
         businessType,
         note,
-      });
-    }
+      })
+      .onConflictDoNothing({ target: waitlist.userId });
     return await statusFor(userId);
   } catch (err) {
     console.error('Waitlist join error:', err);
