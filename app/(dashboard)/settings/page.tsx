@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { initials } from "@/lib/demo";
 import { Icon } from "@/components/icons";
@@ -387,6 +388,16 @@ export default function SettingsPage() {
                     <button onClick={startWhatsAppConnect} className="font-bold underline" disabled={waConnecting}>
                       Retry
                     </button>
+                  </span>
+                </div>
+              )}
+              {!waConnected && (
+                <div className="mt-3 bg-[#FEF9E7] border border-[#F5E6C8] rounded-[10px] p-3.5 text-[12.5px] text-[#8A6B2A] leading-[1.6] flex items-start gap-2.5">
+                  <Icon name="clock" size={15} />
+                  <span>
+                    WhatsApp connections are opening gradually —{" "}
+                    <Link href="/waitlist" className="font-bold underline">join the waitlist</Link>{" "}
+                    and we&apos;ll activate your number.
                   </span>
                 </div>
               )}

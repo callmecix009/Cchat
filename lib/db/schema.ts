@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, boolean, jsonb, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, boolean, jsonb, index, serial } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
@@ -48,6 +48,17 @@ export const messages = pgTable('messages', {
   mediaId: text('media_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (t) => [index('messages_conversation_id_idx').on(t.conversationId)]);
+
+export const waitlist = pgTable('waitlist', {
+  id: text('id').primaryKey(),
+  seq: serial('seq'),
+  userId: text('user_id').notNull().unique().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  phone: text('phone').notNull(),
+  businessType: text('business_type').default('').notNull(),
+  note: text('note').default('').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
 
 export const commands = pgTable('commands', {
   id: text('id').primaryKey(),
